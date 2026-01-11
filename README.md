@@ -3,11 +3,12 @@
 <div align="center">
 
 ```
-   _____ ____  ____  ____  ___  ______   __  _____________
-  / ___// __ \/ __ \/ __ )/   |/_  __/  /  |/  / ___/ __ \
- / /   / / / / /_/ / __  / /| | / /    / /|_/ / /  / /_/ /
-/ /___/ /_/ / _, _/ /_/ / ___ |/ /    / /  / / /__/ ____/
-\____/\____/_/ |_/_____/_/  |_/_/    /_/  /_/\___/_/
+ ██████╗ ██████╗ ██████╗ ██████╗  █████╗ ████████╗    ███╗   ███╗ ██████╗██████╗
+██╔════╝██╔═══██╗██╔══██╗██╔══██╗██╔══██╗╚══██╔══╝    ████╗ ████║██╔════╝██╔══██╗
+██║     ██║   ██║██████╔╝██████╔╝███████║   ██║       ██╔████╔██║██║     ██████╔╝
+██║     ██║   ██║██╔══██╗██╔══██╗██╔══██║   ██║       ██║╚██╔╝██║██║     ██╔═══╝
+╚██████╗╚██████╔╝██║  ██║██████╔╝██║  ██║   ██║       ██║ ╚═╝ ██║╚██████╗██║
+ ╚═════╝ ╚═════╝ ╚═╝  ╚═╝╚═════╝ ╚═╝  ╚═╝   ╚═╝       ╚═╝     ╚═╝ ╚═════╝╚═╝
 ```
 
 **Your coding standards, always at hand.**
@@ -68,7 +69,7 @@ Choose the profile that matches your tech stack:
 
 | Profile | Stack | Best For |
 |---------|-------|----------|
-| `default` | Java + Spring Boot | Enterprise backend with Hexagonal, DDD, CQRS |
+| `java-spring-backend` | Java + Spring Boot | Enterprise backend with Hexagonal, DDD, CQRS |
 | `nodejs` | Node.js + TypeScript | Backend APIs with Express/Fastify, Prisma |
 | `python` | Python + FastAPI | Backend with SQLAlchemy, async, type hints |
 | `frontend` | React/Vue + TypeScript | SPAs with component architecture, state management |
@@ -94,9 +95,9 @@ Choose the profile that matches your tech stack:
 │                                                                 │
 │  ┌──────────────┐         ┌──────────────┐                     │
 │  │   profiles/  │         │  standards/  │                     │
+│  │  templates/  │         │              │                     │
+│  │  custom/     │         │ *.md files   │                     │
 │  │              │         │              │                     │
-│  │ default.yaml │         │ *.md files   │                     │
-│  │ custom1.yaml │         │              │                     │
 │  └──────┬───────┘         └──────┬───────┘                     │
 │         │                        │                              │
 │         └──────────┬─────────────┘                              │
@@ -131,7 +132,7 @@ Choose the profile that matches your tech stack:
 1. **You start Claude Code** → It reads your MCP settings and spawns `corbat-mcp`
 2. **Claude discovers capabilities** → The server tells Claude what tools/resources are available
 3. **You ask Claude something** → "Review this code using my standards"
-4. **Claude calls the MCP tool** → `get_coding_standards` with profile="default"
+4. **Claude calls the MCP tool** → `get_coding_standards` with profile="java-spring-backend"
 5. **Corbat returns context** → Your architecture rules, naming conventions, quality thresholds...
 6. **Claude applies them** → Reviews your code against YOUR standards, not generic ones
 
@@ -165,11 +166,14 @@ corbat-mcp/
 │   ├── resources.ts  # MCP resources implementation
 │   └── prompts.ts    # MCP prompts implementation
 ├── profiles/
-│   ├── default.yaml  # Java/Spring Boot enterprise standards
-│   ├── nodejs.yaml   # Node.js/TypeScript standards
-│   ├── python.yaml   # Python/FastAPI standards
-│   ├── frontend.yaml # React/Vue frontend standards
-│   └── minimal.yaml  # Lightweight standards for MVPs
+│   ├── templates/                # Official profiles (don't edit)
+│   │   ├── java-spring-backend.yaml  # Java/Spring Boot enterprise
+│   │   ├── nodejs.yaml               # Node.js/TypeScript
+│   │   ├── python.yaml               # Python/FastAPI
+│   │   ├── frontend.yaml             # React/Vue frontend
+│   │   ├── minimal.yaml              # Lightweight for MVPs
+│   │   └── _template.yaml            # Base for custom profiles
+│   └── custom/                   # Your custom profiles
 ├── standards/
 │   ├── architecture/
 │   │   ├── hexagonal.md
@@ -193,7 +197,7 @@ corbat-mcp/
 Profiles are YAML files that define your coding standards:
 
 ```yaml
-# profiles/default.yaml
+# profiles/custom/my-project.yaml
 name: "My Team Standards"
 description: "Backend coding standards"
 
@@ -221,10 +225,11 @@ naming:
 
 ### Create Your Own
 
-1. Copy `profiles/custom1.yaml`
-2. Rename it (e.g., `my-project.yaml`)
-3. Edit the values
-4. Use it: `"Apply corbat standards with profile my-project"`
+1. Copy the template: `cp profiles/templates/_template.yaml profiles/custom/my-project.yaml`
+2. Edit with your standards
+3. Use it: `"Apply corbat standards with profile my-project"`
+
+Custom profiles in `profiles/custom/` can override official templates.
 
 ---
 
@@ -264,7 +269,7 @@ The `standards/` folder contains Markdown files that get included in the context
 |----------|---------|-------------|
 | `CORBAT_PROFILES_DIR` | `./profiles` | Profiles directory |
 | `CORBAT_STANDARDS_DIR` | `./standards` | Standards directory |
-| `CORBAT_DEFAULT_PROFILE` | `default` | Default profile ID |
+| `CORBAT_DEFAULT_PROFILE` | `java-spring-backend` | Default profile ID |
 
 ---
 
@@ -323,7 +328,7 @@ npm run build
 
 ### Profile not found
 
-1. Check the profile exists in `profiles/` directory
+1. Check the profile exists in `profiles/templates/` or `profiles/custom/`
 2. Verify the filename matches (without `.yaml` extension)
 3. Check YAML syntax is valid
 

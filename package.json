@@ -15,7 +15,15 @@
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "clean": "rm -rf dist",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "lint": "biome lint .",
+    "lint:fix": "biome lint --write .",
+    "format": "biome format --write .",
+    "format:check": "biome format .",
+    "check": "biome check .",
+    "check:fix": "biome check --write .",
+    "validate": "npm run check && npm run test",
+    "validate:arch": "depcruise src --config .dependency-cruiser.cjs"
   },
   "keywords": [
     "mcp",
@@ -38,12 +46,15 @@
   ],
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.0.0",
+    "p-retry": "^6.2.0",
     "yaml": "^2.3.4",
     "zod": "^3.22.4"
   },
   "devDependencies": {
+    "@biomejs/biome": "^1.9.4",
     "@types/node": "^20.10.0",
     "@vitest/coverage-v8": "^1.0.0",
+    "dependency-cruiser": "^16.5.0",
     "tsx": "^4.6.0",
     "typescript": "^5.3.0",
     "vitest": "^1.0.0"

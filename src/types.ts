@@ -23,7 +23,9 @@ export const ArchUnitSchema = z.object({
  * Architecture configuration schema.
  */
 export const ArchitectureSchema = z.object({
-  type: z.enum(['hexagonal', 'clean', 'onion', 'layered', 'microservices', 'modular-monolith', 'feature-based']).default('hexagonal'),
+  type: z
+    .enum(['hexagonal', 'clean', 'onion', 'layered', 'microservices', 'modular-monolith', 'feature-based'])
+    .default('hexagonal'),
   enforceLayerDependencies: z.boolean().default(true),
   layers: z.array(LayerSchema).optional(),
   archUnit: ArchUnitSchema.optional(),
@@ -47,18 +49,22 @@ export const DddSchema = z.object({
   enabled: z.boolean().default(true),
   ubiquitousLanguageEnforced: z.boolean().default(true),
   patterns: DddPatternsSchema.optional(),
-  valueObjectGuidelines: z.object({
-    useRecords: z.boolean().default(true),
-    immutable: z.boolean().default(true),
-    selfValidating: z.boolean().default(true),
-    examples: z.array(z.string()).optional(),
-  }).optional(),
-  aggregateGuidelines: z.object({
-    singleEntryPoint: z.boolean().default(true),
-    protectInvariants: z.boolean().default(true),
-    smallAggregates: z.boolean().default(true),
-    referenceByIdentity: z.boolean().default(true),
-  }).optional(),
+  valueObjectGuidelines: z
+    .object({
+      useRecords: z.boolean().default(true),
+      immutable: z.boolean().default(true),
+      selfValidating: z.boolean().default(true),
+      examples: z.array(z.string()).optional(),
+    })
+    .optional(),
+  aggregateGuidelines: z
+    .object({
+      singleEntryPoint: z.boolean().default(true),
+      protectInvariants: z.boolean().default(true),
+      smallAggregates: z.boolean().default(true),
+      referenceByIdentity: z.boolean().default(true),
+    })
+    .optional(),
 });
 
 /**
@@ -67,18 +73,24 @@ export const DddSchema = z.object({
 export const CqrsSchema = z.object({
   enabled: z.boolean().default(true),
   separation: z.enum(['logical', 'physical']).default('logical'),
-  patterns: z.object({
-    commands: z.object({
-      suffix: z.string().default('Command'),
-      handler: z.string().default('CommandHandler'),
-      examples: z.array(z.string()).optional(),
-    }).optional(),
-    queries: z.object({
-      suffix: z.string().default('Query'),
-      handler: z.string().default('QueryHandler'),
-      examples: z.array(z.string()).optional(),
-    }).optional(),
-  }).optional(),
+  patterns: z
+    .object({
+      commands: z
+        .object({
+          suffix: z.string().default('Command'),
+          handler: z.string().default('CommandHandler'),
+          examples: z.array(z.string()).optional(),
+        })
+        .optional(),
+      queries: z
+        .object({
+          suffix: z.string().default('Query'),
+          handler: z.string().default('QueryHandler'),
+          examples: z.array(z.string()).optional(),
+        })
+        .optional(),
+    })
+    .optional(),
 });
 
 /**
@@ -87,22 +99,30 @@ export const CqrsSchema = z.object({
 export const EventDrivenSchema = z.object({
   enabled: z.boolean().default(true),
   approach: z.enum(['domain-events', 'event-sourcing']).default('domain-events'),
-  patterns: z.object({
-    domainEvents: z.object({
-      suffix: z.string().default('Event'),
-      pastTense: z.boolean().default(true),
-      examples: z.array(z.string()).optional(),
-    }).optional(),
-    eventPublishing: z.object({
-      interface: z.string().default('DomainEventPublisher'),
-      async: z.boolean().default(true),
-    }).optional(),
-    messaging: z.object({
-      broker: z.enum(['kafka', 'rabbitmq', 'sqs']).default('kafka'),
-      topicNaming: z.string().optional(),
-      examples: z.array(z.string()).optional(),
-    }).optional(),
-  }).optional(),
+  patterns: z
+    .object({
+      domainEvents: z
+        .object({
+          suffix: z.string().default('Event'),
+          pastTense: z.boolean().default(true),
+          examples: z.array(z.string()).optional(),
+        })
+        .optional(),
+      eventPublishing: z
+        .object({
+          interface: z.string().default('DomainEventPublisher'),
+          async: z.boolean().default(true),
+        })
+        .optional(),
+      messaging: z
+        .object({
+          broker: z.enum(['kafka', 'rabbitmq', 'sqs']).default('kafka'),
+          topicNaming: z.string().optional(),
+          examples: z.array(z.string()).optional(),
+        })
+        .optional(),
+    })
+    .optional(),
 });
 
 /**
@@ -123,11 +143,14 @@ export const CodeQualitySchema = z.object({
 /**
  * Naming conventions schema - supports nested structure.
  */
-export const NamingSchema = z.object({
-  general: z.record(z.string()).optional(),
-  suffixes: z.record(z.string()).optional(),
-  testing: z.record(z.string()).optional(),
-}).passthrough().optional();
+export const NamingSchema = z
+  .object({
+    general: z.record(z.string()).optional(),
+    suffixes: z.record(z.string()).optional(),
+    testing: z.record(z.string()).optional(),
+  })
+  .passthrough()
+  .optional();
 
 /**
  * Testing configuration schema.
@@ -136,54 +159,70 @@ export const TestingConfigSchema = z.object({
   framework: z.string().default('JUnit5'),
   assertionLibrary: z.string().default('AssertJ'),
   mockingLibrary: z.string().default('Mockito'),
-  types: z.object({
-    unit: z.object({
-      suffix: z.string().default('Test'),
-      location: z.string().optional(),
-      coverage: z.number().optional(),
-      fastExecution: z.boolean().optional(),
-      mavenPhase: z.string().optional(),
-    }).optional(),
-    integration: z.object({
-      suffix: z.string().default('IT'),
-      location: z.string().optional(),
-      mavenPlugin: z.string().optional(),
-      mavenPhase: z.string().optional(),
-      useTestcontainers: z.boolean().optional(),
-    }).optional(),
-    e2e: z.object({
-      suffix: z.string().optional(),
-      location: z.string().optional(),
-    }).optional(),
-    architecture: z.object({
-      tool: z.string().default('ArchUnit'),
-      recommended: z.boolean().default(true),
-      location: z.string().optional(),
-    }).optional(),
-  }).optional(),
+  types: z
+    .object({
+      unit: z
+        .object({
+          suffix: z.string().default('Test'),
+          location: z.string().optional(),
+          coverage: z.number().optional(),
+          fastExecution: z.boolean().optional(),
+          mavenPhase: z.string().optional(),
+        })
+        .optional(),
+      integration: z
+        .object({
+          suffix: z.string().default('IT'),
+          location: z.string().optional(),
+          mavenPlugin: z.string().optional(),
+          mavenPhase: z.string().optional(),
+          useTestcontainers: z.boolean().optional(),
+        })
+        .optional(),
+      e2e: z
+        .object({
+          suffix: z.string().optional(),
+          location: z.string().optional(),
+        })
+        .optional(),
+      architecture: z
+        .object({
+          tool: z.string().default('ArchUnit'),
+          recommended: z.boolean().default(true),
+          location: z.string().optional(),
+        })
+        .optional(),
+    })
+    .optional(),
   patterns: z.record(z.boolean()).optional(),
-  testcontainers: z.object({
-    enabled: z.boolean().default(true),
-    containers: z.array(z.string()).optional(),
-  }).optional(),
+  testcontainers: z
+    .object({
+      enabled: z.boolean().default(true),
+      containers: z.array(z.string()).optional(),
+    })
+    .optional(),
 });
 
 /**
  * HTTP Clients configuration schema.
  */
 export const HttpClientsSchema = z.object({
-  simple: z.object({
-    tool: z.string().default('HttpInterface'),
-    description: z.string().optional(),
-    useWhen: z.array(z.string()).optional(),
-    example: z.string().optional(),
-  }).optional(),
-  complex: z.object({
-    tool: z.string().default('RestClient'),
-    description: z.string().optional(),
-    useWhen: z.array(z.string()).optional(),
-    example: z.string().optional(),
-  }).optional(),
+  simple: z
+    .object({
+      tool: z.string().default('HttpInterface'),
+      description: z.string().optional(),
+      useWhen: z.array(z.string()).optional(),
+      example: z.string().optional(),
+    })
+    .optional(),
+  complex: z
+    .object({
+      tool: z.string().default('RestClient'),
+      description: z.string().optional(),
+      useWhen: z.array(z.string()).optional(),
+      example: z.string().optional(),
+    })
+    .optional(),
 });
 
 /**
@@ -191,36 +230,48 @@ export const HttpClientsSchema = z.object({
  */
 export const ObservabilitySchema = z.object({
   enabled: z.boolean().default(true),
-  logging: z.object({
-    framework: z.string().optional(),
-    format: z.string().optional(),
-    structuredLogging: z.boolean().optional(),
-    correlationId: z.boolean().optional(),
-    mdc: z.array(z.string()).optional(),
-    levels: z.record(z.string()).optional(),
-    avoid: z.array(z.string()).optional(),
-  }).optional(),
-  metrics: z.object({
-    framework: z.string().optional(),
-    registry: z.string().optional(),
-    customMetrics: z.array(z.object({
-      type: z.string(),
+  logging: z
+    .object({
+      framework: z.string().optional(),
+      format: z.string().optional(),
+      structuredLogging: z.boolean().optional(),
+      correlationId: z.boolean().optional(),
+      mdc: z.array(z.string()).optional(),
+      levels: z.record(z.string()).optional(),
+      avoid: z.array(z.string()).optional(),
+    })
+    .optional(),
+  metrics: z
+    .object({
+      framework: z.string().optional(),
+      registry: z.string().optional(),
+      customMetrics: z
+        .array(
+          z.object({
+            type: z.string(),
+            examples: z.array(z.string()).optional(),
+          })
+        )
+        .optional(),
+      naming: z.string().optional(),
+    })
+    .optional(),
+  tracing: z
+    .object({
+      framework: z.string().optional(),
+      propagation: z.string().optional(),
+      samplingRate: z.number().optional(),
+      exporters: z.array(z.string()).optional(),
+      spanAttributes: z.array(z.string()).optional(),
+    })
+    .optional(),
+  healthChecks: z
+    .object({
+      actuatorEndpoints: z.array(z.string()).optional(),
+      customHealthIndicators: z.boolean().optional(),
       examples: z.array(z.string()).optional(),
-    })).optional(),
-    naming: z.string().optional(),
-  }).optional(),
-  tracing: z.object({
-    framework: z.string().optional(),
-    propagation: z.string().optional(),
-    samplingRate: z.number().optional(),
-    exporters: z.array(z.string()).optional(),
-    spanAttributes: z.array(z.string()).optional(),
-  }).optional(),
-  healthChecks: z.object({
-    actuatorEndpoints: z.array(z.string()).optional(),
-    customHealthIndicators: z.boolean().optional(),
-    examples: z.array(z.string()).optional(),
-  }).optional(),
+    })
+    .optional(),
 });
 
 /**
@@ -239,14 +290,18 @@ export const ApiDocumentationSchema = z.object({
  * Security configuration schema.
  */
 export const SecuritySchema = z.object({
-  authentication: z.object({
-    method: z.string().optional(),
-    storage: z.string().optional(),
-  }).optional(),
-  authorization: z.object({
-    framework: z.string().optional(),
-    method: z.string().optional(),
-  }).optional(),
+  authentication: z
+    .object({
+      method: z.string().optional(),
+      storage: z.string().optional(),
+    })
+    .optional(),
+  authorization: z
+    .object({
+      framework: z.string().optional(),
+      method: z.string().optional(),
+    })
+    .optional(),
   practices: z.array(z.string()).optional(),
 });
 
@@ -257,33 +312,43 @@ export const ErrorHandlingSchema = z.object({
   format: z.string().default('RFC 7807 Problem Details'),
   globalHandler: z.string().optional(),
   structure: z.array(z.string()).optional(),
-  customExceptions: z.object({
-    domain: z.array(z.string()).optional(),
-    application: z.array(z.string()).optional(),
-  }).optional(),
+  customExceptions: z
+    .object({
+      domain: z.array(z.string()).optional(),
+      application: z.array(z.string()).optional(),
+    })
+    .optional(),
 });
 
 /**
  * Database configuration schema.
  */
 export const DatabaseSchema = z.object({
-  migrations: z.object({
-    tool: z.string().default('Flyway'),
-    location: z.string().optional(),
-    naming: z.string().optional(),
-  }).optional(),
-  auditing: z.object({
-    enabled: z.boolean().default(true),
-    fields: z.array(z.string()).optional(),
-  }).optional(),
-  mapping: z.object({
-    tool: z.string().optional(),
-    nullHandling: z.string().optional(),
-  }).optional(),
-  softDelete: z.object({
-    recommended: z.boolean().optional(),
-    field: z.string().optional(),
-  }).optional(),
+  migrations: z
+    .object({
+      tool: z.string().default('Flyway'),
+      location: z.string().optional(),
+      naming: z.string().optional(),
+    })
+    .optional(),
+  auditing: z
+    .object({
+      enabled: z.boolean().default(true),
+      fields: z.array(z.string()).optional(),
+    })
+    .optional(),
+  mapping: z
+    .object({
+      tool: z.string().optional(),
+      nullHandling: z.string().optional(),
+    })
+    .optional(),
+  softDelete: z
+    .object({
+      recommended: z.boolean().optional(),
+      field: z.string().optional(),
+    })
+    .optional(),
 });
 
 /**

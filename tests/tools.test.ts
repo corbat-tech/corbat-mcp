@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { tools } from '../src/tools.js';
 
 describe('Tools Definition', () => {
@@ -40,8 +40,15 @@ describe('Tools Definition', () => {
     expect(tool?.inputSchema.required).toContain('query');
   });
 
-  it('should have 5 tools total', () => {
-    expect(tools).toHaveLength(5);
+  it('should have health_check tool', () => {
+    const tool = tools.find((t) => t.name === 'health_check');
+
+    expect(tool).toBeDefined();
+    expect(tool?.description).toContain('health');
+  });
+
+  it('should have 6 tools total', () => {
+    expect(tools).toHaveLength(6);
   });
 
   it('should have valid input schemas', () => {

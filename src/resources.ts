@@ -1,10 +1,10 @@
 import {
+  formatProfileAsMarkdown,
+  getCategories,
   getProfile,
+  getStandardsByCategory,
   listProfiles,
   loadStandards,
-  getStandardsByCategory,
-  getCategories,
-  formatProfileAsMarkdown,
 } from './profiles.js';
 
 /**
@@ -56,9 +56,7 @@ export async function listResources(): Promise<
 /**
  * Read a specific resource by URI.
  */
-export async function readResource(
-  uri: string
-): Promise<{ uri: string; mimeType: string; text: string } | null> {
+export async function readResource(uri: string): Promise<{ uri: string; mimeType: string; text: string } | null> {
   // List all profiles
   if (uri === 'corbat://profiles') {
     const profiles = await listProfiles();
@@ -84,9 +82,7 @@ export async function readResource(
 
     const standards = await loadStandards();
     const profileMarkdown = formatProfileAsMarkdown(profileId, profile);
-    const standardsMarkdown = standards
-      .map((s) => `## ${s.name}\n\n${s.content}`)
-      .join('\n\n---\n\n');
+    const standardsMarkdown = standards.map((s) => `## ${s.name}\n\n${s.content}`).join('\n\n---\n\n');
 
     return {
       uri,
@@ -98,9 +94,7 @@ export async function readResource(
   // All standards
   if (uri === 'corbat://standards') {
     const standards = await loadStandards();
-    const content = standards
-      .map((s) => `# ${s.name}\n\n${s.content}`)
-      .join('\n\n---\n\n');
+    const content = standards.map((s) => `# ${s.name}\n\n${s.content}`).join('\n\n---\n\n');
 
     return {
       uri,
@@ -116,9 +110,7 @@ export async function readResource(
 
     if (standards.length === 0) return null;
 
-    const content = standards
-      .map((s) => `# ${s.name}\n\n${s.content}`)
-      .join('\n\n---\n\n');
+    const content = standards.map((s) => `# ${s.name}\n\n${s.content}`).join('\n\n---\n\n');
 
     return {
       uri,

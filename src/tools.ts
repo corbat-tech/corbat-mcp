@@ -1,11 +1,6 @@
 import { z } from 'zod';
-import {
-  getProfile,
-  listProfiles,
-  loadStandards,
-  formatProfileAsMarkdown,
-} from './profiles.js';
 import { config } from './config.js';
+import { formatProfileAsMarkdown, getProfile, listProfiles, loadStandards } from './profiles.js';
 
 /**
  * Tool definitions for MCP.
@@ -75,6 +70,15 @@ export const tools = [
       required: ['query'],
     },
   },
+  {
+    name: 'health_check',
+    description:
+      'Check the health status of corbat-mcp server. Returns information about loaded profiles, standards, cache status, and version.',
+    inputSchema: {
+      type: 'object' as const,
+      properties: {},
+    },
+  },
 ];
 
 /**
@@ -111,6 +115,9 @@ export async function handleToolCall(
     case 'search_standards':
       return handleSearchStandards(args);
 
+    case 'health_check':
+      return handleHealthCheck();
+
     default:
       return {
         content: [{ type: 'text', text: `Unknown tool: ${name}` }],
@@ -134,9 +141,7 @@ async function handleGetCodingStandards(
 
   const standards = await loadStandards();
   const profileMarkdown = formatProfileAsMarkdown(profileId, profile);
-  const standardsMarkdown = standards
-    .map((s) => `## ${s.name}\n\n${s.content}`)
-    .join('\n\n---\n\n');
+  const standardsMarkdown = standards.map((s) => `## ${s.name}\n\n${s.content}`).join('\n\n---\n\n');
 
   const fullContext = `${profileMarkdown}\n\n---\n\n# Standards Documentation\n\n${standardsMarkdown}`;
 
@@ -188,9 +193,7 @@ async function handleGetArchitectureGuidelines(
         lines.push(`### ${layer.name}`);
         lines.push(layer.description);
         lines.push('');
-        const deps = layer.allowedDependencies.length > 0
-          ? layer.allowedDependencies.join(', ')
-          : 'none';
+        const deps = layer.allowedDependencies.length > 0 ? layer.allowedDependencies.join(', ') : 'none';
         lines.push(`**Allowed dependencies:** ${deps}`);
         if (layer.packages && layer.packages.length > 0) {
           lines.push(`**Packages:** ${layer.packages.join(', ')}`);
@@ -259,7 +262,7 @@ async function handleGetArchitectureGuidelines(
       lines.push(`- Suffix: ${profile.cqrs.patterns.commands.suffix}`);
       lines.push(`- Handler: ${profile.cqrs.patterns.commands.handler}`);
       if (profile.cqrs.patterns.commands.examples) {
-        lines.push('- Examples: ' + profile.cqrs.patterns.commands.examples.join(', '));
+        lines.push(`- Examples: ${profile.cqrs.patterns.commands.examples.join(', ')}`);
       }
       lines.push('');
     }
@@ -269,7 +272,7 @@ async function handleGetArchitectureGuidelines(
       lines.push(`- Suffix: ${profile.cqrs.patterns.queries.suffix}`);
       lines.push(`- Handler: ${profile.cqrs.patterns.queries.handler}`);
       if (profile.cqrs.patterns.queries.examples) {
-        lines.push('- Examples: ' + profile.cqrs.patterns.queries.examples.join(', '));
+        lines.push(`- Examples: ${profile.cqrs.patterns.queries.examples.join(', ')}`);
       }
       lines.push('');
     }
@@ -285,7 +288,7 @@ async function handleGetArchitectureGuidelines(
       lines.push(`- Suffix: ${profile.eventDriven.patterns.domainEvents.suffix}`);
       lines.push(`- Past Tense: ${profile.eventDriven.patterns.domainEvents.pastTense}`);
       if (profile.eventDriven.patterns.domainEvents.examples) {
-        lines.push('- Examples: ' + profile.eventDriven.patterns.domainEvents.examples.join(', '));
+        lines.push(`- Examples: ${profile.eventDriven.patterns.domainEvents.examples.join(', ')}`);
       }
       lines.push('');
     }
@@ -297,7 +300,7 @@ async function handleGetArchitectureGuidelines(
         lines.push(`- Topic Naming: ${profile.eventDriven.patterns.messaging.topicNaming}`);
       }
       if (profile.eventDriven.patterns.messaging.examples) {
-        lines.push('- Examples: ' + profile.eventDriven.patterns.messaging.examples.join(', '));
+        lines.push(`- Examples: ${profile.eventDriven.patterns.messaging.examples.join(', ')}`);
       }
       lines.push('');
     }
@@ -350,7 +353,7 @@ async function handleGetNamingConventions(
     }
 
     // Handle flat naming structure (backwards compatibility)
-    const flatKeys = Object.keys(naming).filter(k => !['general', 'suffixes', 'testing'].includes(k));
+    const flatKeys = Object.keys(naming).filter((k) => !['general', 'suffixes', 'testing'].includes(k));
     if (flatKeys.length > 0) {
       lines.push('## Other Conventions', '');
       for (const key of flatKeys) {
@@ -457,4 +460,75 @@ async function handleSearchStandards(
   }
 
   return { content: [{ type: 'text', text: output.join('\n') }] };
+}
+
+async function handleHealthCheck(): Promise<{
+  content: Array<{ type: 'text'; text: string }>;
+}> {
+  const startTime = Date.now();
+
+  try {
+    const profiles = await listProfiles();
+    const standards = await loadStandards();
+    const loadTimeMs = Date.now() - startTime;
+
+    const healthInfo = {
+      status: 'healthy',
+      version: config.serverVersion,
+      serverName: config.serverName,
+      timestamp: new Date().toISOString(),
+      profiles: {
+        count: profiles.length,
+        ids: profiles.map((p) => p.id),
+      },
+      standards: {
+        count: standards.length,
+        categories: [...new Set(standards.map((s) => s.category))],
+      },
+      configuration: {
+        profilesDir: config.profilesDir,
+        standardsDir: config.standardsDir,
+        defaultProfile: config.defaultProfile,
+      },
+      performance: {
+        loadTimeMs,
+      },
+    };
+
+    const lines: string[] = [
+      '# Corbat MCP Health Check',
+      '',
+      `**Status:** ${healthInfo.status}`,
+      `**Version:** ${healthInfo.version}`,
+      `**Timestamp:** ${healthInfo.timestamp}`,
+      '',
+      '## Profiles',
+      `- Count: ${healthInfo.profiles.count}`,
+      `- Available: ${healthInfo.profiles.ids.join(', ')}`,
+      '',
+      '## Standards',
+      `- Documents: ${healthInfo.standards.count}`,
+      `- Categories: ${healthInfo.standards.categories.join(', ')}`,
+      '',
+      '## Configuration',
+      `- Profiles Directory: ${healthInfo.configuration.profilesDir}`,
+      `- Standards Directory: ${healthInfo.configuration.standardsDir}`,
+      `- Default Profile: ${healthInfo.configuration.defaultProfile}`,
+      '',
+      '## Performance',
+      `- Load Time: ${healthInfo.performance.loadTimeMs}ms`,
+    ];
+
+    return { content: [{ type: 'text', text: lines.join('\n') }] };
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    return {
+      content: [
+        {
+          type: 'text',
+          text: `# Corbat MCP Health Check\n\n**Status:** unhealthy\n**Error:** ${errorMessage}`,
+        },
+      ],
+    };
+  }
 }

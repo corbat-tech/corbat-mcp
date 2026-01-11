@@ -7,6 +7,9 @@ on:
     branches: [main]
 
 jobs:
+  # ===========================================
+  # Build and Test
+  # ===========================================
   build-and-test:
     runs-on: ubuntu-latest
 
@@ -45,6 +48,9 @@ jobs:
           files: ./coverage/lcov.info
           fail_ci_if_error: false
 
+  # ===========================================
+  # Lint and Format
+  # ===========================================
   lint:
     runs-on: ubuntu-latest
     steps:
@@ -60,9 +66,39 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Run Biome check
+        run: npm run check
+
       - name: Type check
         run: npx tsc --noEmit
 
+  # ===========================================
+  # Architecture Validation
+  # ===========================================
+  validate-architecture:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Validate architecture with dependency-cruiser
+        run: npm run validate:arch
+
+  # ===========================================
+  # Profile Validation
+  # ===========================================
   validate-profiles:
     runs-on: ubuntu-latest
     steps:
@@ -96,3 +132,33 @@ jobs:
               process.exit(1);
             });
           "
+
+  # ===========================================
+  # Security Scanning
+  # ===========================================
+  security:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run npm audit
+        run: npm audit --audit-level=high
+        continue-on-error: true
+
+      - name: Run Snyk security scan
+        uses: snyk/actions/node@master
+        continue-on-error: true
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: --severity-threshold=high

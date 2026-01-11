@@ -4,19 +4,19 @@ import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import {
   CallToolRequestSchema,
-  ListToolsRequestSchema,
-  ListResourcesRequestSchema,
-  ReadResourceRequestSchema,
-  ListPromptsRequestSchema,
-  GetPromptRequestSchema,
   ErrorCode,
+  GetPromptRequestSchema,
+  ListPromptsRequestSchema,
+  ListResourcesRequestSchema,
+  ListToolsRequestSchema,
   McpError,
+  ReadResourceRequestSchema,
 } from '@modelcontextprotocol/sdk/types.js';
 
 import { config } from './config.js';
-import { tools, handleToolCall } from './tools.js';
+import { handleGetPrompt, prompts } from './prompts.js';
 import { listResources, readResource } from './resources.js';
-import { prompts, handleGetPrompt } from './prompts.js';
+import { handleToolCall, tools } from './tools.js';
 
 /**
  * Create and configure the MCP server.

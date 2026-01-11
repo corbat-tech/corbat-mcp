@@ -1,7 +1,7 @@
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { mkdir, writeFile, rm } from 'fs/promises';
-import { join } from 'path';
-import { tmpdir } from 'os';
+import { mkdir, rm, writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 // We need to test the profile loading logic
 // For this, we'll create a temporary directory with test profiles
@@ -42,7 +42,7 @@ naming:
     // Import dynamically to test
     const { ProfileSchema } = await import('../src/types.js');
     const { parse } = await import('yaml');
-    const { readFile } = await import('fs/promises');
+    const { readFile } = await import('node:fs/promises');
 
     const content = await readFile(join(tempDir, 'default.yaml'), 'utf-8');
     const rawData = parse(content);
@@ -95,13 +95,9 @@ describe('Types Schema Validation', () => {
   it('should reject invalid coverage values', async () => {
     const { CodeQualitySchema } = await import('../src/types.js');
 
-    expect(() =>
-      CodeQualitySchema.parse({ minimumTestCoverage: 150 })
-    ).toThrow();
+    expect(() => CodeQualitySchema.parse({ minimumTestCoverage: 150 })).toThrow();
 
-    expect(() =>
-      CodeQualitySchema.parse({ minimumTestCoverage: -10 })
-    ).toThrow();
+    expect(() => CodeQualitySchema.parse({ minimumTestCoverage: -10 })).toThrow();
   });
 
   it('should validate DDD schema', async () => {

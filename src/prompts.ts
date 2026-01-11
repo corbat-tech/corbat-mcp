@@ -1,5 +1,5 @@
-import { getProfile, loadStandards, formatProfileAsMarkdown } from './profiles.js';
 import { config } from './config.js';
+import { formatProfileAsMarkdown, getProfile, loadStandards } from './profiles.js';
 
 /**
  * Prompt definitions for MCP.
@@ -41,8 +41,7 @@ export const prompts = [
   },
   {
     name: 'architecture_check',
-    description:
-      'Check if code follows the architecture guidelines (layer dependencies, DDD patterns, structure).',
+    description: 'Check if code follows the architecture guidelines (layer dependencies, DDD patterns, structure).',
     arguments: [
       {
         name: 'profile',
@@ -74,9 +73,7 @@ export async function handleGetPrompt(
 
   const standards = await loadStandards();
   const profileMarkdown = formatProfileAsMarkdown(profileId, profile);
-  const standardsMarkdown = standards
-    .map((s) => `## ${s.name}\n\n${s.content}`)
-    .join('\n\n---\n\n');
+  const standardsMarkdown = standards.map((s) => `## ${s.name}\n\n${s.content}`).join('\n\n---\n\n');
 
   const context = `${profileMarkdown}\n\n---\n\n# Standards Documentation\n\n${standardsMarkdown}`;
 

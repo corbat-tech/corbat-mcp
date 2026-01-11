@@ -1,0 +1,189 @@
+### Corbat MCP - HTTP Examples
+### These examples show how to test MCP tools using HTTP requests
+### Note: MCP uses JSON-RPC over stdio, these are conceptual examples
+
+### ============================================
+### Health Check
+### ============================================
+
+### Check server health status
+# @name healthCheck
+POST http://localhost:3000/rpc HTTP/1.1
+Content-Type: application/json
+
+{
+  "jsonrpc": "2.0",
+  "id": 1,
+  "method": "tools/call",
+  "params": {
+    "name": "health_check",
+    "arguments": {}
+  }
+}
+
+### ============================================
+### Profile Operations
+### ============================================
+
+### List all available profiles
+# @name listProfiles
+POST http://localhost:3000/rpc HTTP/1.1
+Content-Type: application/json
+
+{
+  "jsonrpc": "2.0",
+  "id": 2,
+  "method": "tools/call",
+  "params": {
+    "name": "list_profiles",
+    "arguments": {}
+  }
+}
+
+### Get coding standards for default profile
+# @name getCodingStandards
+POST http://localhost:3000/rpc HTTP/1.1
+Content-Type: application/json
+
+{
+  "jsonrpc": "2.0",
+  "id": 3,
+  "method": "tools/call",
+  "params": {
+    "name": "get_coding_standards",
+    "arguments": {
+      "profile": "default"
+    }
+  }
+}
+
+### Get coding standards for Node.js profile
+# @name getCodingStandardsNodejs
+POST http://localhost:3000/rpc HTTP/1.1
+Content-Type: application/json
+
+{
+  "jsonrpc": "2.0",
+  "id": 4,
+  "method": "tools/call",
+  "params": {
+    "name": "get_coding_standards",
+    "arguments": {
+      "profile": "nodejs"
+    }
+  }
+}
+
+### ============================================
+### Architecture Guidelines
+### ============================================
+
+### Get architecture guidelines
+# @name getArchitectureGuidelines
+POST http://localhost:3000/rpc HTTP/1.1
+Content-Type: application/json
+
+{
+  "jsonrpc": "2.0",
+  "id": 5,
+  "method": "tools/call",
+  "params": {
+    "name": "get_architecture_guidelines",
+    "arguments": {
+      "profile": "default"
+    }
+  }
+}
+
+### ============================================
+### Naming Conventions
+### ============================================
+
+### Get naming conventions
+# @name getNamingConventions
+POST http://localhost:3000/rpc HTTP/1.1
+Content-Type: application/json
+
+{
+  "jsonrpc": "2.0",
+  "id": 6,
+  "method": "tools/call",
+  "params": {
+    "name": "get_naming_conventions",
+    "arguments": {
+      "profile": "default"
+    }
+  }
+}
+
+### ============================================
+### Search Standards
+### ============================================
+
+### Search for Kafka documentation
+# @name searchKafka
+POST http://localhost:3000/rpc HTTP/1.1
+Content-Type: application/json
+
+{
+  "jsonrpc": "2.0",
+  "id": 7,
+  "method": "tools/call",
+  "params": {
+    "name": "search_standards",
+    "arguments": {
+      "query": "kafka"
+    }
+  }
+}
+
+### Search for testing documentation
+# @name searchTesting
+POST http://localhost:3000/rpc HTTP/1.1
+Content-Type: application/json
+
+{
+  "jsonrpc": "2.0",
+  "id": 8,
+  "method": "tools/call",
+  "params": {
+    "name": "search_standards",
+    "arguments": {
+      "query": "testing"
+    }
+  }
+}
+
+### Search for Docker documentation
+# @name searchDocker
+POST http://localhost:3000/rpc HTTP/1.1
+Content-Type: application/json
+
+{
+  "jsonrpc": "2.0",
+  "id": 9,
+  "method": "tools/call",
+  "params": {
+    "name": "search_standards",
+    "arguments": {
+      "query": "docker"
+    }
+  }
+}
+
+### Search for observability documentation
+# @name searchObservability
+POST http://localhost:3000/rpc HTTP/1.1
+Content-Type: application/json
+
+{
+  "jsonrpc": "2.0",
+  "id": 10,
+  "method": "tools/call",
+  "params": {
+    "name": "search_standards",
+    "arguments": {
+      "query": "observability"
+    }
+  }
+}

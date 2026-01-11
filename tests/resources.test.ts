@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { listResources, readResource } from '../src/resources.js';
 
 describe('Resources', () => {
@@ -38,8 +38,8 @@ describe('Resources', () => {
 
     it('should include category resources', async () => {
       const resources = await listResources();
-      const categoryResources = resources.filter((r) =>
-        r.uri.startsWith('corbat://standards/') && r.uri !== 'corbat://standards'
+      const categoryResources = resources.filter(
+        (r) => r.uri.startsWith('corbat://standards/') && r.uri !== 'corbat://standards'
       );
 
       expect(categoryResources.length).toBeGreaterThan(0);

@@ -1,13 +1,8 @@
-import { readdir, readFile, stat } from 'fs/promises';
-import { join, basename } from 'path';
+import { readFile, readdir, stat } from 'node:fs/promises';
+import { basename, join } from 'node:path';
 import { parse } from 'yaml';
 import { config } from './config.js';
-import {
-  Profile,
-  ProfileSchema,
-  StandardDocument,
-  DEFAULT_HEXAGONAL_LAYERS,
-} from './types.js';
+import { DEFAULT_HEXAGONAL_LAYERS, type Profile, ProfileSchema, type StandardDocument } from './types.js';
 
 /**
  * Cache TTL in milliseconds (1 minute).
@@ -133,7 +128,7 @@ async function scanStandardsDirectory(dir: string, category: string): Promise<vo
       const id = generateStandardId(fullPath);
       const name = extractStandardName(content, entry);
 
-      standardsCache!.push({
+      standardsCache?.push({
         id,
         name,
         category: category || 'general',
@@ -181,11 +176,8 @@ export async function getCategories(): Promise<string[]> {
 /**
  * Format a profile as markdown for LLM context.
  */
-export function formatProfileAsMarkdown(profileId: string, profile: Profile): string {
-  const lines: string[] = [
-    `# Coding Standards Profile: ${profile.name}`,
-    '',
-  ];
+export function formatProfileAsMarkdown(_profileId: string, profile: Profile): string {
+  const lines: string[] = [`# Coding Standards Profile: ${profile.name}`, ''];
 
   if (profile.description) {
     lines.push(profile.description, '');
@@ -200,9 +192,7 @@ export function formatProfileAsMarkdown(profileId: string, profile: Profile): st
     if (profile.architecture.layers) {
       lines.push('', '### Layers', '');
       for (const layer of profile.architecture.layers) {
-        const deps = layer.allowedDependencies.length > 0
-          ? layer.allowedDependencies.join(', ')
-          : 'none';
+        const deps = layer.allowedDependencies.length > 0 ? layer.allowedDependencies.join(', ') : 'none';
         lines.push(`#### ${layer.name}`);
         lines.push(layer.description);
         lines.push(`- Allowed dependencies: ${deps}`);
@@ -274,7 +264,7 @@ export function formatProfileAsMarkdown(profileId: string, profile: Profile): st
       lines.push(`- Suffix: ${profile.cqrs.patterns.commands.suffix}`);
       lines.push(`- Handler: ${profile.cqrs.patterns.commands.handler}`);
       if (profile.cqrs.patterns.commands.examples) {
-        lines.push('- Examples: ' + profile.cqrs.patterns.commands.examples.join(', '));
+        lines.push(`- Examples: ${profile.cqrs.patterns.commands.examples.join(', ')}`);
       }
       lines.push('');
     }
@@ -284,7 +274,7 @@ export function formatProfileAsMarkdown(profileId: string, profile: Profile): st
       lines.push(`- Suffix: ${profile.cqrs.patterns.queries.suffix}`);
       lines.push(`- Handler: ${profile.cqrs.patterns.queries.handler}`);
       if (profile.cqrs.patterns.queries.examples) {
-        lines.push('- Examples: ' + profile.cqrs.patterns.queries.examples.join(', '));
+        lines.push(`- Examples: ${profile.cqrs.patterns.queries.examples.join(', ')}`);
       }
       lines.push('');
     }
@@ -300,7 +290,7 @@ export function formatProfileAsMarkdown(profileId: string, profile: Profile): st
       lines.push(`- Suffix: ${profile.eventDriven.patterns.domainEvents.suffix}`);
       lines.push(`- Past Tense: ${profile.eventDriven.patterns.domainEvents.pastTense}`);
       if (profile.eventDriven.patterns.domainEvents.examples) {
-        lines.push('- Examples: ' + profile.eventDriven.patterns.domainEvents.examples.join(', '));
+        lines.push(`- Examples: ${profile.eventDriven.patterns.domainEvents.examples.join(', ')}`);
       }
       lines.push('');
     }
@@ -312,7 +302,7 @@ export function formatProfileAsMarkdown(profileId: string, profile: Profile): st
         lines.push(`- Topic Naming: ${profile.eventDriven.patterns.messaging.topicNaming}`);
       }
       if (profile.eventDriven.patterns.messaging.examples) {
-        lines.push('- Examples: ' + profile.eventDriven.patterns.messaging.examples.join(', '));
+        lines.push(`- Examples: ${profile.eventDriven.patterns.messaging.examples.join(', ')}`);
       }
       lines.push('');
     }
@@ -370,7 +360,7 @@ export function formatProfileAsMarkdown(profileId: string, profile: Profile): st
     }
 
     // Handle flat naming structure (backwards compatibility)
-    const flatKeys = Object.keys(naming).filter(k => !['general', 'suffixes', 'testing'].includes(k));
+    const flatKeys = Object.keys(naming).filter((k) => !['general', 'suffixes', 'testing'].includes(k));
     if (flatKeys.length > 0) {
       for (const key of flatKeys) {
         if (typeof naming[key] === 'string') {
@@ -394,13 +384,17 @@ export function formatProfileAsMarkdown(profileId: string, profile: Profile): st
         lines.push(`- **Unit tests**: suffix \`*${profile.testing.types.unit.suffix}.java\``);
       }
       if (profile.testing.types.integration) {
-        lines.push(`- **Integration tests**: suffix \`*${profile.testing.types.integration.suffix}.java\` (maven-failsafe)`);
+        lines.push(
+          `- **Integration tests**: suffix \`*${profile.testing.types.integration.suffix}.java\` (maven-failsafe)`
+        );
       }
       if (profile.testing.types.e2e?.suffix) {
         lines.push(`- **E2E tests**: suffix \`*${profile.testing.types.e2e.suffix}.java\``);
       }
       if (profile.testing.types.architecture) {
-        lines.push(`- **Architecture tests**: ${profile.testing.types.architecture.tool} (recommended: ${profile.testing.types.architecture.recommended})`);
+        lines.push(
+          `- **Architecture tests**: ${profile.testing.types.architecture.tool} (recommended: ${profile.testing.types.architecture.recommended})`
+        );
       }
     }
 
@@ -542,7 +536,9 @@ export function formatProfileAsMarkdown(profileId: string, profile: Profile): st
       lines.push(`- Authentication: ${profile.security.authentication.method || 'N/A'}`);
     }
     if (profile.security.authorization) {
-      lines.push(`- Authorization: ${profile.security.authorization.method || 'N/A'} (${profile.security.authorization.framework || 'N/A'})`);
+      lines.push(
+        `- Authorization: ${profile.security.authorization.method || 'N/A'} (${profile.security.authorization.framework || 'N/A'})`
+      );
     }
     if (profile.security.practices) {
       lines.push('', '**Practices:**');

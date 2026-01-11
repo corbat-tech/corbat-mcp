@@ -3,17 +3,16 @@
 <div align="center">
 
 ```
- ██████╗ ██████╗ ██████╗ ██████╗  █████╗ ████████╗    ███╗   ███╗ ██████╗██████╗
-██╔════╝██╔═══██╗██╔══██╗██╔══██╗██╔══██╗╚══██╔══╝    ████╗ ████║██╔════╝██╔══██╗
-██║     ██║   ██║██████╔╝██████╔╝███████║   ██║       ██╔████╔██║██║     ██████╔╝
-██║     ██║   ██║██╔══██╗██╔══██╗██╔══██║   ██║       ██║╚██╔╝██║██║     ██╔═══╝
-╚██████╗╚██████╔╝██║  ██║██████╔╝██║  ██║   ██║       ██║ ╚═╝ ██║╚██████╗██║
- ╚═════╝ ╚═════╝ ╚═╝  ╚═╝╚═════╝ ╚═╝  ╚═╝   ╚═╝       ╚═╝     ╚═╝ ╚═════╝╚═╝
+  ____  ___  ____  ____    _  _____   __  __  ____  ____
+ / ___|/ _ \|  _ \| __ )  / \|_   _| |  \/  |/ ___||  _ \
+| |   | | | | |_) |  _ \ / _ \ | |   | |\/| | |    | |_) |
+| |___| |_| |  _ <| |_) / ___ \| |   | |  | | |___ |  __/
+ \____|\___/|_| \_\____/_/   \_\_|   |_|  |_|\____||_|
 ```
 
 **Your coding standards, always at hand.**
 
-[![CI](https://github.com/corbat/corbat-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/corbat/corbat-mcp/actions/workflows/ci.yml)
+[![CI](https://github.com/victormartingil/corbat-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/victormartingil/corbat-mcp/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Node.js](https://img.shields.io/badge/Node.js-18+-green.svg)](https://nodejs.org/)
 [![MCP](https://img.shields.io/badge/MCP-Compatible-blue.svg)](https://modelcontextprotocol.io/)
@@ -42,7 +41,7 @@
 
 ```bash
 # 1. Clone & build
-git clone https://github.com/corbat/corbat-mcp.git
+git clone https://github.com/victormartingil/corbat-mcp.git
 cd corbat-mcp && npm install && npm run build
 
 # 2. Add to Claude Code settings (~/.config/claude-code/settings.json)

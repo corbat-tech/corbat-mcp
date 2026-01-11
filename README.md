@@ -1,21 +1,12 @@
 <div align="center">
 
-```
-╔══════════════════════════════════════════════════════════════════════════════════════════════════╗
-║                                                                                                  ║
-║             ██████╗ ██████╗ ██████╗ ██████╗  █████╗ ████████╗                                    ║
-║            ██╔════╝██╔═══██╗██╔══██╗██╔══██╗██╔══██╗╚══██╔══╝                                    ║
-║            ██║     ██║   ██║██████╔╝██████╔╝███████║   ██║                                       ║
-║            ██║     ██║   ██║██╔══██╗██╔══██╗██╔══██║   ██║                                       ║
-║            ╚██████╗╚██████╔╝██║  ██║██████╔╝██║  ██║   ██║                                       ║
-║             ╚═════╝ ╚═════╝ ╚═╝  ╚═╝╚═════╝ ╚═╝  ╚═╝   ╚═╝                                       ║
-║                                                                                                  ║
-║                                  [ M C P  Server ]                                               ║
-║                                                                                                  ║
-╚══════════════════════════════════════════════════════════════════════════════════════════════════╝
-```
+# 🔧 CORBAT
 
-### Your coding standards, always at hand
+### Model Context Protocol Server
+
+*Your coding standards, always at hand*
+
+<br>
 
 [![CI](https://github.com/victormartingil/corbat-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/victormartingil/corbat-mcp/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -23,7 +14,9 @@
 [![MCP](https://img.shields.io/badge/MCP-Compatible-blue.svg)](https://modelcontextprotocol.io/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue.svg)](https://www.typescriptlang.org/)
 
-**[Quick Start](#-quick-start)** · **[Profiles](#-available-profiles)** · **[How It Works](#-how-it-works)** · **[Documentation](#-standards-documentation)**
+<br>
+
+[Quick Start](#quick-start) · [Profiles](#available-profiles) · [How It Works](#how-it-works) · [Documentation](#standards-documentation)
 
 </div>
 

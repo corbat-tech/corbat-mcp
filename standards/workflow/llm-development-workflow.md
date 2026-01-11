@@ -9,6 +9,7 @@ Esta guía define el proceso estructurado que el LLM debe seguir cuando un devel
 3. **Clarificación antes de acción** - Nunca asumir, siempre preguntar
 4. **Revisión experta** - Adoptar roles específicos para revisar el trabajo
 5. **Refinamiento iterativo** - Hasta 3 ciclos de mejora
+6. **Documentación obligatoria** - Todo cambio debe documentarse con 3 ciclos de auto-revisión
 
 ---
 
@@ -303,6 +304,125 @@ Revisaré: [listar archivos/componentes a revisar]
 
 ---
 
+## Fase 7: DOCUMENTACIÓN (Document)
+
+**Objetivo:** Documentar todo lo implementado de forma profesional, concisa y completa.
+
+### Principios de documentación:
+
+| Hacer | No hacer |
+|-------|----------|
+| Conciso y al grano | Muros de texto |
+| Profesional y completo | Redundancias innecesarias |
+| Solo lo importante | Copiar código entero |
+| Actualizar docs existentes | Crear docs duplicados |
+| Seguir estilo del proyecto | Inventar estilos nuevos |
+
+### Qué documentar:
+
+1. **README del proyecto** - Si hay cambios significativos
+2. **Funciones/clases públicas** - JSDoc/docstring con ejemplo
+3. **Configuraciones nuevas** - En tabla de opciones
+4. **Endpoints API** - Método, path, params, response
+5. **Decisiones de arquitectura** - Por qué se eligió X sobre Y
+
+### Estilo de documentación (GitHub moderno):
+
+```markdown
+<div align="center">
+
+# Título
+
+### Subtítulo
+
+*Tagline*
+
+[![Badges](url)](link)
+
+[Link 1](#) · [Link 2](#) · [Link 3](#)
+
+</div>
+```
+
+- **Usar tablas** para datos estructurados
+- **Usar `<details>`** para contenido expandible
+- **Usar diagramas** ASCII o Mermaid para arquitectura
+- **Usar ejemplos** de código cortos y relevantes
+
+### Ciclo de revisión de documentación (3 iteraciones):
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  ITERACIÓN 1: Borrador inicial                              │
+│  - Escribir documentación                                   │
+│  - Auto-revisar completitud                                 │
+│  - Dar nota (1-10) con justificación                        │
+│  - Identificar áreas de mejora                              │
+├─────────────────────────────────────────────────────────────┤
+│  ITERACIÓN 2: Refinamiento                                  │
+│  - Corregir issues identificados                            │
+│  - Verificar claridad y concisión                           │
+│  - Eliminar redundancias                                    │
+│  - Nueva nota y comparar con anterior                       │
+├─────────────────────────────────────────────────────────────┤
+│  ITERACIÓN 3: Pulido final                                  │
+│  - Revisar gramática y formato                              │
+│  - Verificar links funcionan                                │
+│  - Asegurar consistencia con estilo proyecto                │
+│  - Nota final (debe ser 8+)                                 │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Criterios de puntuación:
+
+| Nota | Significado | Acción |
+|------|-------------|--------|
+| 9-10 | Excelente | Listo para merge |
+| 7-8 | Bueno | Mejoras menores |
+| 5-6 | Aceptable | Revisión significativa |
+| 1-4 | Pobre | Reescribir |
+
+### Checklist de documentación:
+
+```
+[ ] ¿Está completa? ¿Todo lo nuevo está documentado?
+[ ] ¿Es concisa? ¿Sin palabras o código innecesario?
+[ ] ¿Es clara? ¿Un developer nuevo entendería?
+[ ] ¿Es correcta? ¿Coincide con la implementación?
+[ ] ¿Es consistente? ¿Sigue el estilo del proyecto?
+[ ] ¿Está actualizada? ¿Sin información obsoleta?
+```
+
+### Prompt de auto-revisión (usar literalmente):
+
+```
+Voy a revisar la documentación que acabo de escribir.
+
+REVISIÓN ITERACIÓN [N]:
+
+1. COMPLETITUD (1-10): ___
+   - ¿Falta algo por documentar?
+
+2. CLARIDAD (1-10): ___
+   - ¿Se entiende sin contexto previo?
+
+3. CONCISIÓN (1-10): ___
+   - ¿Hay redundancias o texto innecesario?
+
+4. PROFESIONALISMO (1-10): ___
+   - ¿Sigue el estilo del proyecto?
+
+NOTA GLOBAL: ___ / 10
+
+ÁREAS A MEJORAR:
+- [Lista de mejoras específicas]
+
+PRÓXIMOS PASOS:
+- [Qué haré en la siguiente iteración]
+```
+
+---
+
 ## Resumen del Flujo Completo
 
 ```
@@ -356,6 +476,14 @@ Revisaré: [listar archivos/componentes a revisar]
 │  │  - Aplicar críticos             │                        │
 │  │  - Aplicar recomendados         │                        │
 │  │  - Pulido final                 │                        │
+│  └─────────────────────────────────┘                        │
+│                    │                                         │
+│                    ▼                                         │
+│  ┌─────────────────────────────────┐                        │
+│  │  FASE 7: DOCUMENTACIÓN          │◄─── 3 iteraciones      │
+│  │  - Documentar cambios           │     con auto-nota      │
+│  │  - Revisar y puntuar            │                        │
+│  │  - Refinar hasta nota 8+        │                        │
 │  └─────────────────────────────────┘                        │
 │                    │                                         │
 │                    ▼                                         │

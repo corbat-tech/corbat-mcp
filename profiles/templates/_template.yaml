@@ -1,0 +1,159 @@
+# ============================================================================
+# CORBAT MCP - Profile Template
+# ============================================================================
+# Copy this file to profiles/custom/ and customize for your project.
+#
+# Usage:
+#   1. cp profiles/templates/_template.yaml profiles/custom/my-project.yaml
+#   2. Edit my-project.yaml with your project's standards
+#   3. Use profile "my-project" in your MCP calls
+#
+# Tips:
+#   - Only include sections relevant to your project
+#   - Remove sections you don't need (they'll use sensible defaults)
+#   - See profiles/templates/ for complete examples
+# ============================================================================
+
+# REQUIRED: Name and description
+name: "My Project Standards"
+description: "Brief description of your project's coding standards"
+
+# ----------------------------------------------------------------------------
+# ARCHITECTURE (choose one type)
+# ----------------------------------------------------------------------------
+architecture:
+  # Options: hexagonal | clean | layered | onion | none
+  type: hexagonal
+  enforceLayerDependencies: true
+
+  # Define your layers (customize as needed)
+  layers:
+    - name: domain
+      description: "Core business logic"
+      allowedDependencies: []
+      packages:
+        - "*.domain"
+
+    - name: application
+      description: "Use cases and services"
+      allowedDependencies:
+        - domain
+      packages:
+        - "*.application"
+
+    - name: infrastructure
+      description: "External adapters"
+      allowedDependencies:
+        - domain
+        - application
+      packages:
+        - "*.infrastructure"
+
+# ----------------------------------------------------------------------------
+# DDD (optional - remove if not using DDD)
+# ----------------------------------------------------------------------------
+ddd:
+  enabled: true
+  ubiquitousLanguageEnforced: true
+  patterns:
+    aggregates: true
+    valueObjects: true
+    domainEvents: true
+    repositories: true
+
+# ----------------------------------------------------------------------------
+# CODE QUALITY
+# ----------------------------------------------------------------------------
+codeQuality:
+  maxMethodLines: 20
+  maxClassLines: 200
+  maxFileLines: 400
+  maxMethodParameters: 4
+  maxCyclomaticComplexity: 10
+  requireDocumentation: true
+  requireTests: true
+  minimumTestCoverage: 80
+
+  principles:
+    - "SOLID principles"
+    - "DRY (Don't Repeat Yourself)"
+    - "KISS (Keep It Simple)"
+
+# ----------------------------------------------------------------------------
+# NAMING CONVENTIONS
+# ----------------------------------------------------------------------------
+naming:
+  general:
+    class: PascalCase
+    method: camelCase
+    variable: camelCase
+    constant: SCREAMING_SNAKE_CASE
+
+  suffixes:
+    controller: "Controller"
+    service: "Service"
+    repository: "Repository"
+
+  testing:
+    unitTest: "Test"
+    integrationTest: "IT"
+    testMethod: "should_ExpectedBehavior_When_Condition"
+
+# ----------------------------------------------------------------------------
+# TESTING
+# ----------------------------------------------------------------------------
+testing:
+  framework: "JUnit5"  # or: Jest, Pytest, Vitest, etc.
+  assertionLibrary: "AssertJ"
+  mockingLibrary: "Mockito"
+
+  types:
+    unit:
+      suffix: "Test"
+      coverage: 80
+
+    integration:
+      suffix: "IT"
+      useTestcontainers: true
+
+# ----------------------------------------------------------------------------
+# TECHNOLOGIES (list your stack)
+# ----------------------------------------------------------------------------
+technologies:
+  - name: java
+    version: "21"
+    specificRules:
+      useRecordsForValueObjects: true
+
+  - name: spring-boot
+    version: "3.x"
+    specificRules:
+      useConstructorInjection: true
+
+# ============================================================================
+# OPTIONAL SECTIONS (uncomment and customize as needed)
+# ============================================================================
+
+# cqrs:
+#   enabled: true
+#   separation: "logical"
+
+# eventDriven:
+#   enabled: true
+#   approach: "domain-events"
+
+# observability:
+#   enabled: true
+#   logging:
+#     framework: "SLF4J"
+#     format: "JSON"
+
+# security:
+#   authentication:
+#     method: "JWT"
+#   authorization:
+#     method: "RBAC"
+
+# database:
+#   migrations:
+#     tool: "Flyway"

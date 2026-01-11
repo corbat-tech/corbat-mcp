@@ -38,21 +38,22 @@ export function invalidateCache(): void {
 }
 
 /**
- * Load all profiles from YAML files.
+ * Load profiles from a specific directory.
  */
-export async function loadProfiles(): Promise<Map<string, Profile>> {
-  if (profilesCache && isCacheValid(profilesCacheTime)) {
-    return profilesCache;
-  }
-
-  profilesCache = new Map();
-
+async function loadProfilesFromDir(dir: string, profiles: Map<string, Profile>): Promise<void> {
   try {
-    const files = await readdir(config.profilesDir);
-    const yamlFiles = files.filter((f) => f.endsWith('.yaml') || f.endsWith('.yml'));
+    const files = await readdir(dir);
+    const yamlFiles = files.filter(
+      (f) => (f.endsWith('.yaml') || f.endsWith('.yml')) && !f.startsWith('_')
+    );
 
     for (const file of yamlFiles) {
-      const filePath = join(config.profilesDir, file);
+      const filePath = join(dir, file);
+      const fileStat = await stat(filePath);
+
+      // Skip directories
+      if (fileStat.isDirectory()) continue;
+
       const content = await readFile(filePath, 'utf-8');
       const rawData = parse(content);
       const profileId = basename(file, file.endsWith('.yaml') ? '.yaml' : '.yml');
@@ -64,13 +65,37 @@ export async function loadProfiles(): Promise<Map<string, Profile>> {
         profile.architecture.layers = DEFAULT_HEXAGONAL_LAYERS;
       }
 
-      profilesCache.set(profileId, profile);
+      profiles.set(profileId, profile);
     }
   } catch (error) {
     if ((error as NodeJS.ErrnoException).code !== 'ENOENT') {
       throw error;
     }
   }
+}
+
+/**
+ * Load all profiles from YAML files.
+ * Searches in both templates/ and custom/ directories.
+ * Custom profiles override templates with the same name.
+ */
+export async function loadProfiles(): Promise<Map<string, Profile>> {
+  if (profilesCache && isCacheValid(profilesCacheTime)) {
+    return profilesCache;
+  }
+
+  profilesCache = new Map();
+
+  // Load from templates first (official profiles)
+  const templatesDir = join(config.profilesDir, 'templates');
+  await loadProfilesFromDir(templatesDir, profilesCache);
+
+  // Load from custom (user profiles - can override templates)
+  const customDir = join(config.profilesDir, 'custom');
+  await loadProfilesFromDir(customDir, profilesCache);
+
+  // Fallback: also check root profiles dir for backwards compatibility
+  await loadProfilesFromDir(config.profilesDir, profilesCache);
 
   profilesCacheTime = Date.now();
   return profilesCache;

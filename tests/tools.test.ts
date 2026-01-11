@@ -47,8 +47,15 @@ describe('Tools Definition', () => {
     expect(tool?.description).toContain('health');
   });
 
-  it('should have 6 tools total', () => {
-    expect(tools).toHaveLength(6);
+  it('should have get_development_workflow tool', () => {
+    const tool = tools.find((t) => t.name === 'get_development_workflow');
+
+    expect(tool).toBeDefined();
+    expect(tool?.description).toContain('workflow');
+  });
+
+  it('should have 7 tools total', () => {
+    expect(tools).toHaveLength(7);
   });
 
   it('should have valid input schemas', () => {

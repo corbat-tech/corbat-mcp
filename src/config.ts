@@ -48,7 +48,7 @@ type EnvironmentConfig = z.infer<typeof EnvironmentConfigSchema>;
 const ConfigSchema = z.object({
   profilesDir: z.string().min(1),
   standardsDir: z.string().min(1),
-  defaultProfile: z.string().default('default'),
+  defaultProfile: z.string().default('java-spring-backend'),
   serverName: z.string().default('corbat-mcp'),
   serverVersion: z.string().default('1.0.0'),
   environment: z.enum(['development', 'production', 'test']).default('development'),
@@ -80,7 +80,7 @@ export function loadConfig(): Config {
   return ConfigSchema.parse({
     profilesDir: process.env.CORBAT_PROFILES_DIR || join(rootDir, 'profiles'),
     standardsDir: process.env.CORBAT_STANDARDS_DIR || join(rootDir, 'standards'),
-    defaultProfile: process.env.CORBAT_DEFAULT_PROFILE || 'default',
+    defaultProfile: process.env.CORBAT_DEFAULT_PROFILE || 'java-spring-backend',
     serverName: 'corbat-mcp',
     serverVersion: '1.0.0',
     environment,

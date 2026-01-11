@@ -79,6 +79,15 @@ export const tools = [
       properties: {},
     },
   },
+  {
+    name: 'get_development_workflow',
+    description:
+      'Get the structured LLM development workflow guide. This workflow defines how to implement features following: Clarify → Plan → Build (TDD) → Verify → Review → Refine. Use this when starting to implement any feature or fix.',
+    inputSchema: {
+      type: 'object' as const,
+      properties: {},
+    },
+  },
 ];
 
 /**
@@ -117,6 +126,9 @@ export async function handleToolCall(
 
     case 'health_check':
       return handleHealthCheck();
+
+    case 'get_development_workflow':
+      return handleGetDevelopmentWorkflow();
 
     default:
       return {
@@ -531,4 +543,187 @@ async function handleHealthCheck(): Promise<{
       ],
     };
   }
+}
+
+async function handleGetDevelopmentWorkflow(): Promise<{
+  content: Array<{ type: 'text'; text: string }>;
+}> {
+  const workflow = `# LLM Development Workflow
+
+## Overview
+This workflow defines the structured process for implementing features, fixes, or any development task.
+
+**Phases:** Clarify → Plan → Build (TDD) → Verify → Review → Refine
+
+---
+
+## PHASE 1: CLARIFICACIÓN (Ask)
+
+**Before writing any code, you MUST:**
+
+1. Analyze the request for:
+   - Explicit functional requirements
+   - Implicit or assumed requirements
+   - Ambiguities or contradictions
+   - Missing technical context
+
+2. **ASK if you detect:**
+   - Missing functional context
+   - Contradictory requirements
+   - Multiple possible interpretations
+   - Unclear acceptance criteria
+
+3. Confirm understanding by reformulating requirements
+
+---
+
+## PHASE 2: PLANIFICACIÓN (Plan)
+
+1. **List requirements and constraints**
+2. **Evaluate 2-3 alternatives** (when applicable):
+   - Describe each approach
+   - List pros/cons
+   - Recommend best option with justification
+
+3. **Create task checklist:**
+\`\`\`
+[ ] 1. Task A - Description
+    [ ] 1.1 Write tests
+    [ ] 1.2 Implement
+[ ] 2. Task B - Description
+    [ ] 2.1 Write tests
+    [ ] 2.2 Implement
+\`\`\`
+
+4. **Define acceptance criteria**
+
+---
+
+## PHASE 3: IMPLEMENTACIÓN (Build with TDD)
+
+**For EACH task, follow TDD strictly:**
+
+\`\`\`
+┌─────────────────────────────────────────┐
+│  1. RED: Write failing test first       │
+│     - Test describes expected behavior  │
+│     - Run test, confirm it fails        │
+├─────────────────────────────────────────┤
+│  2. GREEN: Implement minimum to pass    │
+│     - Only necessary code               │
+│     - Run test, confirm it passes       │
+├─────────────────────────────────────────┤
+│  3. REFACTOR: Clean up                  │
+│     - Apply project patterns            │
+│     - Tests still pass                  │
+└─────────────────────────────────────────┘
+\`\`\`
+
+**Test coverage:**
+- Unit tests: 80%+ coverage
+- Integration tests: Critical flows
+- Architecture tests: When applicable
+
+---
+
+## PHASE 4: VERIFICACIÓN (Verify)
+
+**Checklist:**
+- [ ] Code compiles without errors
+- [ ] All tests pass
+- [ ] Linter passes
+- [ ] Application starts correctly
+- [ ] No regressions
+
+**If something fails:** Fix → Re-verify → Don't proceed until green
+
+---
+
+## PHASE 5: REVISIÓN EXPERTA (Review)
+
+1. **Clear mental context** - Forget implementation process
+2. **Adopt expert role** based on work type:
+   - Architecture → Software Architect
+   - Backend → Senior Backend Developer
+   - Frontend → Senior Frontend Developer
+   - Security → Security Engineer
+   - Performance → Performance Engineer
+   - Database → DBA
+   - DevOps → DevOps Engineer
+
+3. **Review from scratch, looking for:**
+
+   **CRITICAL (must fix):**
+   - Bugs, security vulnerabilities
+   - Architecture violations
+   - Severe performance issues
+
+   **RECOMMENDED (should fix):**
+   - Readability improvements
+   - Minor optimizations
+   - Missing best practices
+
+   **SUGGESTIONS (nice to have):**
+   - Optional refactorings
+   - Future improvements
+
+---
+
+## PHASE 6: REFINAMIENTO (Refine)
+
+**Apply improvements in up to 3 cycles:**
+
+- **Cycle 1:** Fix ALL critical issues
+- **Cycle 2:** Apply recommended improvements
+- **Cycle 3:** Final polish
+
+**Completion criteria:**
+- [ ] All CRITICAL issues resolved
+- [ ] 80%+ RECOMMENDED issues resolved
+- [ ] All tests pass
+- [ ] Code compiles without warnings
+- [ ] Application works correctly
+
+---
+
+## Quick Reference
+
+\`\`\`
+Developer Request
+       │
+       ▼
+┌──────────────┐
+│ 1. CLARIFY   │◄── Questions? Ask!
+└──────────────┘
+       │
+       ▼
+┌──────────────┐
+│ 2. PLAN      │◄── Task checklist
+└──────────────┘
+       │
+       ▼
+┌──────────────┐
+│ 3. BUILD     │◄── TDD: Test → Code → Refactor
+└──────────────┘
+       │
+       ▼
+┌──────────────┐
+│ 4. VERIFY    │◄── All green?
+└──────────────┘
+       │
+       ▼
+┌──────────────┐
+│ 5. REVIEW    │◄── Expert perspective
+└──────────────┘
+       │
+       ▼
+┌──────────────┐
+│ 6. REFINE    │◄── Up to 3 cycles
+└──────────────┘
+       │
+       ▼
+    ✅ Done
+\`\`\``;
+
+  return { content: [{ type: 'text', text: workflow }] };
 }

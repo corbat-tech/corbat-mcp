@@ -28,12 +28,12 @@ describe('Resources', () => {
       expect(standardsResource?.mimeType).toBe('text/markdown');
     });
 
-    it('should include default profile', async () => {
+    it('should include java-spring-backend profile', async () => {
       const resources = await listResources();
-      const defaultProfile = resources.find((r) => r.uri === 'corbat://profiles/default');
+      const javaProfile = resources.find((r) => r.uri === 'corbat://profiles/java-spring-backend');
 
-      expect(defaultProfile).toBeDefined();
-      expect(defaultProfile?.mimeType).toBe('text/markdown');
+      expect(javaProfile).toBeDefined();
+      expect(javaProfile?.mimeType).toBe('text/markdown');
     });
 
     it('should include category resources', async () => {
@@ -60,7 +60,7 @@ describe('Resources', () => {
     });
 
     it('should read specific profile as markdown', async () => {
-      const result = await readResource('corbat://profiles/default');
+      const result = await readResource('corbat://profiles/java-spring-backend');
 
       expect(result).not.toBeNull();
       expect(result?.mimeType).toBe('text/markdown');

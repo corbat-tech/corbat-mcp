@@ -29,7 +29,7 @@ describe('Tool Handlers Integration', () => {
 
       expect(result.isError).toBeUndefined();
       expect(result.content[0].text).toContain('Available Profiles');
-      expect(result.content[0].text).toContain('default');
+      expect(result.content[0].text).toContain('java-spring-backend');
     });
   });
 

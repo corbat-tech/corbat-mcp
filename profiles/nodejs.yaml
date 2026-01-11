@@ -1,0 +1,338 @@
+# ============================================================================
+# CORBAT MCP - Node.js/TypeScript Profile
+# ============================================================================
+# Production-ready standards for Node.js backend applications with TypeScript.
+# Covers Express/Fastify, Prisma/TypeORM, and modern Node.js practices.
+# ============================================================================
+
+name: "Node.js TypeScript Standards"
+description: "Production-ready standards for Node.js backend with TypeScript, focusing on type safety, clean architecture, and modern practices"
+
+# ----------------------------------------------------------------------------
+# ARCHITECTURE
+# ----------------------------------------------------------------------------
+architecture:
+  type: hexagonal
+  enforceLayerDependencies: true
+  layers:
+    - name: domain
+      description: "Core business logic. Pure TypeScript, no external dependencies. Contains entities, value objects, and domain services."
+      allowedDependencies: []
+      packages:
+        - "src/domain"
+        - "src/domain/entities"
+        - "src/domain/value-objects"
+        - "src/domain/services"
+        - "src/domain/errors"
+
+    - name: application
+      description: "Use cases and application services. Orchestrates domain objects. Contains commands, queries, and handlers."
+      allowedDependencies:
+        - domain
+      packages:
+        - "src/application"
+        - "src/application/use-cases"
+        - "src/application/services"
+        - "src/application/ports"
+
+    - name: infrastructure
+      description: "External adapters: HTTP controllers, database repositories, external APIs, messaging."
+      allowedDependencies:
+        - domain
+        - application
+      packages:
+        - "src/infrastructure"
+        - "src/infrastructure/http"
+        - "src/infrastructure/database"
+        - "src/infrastructure/messaging"
+        - "src/infrastructure/external"
+
+# ----------------------------------------------------------------------------
+# CODE QUALITY
+# ----------------------------------------------------------------------------
+codeQuality:
+  maxMethodLines: 25
+  maxClassLines: 250
+  maxFileLines: 350
+  maxMethodParameters: 4
+  maxCyclomaticComplexity: 10
+  requireDocumentation: true
+  requireTests: true
+  minimumTestCoverage: 80
+
+  principles:
+    - "SOLID principles"
+    - "Favor composition over inheritance"
+    - "Explicit over implicit"
+    - "Fail fast, fail loud"
+    - "Immutability by default"
+
+# ----------------------------------------------------------------------------
+# NAMING CONVENTIONS
+# ----------------------------------------------------------------------------
+naming:
+  general:
+    class: PascalCase
+    interface: PascalCase  # No 'I' prefix
+    type: PascalCase
+    method: camelCase
+    variable: camelCase
+    constant: SCREAMING_SNAKE_CASE
+    file: kebab-case
+    folder: kebab-case
+    enum: PascalCase
+    enumValue: PascalCase
+
+  suffixes:
+    controller: "Controller"
+    service: "Service"
+    repository: "Repository"
+    useCase: "UseCase"
+    handler: "Handler"
+    middleware: "Middleware"
+    validator: "Validator"
+    mapper: "Mapper"
+    factory: "Factory"
+    dto: "Dto"
+    error: "Error"
+
+  testing:
+    unitTest: ".test.ts"
+    integrationTest: ".integration.test.ts"
+    e2eTest: ".e2e.test.ts"
+    testMethod: "should_ExpectedBehavior_when_Condition"
+    fixture: "fixtures"
+    mock: ".mock.ts"
+
+# ----------------------------------------------------------------------------
+# TYPESCRIPT CONFIGURATION
+# ----------------------------------------------------------------------------
+technologies:
+  - name: typescript
+    version: "5.x"
+    specificRules:
+      strict: true
+      noImplicitAny: true
+      strictNullChecks: true
+      noUnusedLocals: true
+      noUnusedParameters: true
+      exactOptionalPropertyTypes: true
+      noUncheckedIndexedAccess: true
+      preferConst: true
+      useUnknownInCatchVariables: true
+
+  - name: node
+    version: "20+"
+    specificRules:
+      useESModules: true
+      topLevelAwait: true
+      avoidCallbackHell: true
+
+  - name: runtime
+    tool: "Node.js"
+    specificRules:
+      useAsyncAwait: true
+      handlePromiseRejections: true
+      useStreamsForLargeData: true
+
+# ----------------------------------------------------------------------------
+# TESTING
+# ----------------------------------------------------------------------------
+testing:
+  framework: "Vitest"
+  assertionLibrary: "Vitest"
+  mockingLibrary: "Vitest"
+
+  types:
+    unit:
+      suffix: ".test.ts"
+      location: "src/**/*.test.ts"
+      coverage: 80
+      fastExecution: true
+
+    integration:
+      suffix: ".integration.test.ts"
+      location: "tests/integration"
+      useTestcontainers: true
+
+    e2e:
+      suffix: ".e2e.test.ts"
+      location: "tests/e2e"
+
+  patterns:
+    arrange_act_assert: true
+    given_when_then: true
+    testDataBuilders: true
+
+  testcontainers:
+    enabled: true
+    containers:
+      - "PostgreSQLContainer"
+      - "RedisContainer"
+      - "KafkaContainer"
+      - "LocalStackContainer"
+
+# ----------------------------------------------------------------------------
+# HTTP FRAMEWORK
+# ----------------------------------------------------------------------------
+httpClients:
+  simple:
+    tool: "fetch"
+    description: "Native fetch API for simple HTTP calls"
+    useWhen:
+      - "Simple GET/POST requests"
+      - "No complex error handling needed"
+      - "Browser compatibility required"
+
+  complex:
+    tool: "axios or ky"
+    description: "HTTP client library for complex scenarios"
+    useWhen:
+      - "Request/response interceptors needed"
+      - "Automatic retries"
+      - "Request cancellation"
+      - "Progress tracking"
+
+# ----------------------------------------------------------------------------
+# DATABASE
+# ----------------------------------------------------------------------------
+database:
+  migrations:
+    tool: "Prisma Migrate"
+    location: "prisma/migrations"
+    naming: "YYYYMMDDHHMMSS_description"
+
+  auditing:
+    enabled: true
+    fields:
+      - "createdAt"
+      - "updatedAt"
+
+  orm:
+    tool: "Prisma"
+    patterns:
+      - "Use transactions for multi-table operations"
+      - "Prefer findFirst over findUnique when appropriate"
+      - "Use select to limit returned fields"
+      - "Avoid N+1 queries with include"
+
+# ----------------------------------------------------------------------------
+# ERROR HANDLING
+# ----------------------------------------------------------------------------
+errorHandling:
+  format: "Custom Error Classes"
+  globalHandler: "ErrorMiddleware"
+
+  customExceptions:
+    domain:
+      - "DomainError (base)"
+      - "EntityNotFoundError"
+      - "ValidationError"
+      - "BusinessRuleViolationError"
+    application:
+      - "ApplicationError"
+      - "UnauthorizedError"
+      - "ForbiddenError"
+    infrastructure:
+      - "DatabaseError"
+      - "ExternalServiceError"
+
+  structure:
+    - "name: Error class name"
+    - "message: Human-readable message"
+    - "code: Machine-readable code"
+    - "statusCode: HTTP status code"
+    - "details: Additional context (optional)"
+
+# ----------------------------------------------------------------------------
+# OBSERVABILITY
+# ----------------------------------------------------------------------------
+observability:
+  enabled: true
+
+  logging:
+    framework: "Pino"
+    format: "JSON"
+    structuredLogging: true
+    correlationId: true
+    levels:
+      production: "info"
+      development: "debug"
+    avoid:
+      - "console.log in production code"
+      - "Logging sensitive data"
+      - "Synchronous logging"
+
+  metrics:
+    framework: "prom-client"
+    customMetrics:
+      - type: "counter"
+        examples: ["requests_total", "errors_total"]
+      - type: "histogram"
+        examples: ["request_duration_seconds", "db_query_duration_seconds"]
+      - type: "gauge"
+        examples: ["active_connections", "queue_size"]
+
+  tracing:
+    framework: "OpenTelemetry"
+    exporters:
+      - "Jaeger"
+      - "OTLP"
+
+  healthChecks:
+    endpoints:
+      - "/health"
+      - "/health/live"
+      - "/health/ready"
+
+# ----------------------------------------------------------------------------
+# SECURITY
+# ----------------------------------------------------------------------------
+security:
+  authentication:
+    method: "JWT"
+    storage: "HTTP-only cookies preferred"
+
+  practices:
+    - "Validate all input with Zod"
+    - "Use parameterized queries (Prisma handles this)"
+    - "Sanitize user-generated content"
+    - "Use helmet for HTTP headers"
+    - "Implement rate limiting"
+    - "Use CORS appropriately"
+    - "Never store secrets in code"
+    - "Use environment variables"
+
+# ----------------------------------------------------------------------------
+# PROJECT STRUCTURE
+# ----------------------------------------------------------------------------
+# Recommended folder structure:
+#
+# src/
+# ├── domain/
+# │   ├── entities/
+# │   ├── value-objects/
+# │   ├── services/
+# │   └── errors/
+# ├── application/
+# │   ├── use-cases/
+# │   ├── services/
+# │   └── ports/
+# ├── infrastructure/
+# │   ├── http/
+# │   │   ├── controllers/
+# │   │   ├── middlewares/
+# │   │   └── routes/
+# │   ├── database/
+# │   │   ├── repositories/
+# │   │   └── mappers/
+# │   └── config/
+# ├── shared/
+# │   ├── utils/
+# │   └── types/
+# └── index.ts
+#
+# tests/
+# ├── integration/
+# ├── e2e/
+# └── fixtures/

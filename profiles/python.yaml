@@ -1,0 +1,340 @@
+# ============================================================================
+# CORBAT MCP - Python Profile
+# ============================================================================
+# Production-ready standards for Python backend applications.
+# Covers FastAPI/Django, SQLAlchemy, and modern Python practices.
+# ============================================================================
+
+name: "Python Backend Standards"
+description: "Production-ready standards for Python backend with FastAPI or Django, focusing on type hints, clean architecture, and Pythonic code"
+
+# ----------------------------------------------------------------------------
+# ARCHITECTURE
+# ----------------------------------------------------------------------------
+architecture:
+  type: hexagonal
+  enforceLayerDependencies: true
+  layers:
+    - name: domain
+      description: "Core business logic. Pure Python, no framework dependencies. Contains entities, value objects, and domain services."
+      allowedDependencies: []
+      packages:
+        - "src/domain"
+        - "src/domain/entities"
+        - "src/domain/value_objects"
+        - "src/domain/services"
+        - "src/domain/exceptions"
+
+    - name: application
+      description: "Use cases and application services. Orchestrates domain objects."
+      allowedDependencies:
+        - domain
+      packages:
+        - "src/application"
+        - "src/application/use_cases"
+        - "src/application/services"
+        - "src/application/ports"
+
+    - name: infrastructure
+      description: "External adapters: API routes, database repositories, external services."
+      allowedDependencies:
+        - domain
+        - application
+      packages:
+        - "src/infrastructure"
+        - "src/infrastructure/api"
+        - "src/infrastructure/database"
+        - "src/infrastructure/external"
+
+# ----------------------------------------------------------------------------
+# CODE QUALITY
+# ----------------------------------------------------------------------------
+codeQuality:
+  maxMethodLines: 25
+  maxClassLines: 200
+  maxFileLines: 400
+  maxMethodParameters: 5
+  maxCyclomaticComplexity: 10
+  requireDocumentation: true
+  requireTests: true
+  minimumTestCoverage: 80
+
+  principles:
+    - "The Zen of Python"
+    - "Explicit is better than implicit"
+    - "Simple is better than complex"
+    - "Readability counts"
+    - "SOLID principles"
+
+# ----------------------------------------------------------------------------
+# NAMING CONVENTIONS
+# ----------------------------------------------------------------------------
+naming:
+  general:
+    class: PascalCase
+    function: snake_case
+    method: snake_case
+    variable: snake_case
+    constant: SCREAMING_SNAKE_CASE
+    module: snake_case
+    package: snake_case
+    privateAttribute: _leading_underscore
+    protectedAttribute: _single_underscore
+    privateMethod: __double_underscore
+
+  suffixes:
+    router: "_router"
+    service: "Service"
+    repository: "Repository"
+    useCase: "UseCase"
+    schema: "Schema"
+    model: "Model"
+    exception: "Error"
+
+  testing:
+    testFile: "test_*.py"
+    testClass: "Test*"
+    testMethod: "test_should_expected_when_condition"
+    fixture: "conftest.py"
+
+# ----------------------------------------------------------------------------
+# PYTHON CONFIGURATION
+# ----------------------------------------------------------------------------
+technologies:
+  - name: python
+    version: "3.11+"
+    specificRules:
+      useTypeHints: true
+      useDataclasses: true
+      usePydantic: true
+      useAsyncAwait: true
+      useContextManagers: true
+      useGenerators: true
+      useWalrus: false  # := operator - use sparingly
+      preferFStrings: true
+      usePathlib: true
+
+  - name: fastapi
+    version: "0.100+"
+    specificRules:
+      useDependencyInjection: true
+      useAsyncEndpoints: true
+      usePydanticV2: true
+      useResponseModel: true
+      useStatusCodes: true
+
+  - name: linting
+    tools:
+      - "ruff"
+      - "mypy"
+      - "black"
+    specificRules:
+      lineLength: 88
+      sortImports: true
+      strictMypy: true
+
+# ----------------------------------------------------------------------------
+# TESTING
+# ----------------------------------------------------------------------------
+testing:
+  framework: "pytest"
+  assertionLibrary: "pytest"
+  mockingLibrary: "pytest-mock"
+
+  types:
+    unit:
+      pattern: "test_*.py"
+      location: "tests/unit"
+      coverage: 80
+      markers: ["unit"]
+
+    integration:
+      pattern: "test_*_integration.py"
+      location: "tests/integration"
+      markers: ["integration"]
+      useTestcontainers: true
+
+    e2e:
+      pattern: "test_*_e2e.py"
+      location: "tests/e2e"
+      markers: ["e2e"]
+
+  patterns:
+    arrange_act_assert: true
+    given_when_then: true
+    fixtures: true
+
+  plugins:
+    - "pytest-asyncio"
+    - "pytest-cov"
+    - "pytest-mock"
+    - "pytest-env"
+    - "httpx"  # For async test client
+
+  testcontainers:
+    enabled: true
+    containers:
+      - "PostgreSQLContainer"
+      - "RedisContainer"
+      - "KafkaContainer"
+
+# ----------------------------------------------------------------------------
+# DATABASE
+# ----------------------------------------------------------------------------
+database:
+  migrations:
+    tool: "Alembic"
+    location: "alembic/versions"
+    naming: "YYYY_MM_DD_HHMM_description"
+
+  auditing:
+    enabled: true
+    fields:
+      - "created_at"
+      - "updated_at"
+
+  orm:
+    tool: "SQLAlchemy 2.0"
+    patterns:
+      - "Use async sessions"
+      - "Use repository pattern"
+      - "Prefer select() over query()"
+      - "Use relationship lazy loading appropriately"
+
+# ----------------------------------------------------------------------------
+# ERROR HANDLING
+# ----------------------------------------------------------------------------
+errorHandling:
+  format: "RFC 7807 Problem Details"
+  globalHandler: "exception_handlers.py"
+
+  customExceptions:
+    domain:
+      - "DomainError (base)"
+      - "EntityNotFoundError"
+      - "ValidationError"
+      - "BusinessRuleViolationError"
+    application:
+      - "ApplicationError"
+      - "UnauthorizedError"
+      - "ForbiddenError"
+    infrastructure:
+      - "DatabaseError"
+      - "ExternalServiceError"
+
+  structure:
+    - "type: Error type URI"
+    - "title: Short description"
+    - "status: HTTP status code"
+    - "detail: Detailed message"
+    - "instance: Request path"
+
+# ----------------------------------------------------------------------------
+# OBSERVABILITY
+# ----------------------------------------------------------------------------
+observability:
+  enabled: true
+
+  logging:
+    framework: "structlog"
+    format: "JSON"
+    structuredLogging: true
+    correlationId: true
+    levels:
+      production: "INFO"
+      development: "DEBUG"
+    avoid:
+      - "print() statements"
+      - "Logging sensitive data"
+      - "f-strings in log messages (use structlog binding)"
+
+  metrics:
+    framework: "prometheus-client"
+    customMetrics:
+      - type: "counter"
+        examples: ["requests_total", "errors_total"]
+      - type: "histogram"
+        examples: ["request_duration_seconds"]
+      - type: "gauge"
+        examples: ["active_connections"]
+
+  tracing:
+    framework: "OpenTelemetry"
+    exporters:
+      - "Jaeger"
+      - "OTLP"
+
+  healthChecks:
+    endpoints:
+      - "/health"
+      - "/health/live"
+      - "/health/ready"
+
+# ----------------------------------------------------------------------------
+# SECURITY
+# ----------------------------------------------------------------------------
+security:
+  authentication:
+    method: "JWT or OAuth2"
+    library: "python-jose or authlib"
+
+  practices:
+    - "Validate input with Pydantic"
+    - "Use parameterized queries"
+    - "Sanitize user content"
+    - "Use secrets module for tokens"
+    - "Implement rate limiting"
+    - "Use CORS middleware"
+    - "Never commit secrets"
+    - "Use environment variables"
+    - "Hash passwords with bcrypt"
+
+# ----------------------------------------------------------------------------
+# DEPENDENCY MANAGEMENT
+# ----------------------------------------------------------------------------
+dependencies:
+  tool: "Poetry or uv"
+  lockFile: true
+  separateDevDependencies: true
+  pinVersions: true
+
+# ----------------------------------------------------------------------------
+# PROJECT STRUCTURE
+# ----------------------------------------------------------------------------
+# Recommended folder structure:
+#
+# src/
+# ├── domain/
+# │   ├── entities/
+# │   ├── value_objects/
+# │   ├── services/
+# │   └── exceptions/
+# ├── application/
+# │   ├── use_cases/
+# │   ├── services/
+# │   └── ports/
+# ├── infrastructure/
+# │   ├── api/
+# │   │   ├── routes/
+# │   │   ├── dependencies/
+# │   │   └── middleware/
+# │   ├── database/
+# │   │   ├── repositories/
+# │   │   ├── models/
+# │   │   └── mappers/
+# │   └── config/
+# ├── shared/
+# │   ├── utils/
+# │   └── types/
+# └── main.py
+#
+# tests/
+# ├── unit/
+# ├── integration/
+# ├── e2e/
+# ├── fixtures/
+# └── conftest.py
+#
+# pyproject.toml
+# alembic.ini
+# Dockerfile

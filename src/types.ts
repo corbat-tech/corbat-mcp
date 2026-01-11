@@ -23,7 +23,7 @@ export const ArchUnitSchema = z.object({
  * Architecture configuration schema.
  */
 export const ArchitectureSchema = z.object({
-  type: z.enum(['hexagonal', 'clean', 'onion', 'layered', 'microservices', 'modular-monolith']).default('hexagonal'),
+  type: z.enum(['hexagonal', 'clean', 'onion', 'layered', 'microservices', 'modular-monolith', 'feature-based']).default('hexagonal'),
   enforceLayerDependencies: z.boolean().default(true),
   layers: z.array(LayerSchema).optional(),
   archUnit: ArchUnitSchema.optional(),

@@ -12,9 +12,11 @@
 
 **Your coding standards, always at hand.**
 
+[![CI](https://github.com/corbat/corbat-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/corbat/corbat-mcp/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Node.js](https://img.shields.io/badge/Node.js-18+-green.svg)](https://nodejs.org/)
 [![MCP](https://img.shields.io/badge/MCP-Compatible-blue.svg)](https://modelcontextprotocol.io/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue.svg)](https://www.typescriptlang.org/)
 
 </div>
 
@@ -26,13 +28,20 @@
 
 **In simple terms:** You define your coding rules in YAML files, and any MCP-compatible AI (like Claude) can read and apply them.
 
+### Key Features
+
+- **Multi-Stack Support** - Ready-to-use profiles for Java/Spring, Node.js, Python, and Frontend
+- **Searchable Standards** - Find specific topics (kafka, testing, docker) instantly
+- **Extensible** - Add your own profiles and documentation easily
+- **Zero Config** - Works out of the box with sensible defaults
+
 ---
 
 ## Quick Start (TL;DR)
 
 ```bash
 # 1. Clone & build
-git clone https://github.com/your-username/corbat-mcp.git
+git clone https://github.com/corbat/corbat-mcp.git
 cd corbat-mcp && npm install && npm run build
 
 # 2. Add to Claude Code settings (~/.config/claude-code/settings.json)
@@ -50,6 +59,27 @@ cd corbat-mcp && npm install && npm run build
 ```
 
 **That's it.** Claude now has access to your coding standards.
+
+---
+
+## Available Profiles
+
+Choose the profile that matches your tech stack:
+
+| Profile | Stack | Best For |
+|---------|-------|----------|
+| `default` | Java + Spring Boot | Enterprise backend with Hexagonal, DDD, CQRS |
+| `nodejs` | Node.js + TypeScript | Backend APIs with Express/Fastify, Prisma |
+| `python` | Python + FastAPI | Backend with SQLAlchemy, async, type hints |
+| `frontend` | React/Vue + TypeScript | SPAs with component architecture, state management |
+| `minimal` | Any | MVPs, prototypes, small projects |
+
+**Usage:**
+```bash
+# In Claude
+"Review this code using corbat with profile nodejs"
+"Apply python standards from corbat"
+```
 
 ---
 
@@ -135,8 +165,11 @@ corbat-mcp/
 │   ├── resources.ts  # MCP resources implementation
 │   └── prompts.ts    # MCP prompts implementation
 ├── profiles/
-│   ├── default.yaml  # Default coding standards
-│   └── custom1.yaml  # Customizable profile template
+│   ├── default.yaml  # Java/Spring Boot enterprise standards
+│   ├── nodejs.yaml   # Node.js/TypeScript standards
+│   ├── python.yaml   # Python/FastAPI standards
+│   ├── frontend.yaml # React/Vue frontend standards
+│   └── minimal.yaml  # Lightweight standards for MVPs
 ├── standards/
 │   ├── architecture/
 │   │   ├── hexagonal.md
@@ -315,13 +348,15 @@ DEBUG=corbat:* node dist/index.js
 
 ### Common configuration issues
 
+**WRONG** - relative path:
 ```json
-// WRONG - relative path
 {
   "args": ["./corbat-mcp/dist/index.js"]
 }
+```
 
-// CORRECT - absolute path
+**CORRECT** - absolute path:
+```json
 {
   "args": ["/Users/yourname/corbat-mcp/dist/index.js"]
 }

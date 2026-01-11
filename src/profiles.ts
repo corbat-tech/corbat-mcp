@@ -10,16 +10,45 @@ import {
 } from './types.js';
 
 /**
+ * Cache TTL in milliseconds (1 minute).
+ * Set to 0 to disable cache expiration.
+ */
+const CACHE_TTL_MS: number = 60_000;
+
+/**
  * Cache for loaded profiles and standards.
  */
 let profilesCache: Map<string, Profile> | null = null;
+let profilesCacheTime: number | null = null;
 let standardsCache: StandardDocument[] | null = null;
+let standardsCacheTime: number | null = null;
+
+/**
+ * Check if cache is still valid.
+ */
+function isCacheValid(cacheTime: number | null): boolean {
+  if (!cacheTime) return false;
+  if (CACHE_TTL_MS === 0) return true; // TTL disabled
+  return Date.now() - cacheTime < CACHE_TTL_MS;
+}
+
+/**
+ * Invalidate all caches. Useful for testing or hot-reload scenarios.
+ */
+export function invalidateCache(): void {
+  profilesCache = null;
+  profilesCacheTime = null;
+  standardsCache = null;
+  standardsCacheTime = null;
+}
 
 /**
  * Load all profiles from YAML files.
  */
 export async function loadProfiles(): Promise<Map<string, Profile>> {
-  if (profilesCache) return profilesCache;
+  if (profilesCache && isCacheValid(profilesCacheTime)) {
+    return profilesCache;
+  }
 
   profilesCache = new Map();
 
@@ -48,6 +77,7 @@ export async function loadProfiles(): Promise<Map<string, Profile>> {
     }
   }
 
+  profilesCacheTime = Date.now();
   return profilesCache;
 }
 
@@ -71,7 +101,9 @@ export async function listProfiles(): Promise<Array<{ id: string; profile: Profi
  * Load all standards from markdown files.
  */
 export async function loadStandards(): Promise<StandardDocument[]> {
-  if (standardsCache) return standardsCache;
+  if (standardsCache && isCacheValid(standardsCacheTime)) {
+    return standardsCache;
+  }
 
   standardsCache = [];
 
@@ -83,6 +115,7 @@ export async function loadStandards(): Promise<StandardDocument[]> {
     }
   }
 
+  standardsCacheTime = Date.now();
   return standardsCache;
 }
 

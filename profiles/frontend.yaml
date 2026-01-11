@@ -1,0 +1,332 @@
+# ============================================================================
+# CORBAT MCP - Frontend Profile
+# ============================================================================
+# Production-ready standards for modern frontend applications.
+# Covers React, Vue, and framework-agnostic best practices.
+# ============================================================================
+
+name: "Frontend Standards"
+description: "Production-ready standards for React/Vue frontend applications with TypeScript, focusing on component architecture, state management, and user experience"
+
+# ----------------------------------------------------------------------------
+# ARCHITECTURE
+# ----------------------------------------------------------------------------
+architecture:
+  type: "feature-based"
+  enforceLayerDependencies: true
+  layers:
+    - name: features
+      description: "Feature modules containing components, hooks, and logic for specific features"
+      allowedDependencies:
+        - shared
+        - core
+      packages:
+        - "src/features/*"
+
+    - name: shared
+      description: "Reusable UI components, hooks, and utilities used across features"
+      allowedDependencies:
+        - core
+      packages:
+        - "src/shared"
+        - "src/shared/components"
+        - "src/shared/hooks"
+        - "src/shared/utils"
+
+    - name: core
+      description: "Application core: routing, state management setup, API client, types"
+      allowedDependencies: []
+      packages:
+        - "src/core"
+        - "src/core/api"
+        - "src/core/store"
+        - "src/core/types"
+
+# ----------------------------------------------------------------------------
+# CODE QUALITY
+# ----------------------------------------------------------------------------
+codeQuality:
+  maxMethodLines: 30
+  maxClassLines: 200
+  maxFileLines: 300
+  maxMethodParameters: 4
+  maxCyclomaticComplexity: 10
+  requireDocumentation: true
+  requireTests: true
+  minimumTestCoverage: 70
+
+  principles:
+    - "Component Single Responsibility"
+    - "Composition over inheritance"
+    - "Colocation (keep related code together)"
+    - "Minimal prop drilling"
+    - "Accessibility first"
+
+# ----------------------------------------------------------------------------
+# NAMING CONVENTIONS
+# ----------------------------------------------------------------------------
+naming:
+  general:
+    component: PascalCase
+    hook: '"use" prefix + camelCase'
+    util: camelCase
+    constant: SCREAMING_SNAKE_CASE
+    type: PascalCase
+    interface: PascalCase
+    enum: PascalCase
+    file: PascalCase for components, camelCase for utils
+    folder: kebab-case
+
+  suffixes:
+    page: "Page"
+    layout: "Layout"
+    context: "Context"
+    provider: "Provider"
+    hook: "" # useXxx pattern
+    store: "Store"
+    slice: "Slice"
+    service: "Service"
+    type: "" # No suffix for types
+
+  testing:
+    testFile: ".test.tsx"
+    testComponent: ".test.tsx"
+    testHook: ".test.ts"
+    storybook: ".stories.tsx"
+
+# ----------------------------------------------------------------------------
+# COMPONENT GUIDELINES
+# ----------------------------------------------------------------------------
+components:
+  structure:
+    - "Props interface at top"
+    - "Component function"
+    - "Hooks at the beginning"
+    - "Event handlers"
+    - "Render helpers (if needed)"
+    - "Return JSX"
+
+  rules:
+    - "One component per file"
+    - "Export component as default"
+    - "Export types as named exports"
+    - "Use functional components only"
+    - "Destructure props"
+    - "Use explicit return for complex JSX"
+    - "Keep components under 200 lines"
+
+  propsNaming:
+    eventHandlers: "onAction (onClick, onSubmit)"
+    booleans: "is/has/should prefix (isOpen, hasError)"
+    children: "children for nested content"
+    className: "className for styling"
+
+# ----------------------------------------------------------------------------
+# STATE MANAGEMENT
+# ----------------------------------------------------------------------------
+stateManagement:
+  local:
+    tool: "useState / useReducer"
+    useWhen:
+      - "Component-specific state"
+      - "Form state"
+      - "UI state (modals, dropdowns)"
+
+  shared:
+    tool: "Zustand or Redux Toolkit"
+    useWhen:
+      - "State shared across multiple components"
+      - "Complex state logic"
+      - "State that persists across routes"
+
+  server:
+    tool: "TanStack Query (React Query)"
+    useWhen:
+      - "API data fetching"
+      - "Caching server state"
+      - "Optimistic updates"
+      - "Background refetching"
+
+  rules:
+    - "Prefer server state (React Query) over client state"
+    - "Colocate state as close as possible to where it's used"
+    - "Avoid prop drilling > 2 levels"
+    - "Use context for theme, auth, i18n"
+
+# ----------------------------------------------------------------------------
+# TYPESCRIPT
+# ----------------------------------------------------------------------------
+technologies:
+  - name: typescript
+    version: "5.x"
+    specificRules:
+      strict: true
+      noImplicitAny: true
+      strictNullChecks: true
+      noUnusedLocals: true
+      preferConst: true
+      useUnknownInCatchVariables: true
+
+  - name: react
+    version: "18+"
+    specificRules:
+      useFunctionalComponents: true
+      useHooks: true
+      useStrictMode: true
+      useSuspense: true
+      useErrorBoundaries: true
+
+  - name: linting
+    tools:
+      - "ESLint"
+      - "Prettier"
+      - "eslint-plugin-react-hooks"
+      - "eslint-plugin-jsx-a11y"
+
+# ----------------------------------------------------------------------------
+# TESTING
+# ----------------------------------------------------------------------------
+testing:
+  framework: "Vitest"
+  assertionLibrary: "Vitest"
+  componentTesting: "React Testing Library"
+
+  types:
+    unit:
+      suffix: ".test.ts"
+      location: "**/*.test.ts"
+      coverage: 70
+
+    component:
+      suffix: ".test.tsx"
+      location: "**/*.test.tsx"
+      coverage: 70
+
+    integration:
+      suffix: ".integration.test.tsx"
+      location: "tests/integration"
+
+    e2e:
+      tool: "Playwright or Cypress"
+      location: "tests/e2e"
+
+  patterns:
+    arrange_act_assert: true
+    userCentric: true # Test from user perspective
+
+  rules:
+    - "Test behavior, not implementation"
+    - "Use getByRole, getByLabelText over getByTestId"
+    - "Avoid testing internal state"
+    - "Mock API calls, not components"
+    - "Test accessibility"
+
+# ----------------------------------------------------------------------------
+# STYLING
+# ----------------------------------------------------------------------------
+styling:
+  approach: "Utility-first or CSS Modules"
+  tools:
+    - "Tailwind CSS (recommended)"
+    - "CSS Modules"
+    - "Styled Components"
+
+  rules:
+    - "Mobile-first responsive design"
+    - "Use design tokens for consistency"
+    - "Avoid inline styles"
+    - "Keep specificity low"
+    - "Use CSS variables for theming"
+
+# ----------------------------------------------------------------------------
+# ACCESSIBILITY
+# ----------------------------------------------------------------------------
+accessibility:
+  level: "WCAG 2.1 AA"
+  rules:
+    - "All interactive elements must be keyboard accessible"
+    - "Use semantic HTML elements"
+    - "Provide alt text for images"
+    - "Ensure sufficient color contrast"
+    - "Use ARIA attributes when needed"
+    - "Test with screen readers"
+    - "Support reduced motion"
+
+  testing:
+    - "eslint-plugin-jsx-a11y"
+    - "axe-core"
+    - "Manual keyboard navigation testing"
+
+# ----------------------------------------------------------------------------
+# PERFORMANCE
+# ----------------------------------------------------------------------------
+performance:
+  rules:
+    - "Lazy load routes and heavy components"
+    - "Use React.memo for expensive renders"
+    - "Use useMemo and useCallback appropriately"
+    - "Optimize images (next/image, srcset)"
+    - "Minimize bundle size"
+    - "Use code splitting"
+
+  metrics:
+    - "Largest Contentful Paint (LCP) < 2.5s"
+    - "First Input Delay (FID) < 100ms"
+    - "Cumulative Layout Shift (CLS) < 0.1"
+
+# ----------------------------------------------------------------------------
+# API INTEGRATION
+# ----------------------------------------------------------------------------
+api:
+  client: "TanStack Query + fetch/axios"
+  patterns:
+    - "Centralize API client configuration"
+    - "Use TypeScript for API responses"
+    - "Handle loading, error, and success states"
+    - "Implement optimistic updates"
+    - "Use proper error boundaries"
+
+  errorHandling:
+    - "Show user-friendly error messages"
+    - "Provide retry mechanisms"
+    - "Log errors for debugging"
+    - "Graceful degradation"
+
+# ----------------------------------------------------------------------------
+# PROJECT STRUCTURE
+# ----------------------------------------------------------------------------
+# Recommended folder structure:
+#
+# src/
+# ├── app/                    # App entry, routing, providers
+# │   ├── routes/
+# │   ├── providers/
+# │   └── App.tsx
+# ├── core/                   # Application core
+# │   ├── api/               # API client setup
+# │   ├── store/             # Global state
+# │   ├── types/             # Shared types
+# │   └── config/            # App configuration
+# ├── features/              # Feature modules
+# │   ├── auth/
+# │   │   ├── components/
+# │   │   ├── hooks/
+# │   │   ├── services/
+# │   │   ├── types/
+# │   │   └── index.ts
+# │   ├── dashboard/
+# │   └── settings/
+# ├── shared/                # Shared code
+# │   ├── components/        # UI components
+# │   │   ├── Button/
+# │   │   ├── Input/
+# │   │   └── Modal/
+# │   ├── hooks/             # Custom hooks
+# │   ├── utils/             # Utilities
+# │   └── types/             # Shared types
+# └── index.tsx
+#
+# tests/
+# ├── integration/
+# ├── e2e/
+# └── setup.ts

@@ -1,0 +1,102 @@
+# ============================================================================
+# CORBAT MCP - Minimal Profile
+# ============================================================================
+# Lightweight standards for small projects, MVPs, and prototypes.
+# Use this when you want basic guidelines without enterprise complexity.
+# ============================================================================
+
+name: "Minimal Standards"
+description: "Lightweight coding standards for small projects and MVPs. Focus on simplicity and speed over ceremony."
+
+# ----------------------------------------------------------------------------
+# ARCHITECTURE (Simple layered)
+# ----------------------------------------------------------------------------
+architecture:
+  type: layered
+  enforceLayerDependencies: false
+  layers:
+    - name: controllers
+      description: "HTTP handlers and request/response mapping"
+      allowedDependencies: [services]
+
+    - name: services
+      description: "Business logic"
+      allowedDependencies: [repositories]
+
+    - name: repositories
+      description: "Data access"
+      allowedDependencies: []
+
+# ----------------------------------------------------------------------------
+# CODE QUALITY (Relaxed)
+# ----------------------------------------------------------------------------
+codeQuality:
+  maxMethodLines: 40
+  maxClassLines: 400
+  maxFileLines: 600
+  maxMethodParameters: 5
+  maxCyclomaticComplexity: 15
+  requireDocumentation: false
+  requireTests: false
+  minimumTestCoverage: 50
+
+  principles:
+    - "KISS (Keep It Simple)"
+    - "DRY (Don't Repeat Yourself)"
+    - "Make it work, then make it right"
+
+# ----------------------------------------------------------------------------
+# NAMING CONVENTIONS
+# ----------------------------------------------------------------------------
+naming:
+  general:
+    class: PascalCase
+    interface: PascalCase
+    method: camelCase
+    variable: camelCase
+    constant: SCREAMING_SNAKE_CASE
+    file: kebab-case
+
+  suffixes:
+    controller: "Controller"
+    service: "Service"
+    repository: "Repository"
+
+# ----------------------------------------------------------------------------
+# TESTING (Basic)
+# ----------------------------------------------------------------------------
+testing:
+  framework: "Any"
+  types:
+    unit:
+      suffix: "Test"
+      coverage: 50
+      fastExecution: true
+
+  patterns:
+    arrange_act_assert: true
+
+# ----------------------------------------------------------------------------
+# ERROR HANDLING
+# ----------------------------------------------------------------------------
+errorHandling:
+  format: "Simple JSON"
+  structure:
+    - "message: Error description"
+    - "code: Error code (optional)"
+
+# ----------------------------------------------------------------------------
+# GUIDELINES
+# ----------------------------------------------------------------------------
+# When to use this profile:
+# - MVPs and prototypes
+# - Small personal projects
+# - Learning projects
+# - Hackathons
+# - Scripts and utilities
+#
+# When to upgrade to a more complete profile:
+# - Team grows beyond 2-3 developers
+# - Project will be maintained long-term
+# - Production deployment with real users
+# - Complex domain logic emerges

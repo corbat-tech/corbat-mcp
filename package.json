@@ -1,0 +1,51 @@
+{
+  "name": "corbat-mcp",
+  "version": "1.0.0",
+  "description": "MCP server for coding standards and best practices - Hexagonal Architecture, DDD, Clean Code",
+  "type": "module",
+  "main": "dist/index.js",
+  "bin": {
+    "corbat-mcp": "dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "node --import tsx src/index.ts",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "clean": "rm -rf dist",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "coding-standards",
+    "best-practices",
+    "hexagonal-architecture",
+    "ddd",
+    "clean-code"
+  ],
+  "author": "Corbat",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "files": [
+    "dist",
+    "profiles",
+    "standards"
+  ],
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "yaml": "^2.3.4",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "@vitest/coverage-v8": "^1.0.0",
+    "tsx": "^4.6.0",
+    "typescript": "^5.3.0",
+    "vitest": "^1.0.0"
+  }
+}

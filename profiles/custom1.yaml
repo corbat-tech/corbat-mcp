@@ -1,0 +1,117 @@
+# ============================================================================
+# CORBAT MCP - Custom Profile 1
+# ============================================================================
+# EDITABLE PROFILE: Customize this file for your project or client.
+# Copy this file and rename it for additional profiles.
+# ============================================================================
+
+name: "Custom Project Standards"
+description: "Customizable profile - edit this file to match your project requirements"
+
+# ----------------------------------------------------------------------------
+# ARCHITECTURE
+# ----------------------------------------------------------------------------
+# Options: hexagonal, clean, onion, layered, microservices, modular-monolith
+architecture:
+  type: hexagonal
+  enforceLayerDependencies: true
+  layers:
+    - name: domain
+      description: "Core business logic"
+      allowedDependencies: []
+
+    - name: application
+      description: "Use cases and orchestration"
+      allowedDependencies:
+        - domain
+
+    - name: infrastructure
+      description: "External adapters and frameworks"
+      allowedDependencies:
+        - domain
+        - application
+
+# ----------------------------------------------------------------------------
+# DOMAIN-DRIVEN DESIGN
+# ----------------------------------------------------------------------------
+# Enable/disable DDD patterns as needed for your project
+ddd:
+  enabled: true
+  ubiquitousLanguageEnforced: true
+  patterns:
+    aggregates: true
+    entities: true
+    valueObjects: true
+    domainEvents: true
+    repositories: true
+    domainServices: true
+    factories: false        # Enable if you need complex object creation
+    specifications: false   # Enable for complex query logic
+
+# ----------------------------------------------------------------------------
+# CODE QUALITY
+# ----------------------------------------------------------------------------
+# Adjust these values based on your team's preferences
+codeQuality:
+  maxMethodLines: 25           # Increase for more tolerance
+  maxClassLines: 250           # Increase for larger classes
+  maxFileLines: 500            # Increase for larger files
+  maxMethodParameters: 5       # Increase if needed
+  maxCyclomaticComplexity: 12  # Increase for more complex logic
+  requireDocumentation: true   # Set to false for internal/prototype code
+  requireTests: true           # Set to false for spike/prototype work
+  minimumTestCoverage: 70      # Adjust based on project maturity
+
+# ----------------------------------------------------------------------------
+# NAMING CONVENTIONS
+# ----------------------------------------------------------------------------
+# Standard conventions - modify if your project has specific requirements
+naming:
+  class: PascalCase
+  interface: PascalCase
+  method: camelCase
+  variable: camelCase
+  constant: SCREAMING_SNAKE_CASE
+  package: lowercase.dot.separated
+  enum: PascalCase
+  enumValue: SCREAMING_SNAKE_CASE
+
+# ----------------------------------------------------------------------------
+# TECHNOLOGIES
+# ----------------------------------------------------------------------------
+# Add or modify technologies based on your stack
+technologies:
+  - name: java
+    version: "21"
+    specificRules:
+      useRecordsForValueObjects: true
+      useSealedClassesForAggregates: false  # Optional
+      preferOptionalOverNull: true
+      useStreamApiForCollections: true
+
+  - name: spring-boot
+    version: "3.x"
+    specificRules:
+      useConstructorInjection: true
+      avoidFieldInjection: true
+      useProblemDetailsForErrors: true
+      useValidationAnnotations: true
+      separateConfigurationClasses: true
+
+  - name: testing
+    specificRules:
+      useJUnit5: true
+      useMockito: true
+      useAssertJ: true
+      testNamingPattern: "should_ExpectedBehavior_When_Condition"
+      separateUnitAndIntegrationTests: true
+
+# ----------------------------------------------------------------------------
+# CUSTOM RULES (optional)
+# ----------------------------------------------------------------------------
+# Add project-specific rules here
+# customRules:
+#   - id: "my-custom-rule"
+#     description: "Description of the rule"
+#     severity: "warning"  # error, warning, info
+#     enabled: true

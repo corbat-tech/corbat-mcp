@@ -1,0 +1,512 @@
+# ============================================================================
+# CORBAT MCP - Default Profile
+# ============================================================================
+# Enterprise-grade coding standards for Spring Boot backend applications.
+# Based on industry best practices: Hexagonal Architecture, DDD, CQRS, Clean Code.
+# ============================================================================
+
+name: "Corbat Default Standards"
+description: "Complete enterprise backend standards with Hexagonal Architecture, DDD, CQRS, Event-Driven Design, and comprehensive testing"
+
+# ----------------------------------------------------------------------------
+# ARCHITECTURE
+# ----------------------------------------------------------------------------
+architecture:
+  type: hexagonal
+  enforceLayerDependencies: true
+  layers:
+    - name: domain
+      description: "Core business logic. Contains entities, value objects, aggregates, domain events, and repository interfaces. NO external dependencies."
+      allowedDependencies: []
+      packages:
+        - "*.domain"
+        - "*.domain.model"
+        - "*.domain.event"
+        - "*.domain.exception"
+        - "*.domain.port.in"
+        - "*.domain.port.out"
+        - "*.domain.service"
+
+    - name: application
+      description: "Use cases and application services. Orchestrates domain objects. Contains commands, queries, and handlers. Depends only on domain."
+      allowedDependencies:
+        - domain
+      packages:
+        - "*.application"
+        - "*.application.usecase"
+        - "*.application.command"
+        - "*.application.query"
+        - "*.application.handler"
+
+    - name: infrastructure
+      description: "External adapters: REST controllers, database repositories, messaging, external APIs. Implements domain interfaces."
+      allowedDependencies:
+        - domain
+        - application
+      packages:
+        - "*.infrastructure"
+        - "*.infrastructure.adapter.in.rest"
+        - "*.infrastructure.adapter.out.persistence"
+        - "*.infrastructure.adapter.out.messaging"
+        - "*.infrastructure.adapter.out.http"
+        - "*.infrastructure.config"
+
+  archUnit:
+    enabled: true
+    recommended: true  # Recommended but not mandatory
+    rules:
+      - "Domain layer should not depend on application layer"
+      - "Domain layer should not depend on infrastructure layer"
+      - "Application layer should not depend on infrastructure layer"
+      - "Controllers should only use use cases, not repositories directly"
+      - "No Spring annotations in domain layer"
+
+# ----------------------------------------------------------------------------
+# DOMAIN-DRIVEN DESIGN
+# ----------------------------------------------------------------------------
+ddd:
+  enabled: true
+  ubiquitousLanguageEnforced: true
+  patterns:
+    aggregates: true
+    entities: true
+    valueObjects: true
+    domainEvents: true
+    repositories: true
+    domainServices: true
+    factories: true
+    specifications: false
+
+  valueObjectGuidelines:
+    useRecords: true
+    immutable: true
+    selfValidating: true
+    examples:
+      - "OrderId, CustomerId, ProductId (Identity Value Objects)"
+      - "Money, Email, PhoneNumber (Business Value Objects)"
+      - "Address, DateRange, Quantity (Composite Value Objects)"
+
+  aggregateGuidelines:
+    singleEntryPoint: true
+    protectInvariants: true
+    smallAggregates: true
+    referenceByIdentity: true
+
+# ----------------------------------------------------------------------------
+# CQRS (Command Query Responsibility Segregation)
+# ----------------------------------------------------------------------------
+cqrs:
+  enabled: true
+  separation: "logical"  # logical | physical
+  patterns:
+    commands:
+      suffix: "Command"
+      handler: "CommandHandler"
+      examples:
+        - "CreateOrderCommand"
+        - "CancelOrderCommand"
+        - "UpdateCustomerCommand"
+    queries:
+      suffix: "Query"
+      handler: "QueryHandler"
+      examples:
+        - "GetOrderByIdQuery"
+        - "ListOrdersByCustomerQuery"
+        - "SearchProductsQuery"
+
+# ----------------------------------------------------------------------------
+# EVENT-DRIVEN ARCHITECTURE
+# ----------------------------------------------------------------------------
+eventDriven:
+  enabled: true
+  approach: "domain-events"  # domain-events | event-sourcing
+  patterns:
+    domainEvents:
+      suffix: "Event"
+      pastTense: true
+      examples:
+        - "OrderCreatedEvent"
+        - "OrderShippedEvent"
+        - "PaymentReceivedEvent"
+    eventPublishing:
+      interface: "DomainEventPublisher"
+      async: true
+    messaging:
+      broker: "kafka"  # kafka | rabbitmq | sqs
+      topicNaming: "domain.aggregate.event"
+      examples:
+        - "orders.order.created"
+        - "payments.payment.received"
+
+# ----------------------------------------------------------------------------
+# CODE QUALITY
+# ----------------------------------------------------------------------------
+codeQuality:
+  maxMethodLines: 20
+  maxClassLines: 200
+  maxFileLines: 400
+  maxMethodParameters: 4
+  maxCyclomaticComplexity: 10
+  requireDocumentation: true
+  requireTests: true
+  minimumTestCoverage: 80
+
+  principles:
+    - "SOLID principles"
+    - "DRY (Don't Repeat Yourself)"
+    - "KISS (Keep It Simple, Stupid)"
+    - "YAGNI (You Aren't Gonna Need It)"
+    - "Favor composition over inheritance"
+    - "Program to interfaces, not implementations"
+
+# ----------------------------------------------------------------------------
+# NAMING CONVENTIONS
+# ----------------------------------------------------------------------------
+naming:
+  general:
+    class: PascalCase
+    interface: PascalCase
+    method: camelCase
+    variable: camelCase
+    constant: SCREAMING_SNAKE_CASE
+    package: lowercase.dot.separated
+    enum: PascalCase
+    enumValue: SCREAMING_SNAKE_CASE
+
+  suffixes:
+    controller: "Controller"
+    service: "Service"
+    repository: "Repository"
+    useCase: "UseCase"
+    command: "Command"
+    query: "Query"
+    event: "Event"
+    handler: "Handler"
+    mapper: "Mapper"
+    dto: "Request|Response|Dto"
+    exception: "Exception"
+    config: "Config|Configuration"
+    properties: "Properties"
+
+  testing:
+    unitTest: "Test"
+    integrationTest: "IT"
+    e2eTest: "E2ETest"
+    testMethod: "should_ExpectedBehavior_When_Condition"
+    fixture: "Fixtures|TestBuilder|Mother"
+
+# ----------------------------------------------------------------------------
+# TESTING
+# ----------------------------------------------------------------------------
+testing:
+  framework: "JUnit5"
+  assertionLibrary: "AssertJ"
+  mockingLibrary: "Mockito"
+
+  types:
+    unit:
+      suffix: "Test"
+      location: "src/test/java"
+      coverage: 80
+      fastExecution: true
+      mavenPhase: "test"
+
+    integration:
+      suffix: "IT"
+      location: "src/test/java"
+      mavenPlugin: "maven-failsafe-plugin"
+      mavenPhase: "integration-test"
+      useTestcontainers: true
+
+    e2e:
+      suffix: "E2ETest"
+      location: "src/test/java"
+
+    architecture:
+      tool: "ArchUnit"
+      recommended: true
+      location: "src/test/java/**/architecture"
+
+  patterns:
+    arrange_act_assert: true
+    given_when_then: true
+    testDataBuilders: true
+    fixtures: true
+
+  testcontainers:
+    enabled: true
+    containers:
+      - "PostgreSQLContainer"
+      - "KafkaContainer"
+      - "LocalStackContainer"
+      - "WireMockContainer"
+
+# ----------------------------------------------------------------------------
+# HTTP CLIENTS
+# ----------------------------------------------------------------------------
+httpClients:
+  simple:
+    tool: "HttpInterface"
+    description: "Declarative HTTP client using Spring 6 HTTP Interface. Best for simple REST API calls."
+    useWhen:
+      - "Simple CRUD operations"
+      - "Standard REST endpoints"
+      - "No complex error handling needed"
+    example: |
+      @HttpExchange("/api/v1/users")
+      public interface UserClient {
+          @GetExchange("/{id}")
+          UserResponse getUser(@PathVariable String id);
+
+          @PostExchange
+          UserResponse createUser(@RequestBody CreateUserRequest request);
+      }
+
+  complex:
+    tool: "RestClient"
+    description: "Fluent API for complex HTTP operations. Use when you need fine-grained control."
+    useWhen:
+      - "Custom error handling"
+      - "Dynamic headers or query params"
+      - "Complex request/response transformations"
+      - "Retry policies"
+      - "Circuit breaker integration"
+    example: |
+      @Component
+      @RequiredArgsConstructor
+      public class PaymentGatewayClient {
+          private final RestClient restClient;
+
+          public PaymentResponse processPayment(PaymentRequest request) {
+              return restClient.post()
+                  .uri("/payments")
+                  .header("X-Idempotency-Key", request.idempotencyKey())
+                  .body(request)
+                  .retrieve()
+                  .onStatus(HttpStatusCode::is4xxClientError, this::handleClientError)
+                  .body(PaymentResponse.class);
+          }
+      }
+
+# ----------------------------------------------------------------------------
+# OBSERVABILITY
+# ----------------------------------------------------------------------------
+observability:
+  enabled: true
+
+  logging:
+    framework: "SLF4J + Logback"
+    format: "JSON"
+    structuredLogging: true
+    correlationId: true
+    mdc:
+      - "traceId"
+      - "spanId"
+      - "userId"
+      - "requestId"
+    levels:
+      production: "INFO"
+      development: "DEBUG"
+    avoid:
+      - "System.out.println"
+      - "printStackTrace"
+      - "Logging sensitive data"
+
+  metrics:
+    framework: "Micrometer"
+    registry: "prometheus"
+    customMetrics:
+      - type: "counter"
+        examples: ["orders.created", "payments.processed"]
+      - type: "gauge"
+        examples: ["orders.pending.count", "connections.active"]
+      - type: "timer"
+        examples: ["order.processing.time", "external.api.latency"]
+    naming: "snake_case with dots"
+
+  tracing:
+    framework: "Micrometer Tracing"
+    propagation: "W3C"
+    samplingRate: 1.0
+    exporters:
+      - "Jaeger"
+      - "Zipkin"
+      - "OTLP"
+    spanAttributes:
+      - "http.method"
+      - "http.url"
+      - "http.status_code"
+      - "db.operation"
+      - "messaging.destination"
+
+  healthChecks:
+    actuatorEndpoints:
+      - "/actuator/health"
+      - "/actuator/health/liveness"
+      - "/actuator/health/readiness"
+      - "/actuator/info"
+      - "/actuator/metrics"
+      - "/actuator/prometheus"
+    customHealthIndicators: true
+    examples:
+      - "DatabaseHealthIndicator"
+      - "KafkaHealthIndicator"
+      - "ExternalApiHealthIndicator"
+
+# ----------------------------------------------------------------------------
+# API DOCUMENTATION
+# ----------------------------------------------------------------------------
+apiDocumentation:
+  enabled: true
+  tool: "SpringDoc OpenAPI"
+  version: "3.0"
+
+  requirements:
+    - "All endpoints must be documented"
+    - "Request/Response examples required"
+    - "Error responses documented"
+    - "Authentication documented"
+
+  annotations:
+    operation: "@Operation"
+    parameter: "@Parameter"
+    schema: "@Schema"
+    response: "@ApiResponse"
+
+  output:
+    - "/api-docs"
+    - "/swagger-ui.html"
+
+# ----------------------------------------------------------------------------
+# SECURITY
+# ----------------------------------------------------------------------------
+security:
+  authentication:
+    method: "JWT"
+    storage: "HTTP-only Cookie or Authorization Header"
+
+  authorization:
+    framework: "Spring Security"
+    method: "Role-based (RBAC)"
+
+  practices:
+    - "Never store secrets in code"
+    - "Use environment variables or secret managers"
+    - "Enable HTTPS in production"
+    - "Validate and sanitize all input"
+    - "Use parameterized queries"
+    - "Implement proper CORS configuration"
+    - "Set security headers (CSP, X-Frame-Options, etc.)"
+
+# ----------------------------------------------------------------------------
+# ERROR HANDLING
+# ----------------------------------------------------------------------------
+errorHandling:
+  format: "RFC 7807 Problem Details"
+  globalHandler: "GlobalExceptionHandler"
+
+  structure:
+    - "type: URI identifying the problem type"
+    - "title: Short summary"
+    - "status: HTTP status code"
+    - "detail: Detailed explanation"
+    - "instance: URI of the specific occurrence"
+
+  customExceptions:
+    domain:
+      - "DomainException (base)"
+      - "EntityNotFoundException"
+      - "BusinessRuleViolationException"
+      - "InvalidOperationException"
+    application:
+      - "ValidationException"
+      - "UnauthorizedException"
+
+# ----------------------------------------------------------------------------
+# DATABASE
+# ----------------------------------------------------------------------------
+database:
+  migrations:
+    tool: "Flyway"
+    location: "db/migration"
+    naming: "V{version}__{description}.sql"
+
+  auditing:
+    enabled: true
+    fields:
+      - "createdAt"
+      - "createdBy"
+      - "updatedAt"
+      - "updatedBy"
+
+  mapping:
+    tool: "MapStruct"
+    nullHandling: "strict"
+
+  softDelete:
+    recommended: true
+    field: "deletedAt"
+
+# ----------------------------------------------------------------------------
+# OBJECT MAPPING
+# ----------------------------------------------------------------------------
+mapping:
+  tool: "MapStruct"
+  componentModel: "spring"
+  nullValueHandling: "RETURN_NULL"
+
+  patterns:
+    - "Domain to DTO"
+    - "DTO to Command"
+    - "Entity to Domain"
+    - "Domain to Entity"
+
+  example: |
+    @Mapper(componentModel = "spring")
+    public interface OrderMapper {
+        OrderResponse toResponse(Order order);
+        Order toDomain(OrderEntity entity);
+        OrderEntity toEntity(Order order);
+    }
+
+# ----------------------------------------------------------------------------
+# TECHNOLOGIES
+# ----------------------------------------------------------------------------
+technologies:
+  - name: java
+    version: "21"
+    specificRules:
+      useRecordsForValueObjects: true
+      useRecordsForDTOs: true
+      useSealedClassesForAggregates: false
+      preferOptionalOverNull: true
+      useStreamApiForCollections: true
+      usePatternMatching: true
+      useTextBlocks: true
+
+  - name: spring-boot
+    version: "3.x"
+    specificRules:
+      useConstructorInjection: true
+      avoidFieldInjection: true
+      useProblemDetailsForErrors: true
+      useValidationAnnotations: true
+      separateConfigurationClasses: true
+      useConfigurationProperties: true
+
+  - name: build
+    tool: "Maven"
+    specificRules:
+      usePropertyVersions: true
+      separateProfiles: true
+      useFailsafeForIT: true
+
+  - name: testing
+    specificRules:
+      useJUnit5: true
+      useMockito: true
+      useAssertJ: true
+      useTestcontainers: true
+      useArchUnit: true
+      testNamingPattern: "should_ExpectedBehavior_When_Condition"
+      integrationTestSuffix: "IT"

@@ -113,6 +113,7 @@ cd corbat-mcp && npm install && npm run build
 | **Tool** | `list_profiles` | Lists available profiles |
 | **Tool** | `get_architecture_guidelines` | Returns architecture rules only |
 | **Tool** | `get_naming_conventions` | Returns naming rules only |
+| **Tool** | `search_standards` | Search docs for specific topics |
 | **Resource** | `corbat://profiles/{id}` | Read a profile as markdown |
 | **Resource** | `corbat://standards/{category}` | Read standards by category |
 | **Prompt** | `code_review` | Pre-built prompt for code review |
@@ -265,6 +266,66 @@ For local MCP servers (like this one), STDIO is the recommended transport:
 ### Logging
 
 **Important:** This server logs to `stderr` only. In STDIO transport, `stdout` is reserved for protocol messages.
+
+---
+
+## Troubleshooting
+
+### Server not starting
+
+```bash
+# Check if it runs directly
+node dist/index.js
+
+# Should output nothing (waits for stdin)
+# If you see errors, fix them first
+```
+
+### "Unknown tool" errors
+
+Make sure you built the project:
+```bash
+npm run build
+```
+
+### Profile not found
+
+1. Check the profile exists in `profiles/` directory
+2. Verify the filename matches (without `.yaml` extension)
+3. Check YAML syntax is valid
+
+### Standards not showing
+
+1. Verify markdown files exist in `standards/` directory
+2. Check file permissions
+3. Ensure files have `.md` extension
+
+### Claude can't find the MCP
+
+1. Verify the path in settings is absolute
+2. Check `node` is in your PATH
+3. Restart Claude Code after changing settings
+
+### Debug mode
+
+Set environment variable for verbose logging:
+```bash
+DEBUG=corbat:* node dist/index.js
+```
+
+### Common configuration issues
+
+```json
+// WRONG - relative path
+{
+  "args": ["./corbat-mcp/dist/index.js"]
+}
+
+// CORRECT - absolute path
+{
+  "args": ["/Users/yourname/corbat-mcp/dist/index.js"]
+}
+```
 
 ---
 

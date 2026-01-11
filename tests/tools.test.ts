@@ -31,8 +31,17 @@ describe('Tools Definition', () => {
     expect(tool?.description).toContain('naming');
   });
 
-  it('should have 4 tools total', () => {
-    expect(tools).toHaveLength(4);
+  it('should have search_standards tool', () => {
+    const tool = tools.find((t) => t.name === 'search_standards');
+
+    expect(tool).toBeDefined();
+    expect(tool?.description).toContain('Search');
+    expect(tool?.inputSchema.properties).toHaveProperty('query');
+    expect(tool?.inputSchema.required).toContain('query');
+  });
+
+  it('should have 5 tools total', () => {
+    expect(tools).toHaveLength(5);
   });
 
   it('should have valid input schemas', () => {

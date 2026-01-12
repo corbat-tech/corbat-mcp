@@ -10,7 +10,7 @@ profiles/
 │   ├── java-spring-backend.yaml  # Java + Spring Boot enterprise
 │   ├── nodejs.yaml               # Node.js + TypeScript
 │   ├── python.yaml               # Python + FastAPI/Django
-│   ├── frontend.yaml             # React/Vue/Angular
+│   ├── react.yaml                # React + TypeScript
 │   ├── minimal.yaml              # Configuración mínima
 │   └── _template.yaml            # Plantilla para crear nuevos perfiles
 │
@@ -28,7 +28,7 @@ profiles/
 # En tu cliente MCP, especifica el perfil:
 get_coding_standards(profile: "java-spring-backend")
 get_coding_standards(profile: "nodejs")
-get_coding_standards(profile: "frontend")
+get_coding_standards(profile: "react")
 ```
 
 ### 2. Crear un perfil personalizado
@@ -51,7 +51,7 @@ get_coding_standards(profile: "mi-proyecto")
 | `java-spring-backend` | Enterprise backend con arquitectura hexagonal, DDD, CQRS | Java 21, Spring Boot 3.x |
 | `nodejs` | Backend/fullstack con TypeScript | Node.js, TypeScript, Express/Nest |
 | `python` | Backend con tipado estricto | Python 3.11+, FastAPI/Django |
-| `frontend` | Aplicaciones web modernas | React/Vue/Angular, TypeScript |
+| `react` | Aplicaciones React modernas | React 18+, TypeScript |
 | `minimal` | Configuración mínima para empezar | Cualquiera |
 
 ## Estructura de un Perfil

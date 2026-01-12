@@ -7,12 +7,8 @@
 **Your architecture rules, TDD workflow, and SOLID principles — injected automatically into every AI response.**
 
 [![CI](https://github.com/victormartingil/corbat-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/victormartingil/corbat-mcp/actions/workflows/ci.yml)
-[![Coverage](https://img.shields.io/badge/coverage-80%25+-brightgreen.svg)](https://github.com/victormartingil/corbat-mcp)
-[![Tests](https://img.shields.io/badge/tests-78%20passing-brightgreen.svg)](https://github.com/victormartingil/corbat-mcp)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Node.js](https://img.shields.io/badge/Node.js-18+-green.svg)](https://nodejs.org/)
 [![MCP](https://img.shields.io/badge/MCP-1.0-blue.svg)](https://modelcontextprotocol.io/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.3-blue.svg)](https://www.typescriptlang.org/)
 
 </div>
 
@@ -211,7 +207,7 @@ Corbat adapts its rules based on what you're doing:
 | `java-spring-backend` | Enterprise Java | Hexagonal + DDD |
 | `nodejs` | Node.js/TypeScript APIs | Clean Architecture |
 | `python` | Python/FastAPI | Clean Architecture |
-| `frontend` | React/Vue/Angular | Component-based |
+| `react` | React applications | Component-based |
 | `minimal` | MVPs, prototypes | Basic standards |
 
 **Auto-detection**: Corbat reads `pom.xml`, `package.json`, `requirements.txt`, etc. to select the right profile.

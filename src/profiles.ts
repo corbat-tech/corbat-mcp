@@ -196,358 +196,319 @@ export async function getCategories(): Promise<string[]> {
   return Array.from(categories);
 }
 
-/**
- * Format a profile as markdown for LLM context.
- */
-export function formatProfileAsMarkdown(_profileId: string, profile: Profile): string {
-  const lines: string[] = [`# Coding Standards Profile: ${profile.name}`, ''];
+// ============================================================================
+// MARKDOWN FORMATTING HELPERS
+// ============================================================================
 
-  if (profile.description) {
-    lines.push(profile.description, '');
-  }
+function formatArchitectureSection(profile: Profile): string[] {
+  if (!profile.architecture) return [];
 
-  // Architecture
-  if (profile.architecture) {
-    lines.push('## Architecture', '');
-    lines.push(`**Pattern:** ${profile.architecture.type}`, '');
-    lines.push(`**Enforce Layer Dependencies:** ${profile.architecture.enforceLayerDependencies}`, '');
+  const lines: string[] = [
+    '## Architecture',
+    '',
+    `**Pattern:** ${profile.architecture.type}`,
+    '',
+    `**Enforce Layer Dependencies:** ${profile.architecture.enforceLayerDependencies}`,
+    '',
+  ];
 
-    if (profile.architecture.layers) {
-      lines.push('', '### Layers', '');
-      for (const layer of profile.architecture.layers) {
-        const deps = layer.allowedDependencies.length > 0 ? layer.allowedDependencies.join(', ') : 'none';
-        lines.push(`#### ${layer.name}`);
-        lines.push(layer.description);
-        lines.push(`- Allowed dependencies: ${deps}`);
-        if (layer.packages && layer.packages.length > 0) {
-          lines.push(`- Packages: ${layer.packages.join(', ')}`);
-        }
-        lines.push('');
-      }
-    }
-
-    if (profile.architecture.archUnit) {
-      lines.push('### ArchUnit', '');
-      lines.push(`- Enabled: ${profile.architecture.archUnit.enabled}`);
-      lines.push(`- Recommended: ${profile.architecture.archUnit.recommended}`);
-      if (profile.architecture.archUnit.rules) {
-        lines.push('', '**Rules:**');
-        for (const rule of profile.architecture.archUnit.rules) {
-          lines.push(`- ${rule}`);
-        }
+  if (profile.architecture.layers) {
+    lines.push('### Layers', '');
+    for (const layer of profile.architecture.layers) {
+      const deps = layer.allowedDependencies.length > 0 ? layer.allowedDependencies.join(', ') : 'none';
+      lines.push(`#### ${layer.name}`, layer.description, `- Allowed dependencies: ${deps}`);
+      if (layer.packages?.length) {
+        lines.push(`- Packages: ${layer.packages.join(', ')}`);
       }
       lines.push('');
     }
   }
 
-  // DDD
-  if (profile.ddd?.enabled) {
-    lines.push('## Domain-Driven Design', '');
-    lines.push(`**Ubiquitous Language Enforced:** ${profile.ddd.ubiquitousLanguageEnforced}`, '');
-
-    if (profile.ddd.patterns) {
-      lines.push('### Enabled Patterns', '');
-      for (const [pattern, enabled] of Object.entries(profile.ddd.patterns)) {
-        if (enabled) lines.push(`- ${pattern}`);
-      }
-      lines.push('');
-    }
-
-    if (profile.ddd.valueObjectGuidelines) {
-      lines.push('### Value Object Guidelines', '');
-      lines.push(`- Use Records: ${profile.ddd.valueObjectGuidelines.useRecords}`);
-      lines.push(`- Immutable: ${profile.ddd.valueObjectGuidelines.immutable}`);
-      lines.push(`- Self-validating: ${profile.ddd.valueObjectGuidelines.selfValidating}`);
-      if (profile.ddd.valueObjectGuidelines.examples) {
-        lines.push('', '**Examples:**');
-        for (const ex of profile.ddd.valueObjectGuidelines.examples) {
-          lines.push(`- ${ex}`);
-        }
-      }
-      lines.push('');
-    }
-
-    if (profile.ddd.aggregateGuidelines) {
-      lines.push('### Aggregate Guidelines', '');
-      lines.push(`- Single Entry Point: ${profile.ddd.aggregateGuidelines.singleEntryPoint}`);
-      lines.push(`- Protect Invariants: ${profile.ddd.aggregateGuidelines.protectInvariants}`);
-      lines.push(`- Small Aggregates: ${profile.ddd.aggregateGuidelines.smallAggregates}`);
-      lines.push(`- Reference by Identity: ${profile.ddd.aggregateGuidelines.referenceByIdentity}`);
-      lines.push('');
-    }
-  }
-
-  // CQRS
-  if (profile.cqrs?.enabled) {
-    lines.push('## CQRS', '');
-    lines.push(`**Separation:** ${profile.cqrs.separation}`, '');
-
-    if (profile.cqrs.patterns?.commands) {
-      lines.push('### Commands', '');
-      lines.push(`- Suffix: ${profile.cqrs.patterns.commands.suffix}`);
-      lines.push(`- Handler: ${profile.cqrs.patterns.commands.handler}`);
-      if (profile.cqrs.patterns.commands.examples) {
-        lines.push(`- Examples: ${profile.cqrs.patterns.commands.examples.join(', ')}`);
-      }
-      lines.push('');
-    }
-
-    if (profile.cqrs.patterns?.queries) {
-      lines.push('### Queries', '');
-      lines.push(`- Suffix: ${profile.cqrs.patterns.queries.suffix}`);
-      lines.push(`- Handler: ${profile.cqrs.patterns.queries.handler}`);
-      if (profile.cqrs.patterns.queries.examples) {
-        lines.push(`- Examples: ${profile.cqrs.patterns.queries.examples.join(', ')}`);
-      }
-      lines.push('');
-    }
-  }
-
-  // Event-Driven
-  if (profile.eventDriven?.enabled) {
-    lines.push('## Event-Driven Architecture', '');
-    lines.push(`**Approach:** ${profile.eventDriven.approach}`, '');
-
-    if (profile.eventDriven.patterns?.domainEvents) {
-      lines.push('### Domain Events', '');
-      lines.push(`- Suffix: ${profile.eventDriven.patterns.domainEvents.suffix}`);
-      lines.push(`- Past Tense: ${profile.eventDriven.patterns.domainEvents.pastTense}`);
-      if (profile.eventDriven.patterns.domainEvents.examples) {
-        lines.push(`- Examples: ${profile.eventDriven.patterns.domainEvents.examples.join(', ')}`);
-      }
-      lines.push('');
-    }
-
-    if (profile.eventDriven.patterns?.messaging) {
-      lines.push('### Messaging', '');
-      lines.push(`- Broker: ${profile.eventDriven.patterns.messaging.broker}`);
-      if (profile.eventDriven.patterns.messaging.topicNaming) {
-        lines.push(`- Topic Naming: ${profile.eventDriven.patterns.messaging.topicNaming}`);
-      }
-      if (profile.eventDriven.patterns.messaging.examples) {
-        lines.push(`- Examples: ${profile.eventDriven.patterns.messaging.examples.join(', ')}`);
-      }
-      lines.push('');
-    }
-  }
-
-  // Code Quality
-  if (profile.codeQuality) {
-    const cq = profile.codeQuality;
-    lines.push('## Code Quality Rules', '');
-    lines.push(`- Max method lines: ${cq.maxMethodLines}`);
-    lines.push(`- Max class lines: ${cq.maxClassLines}`);
-    lines.push(`- Max file lines: ${cq.maxFileLines}`);
-    lines.push(`- Max parameters: ${cq.maxMethodParameters}`);
-    lines.push(`- Max cyclomatic complexity: ${cq.maxCyclomaticComplexity}`);
-    lines.push(`- Require documentation: ${cq.requireDocumentation}`);
-    lines.push(`- Require tests: ${cq.requireTests}`);
-    lines.push(`- Minimum test coverage: ${cq.minimumTestCoverage}%`);
-    if (cq.principles && cq.principles.length > 0) {
-      lines.push('', '**Principles:**');
-      for (const p of cq.principles) {
-        lines.push(`- ${p}`);
-      }
+  if (profile.architecture.archUnit) {
+    lines.push(
+      '### ArchUnit',
+      '',
+      `- Enabled: ${profile.architecture.archUnit.enabled}`,
+      `- Recommended: ${profile.architecture.archUnit.recommended}`
+    );
+    if (profile.architecture.archUnit.rules) {
+      lines.push('', '**Rules:**', ...profile.architecture.archUnit.rules.map((r) => `- ${r}`));
     }
     lines.push('');
   }
 
-  // Naming Conventions
-  if (profile.naming) {
-    lines.push('## Naming Conventions', '');
+  return lines;
+}
 
-    const naming = profile.naming as Record<string, unknown>;
+function formatDddSection(profile: Profile): string[] {
+  if (!profile.ddd?.enabled) return [];
 
-    if (naming.general && typeof naming.general === 'object') {
-      lines.push('### General', '');
-      for (const [key, value] of Object.entries(naming.general as Record<string, string>)) {
-        lines.push(`- **${key}**: ${value}`);
-      }
-      lines.push('');
-    }
+  const lines: string[] = [
+    '## Domain-Driven Design',
+    '',
+    `**Ubiquitous Language Enforced:** ${profile.ddd.ubiquitousLanguageEnforced}`,
+    '',
+  ];
 
-    if (naming.suffixes && typeof naming.suffixes === 'object') {
-      lines.push('### Suffixes', '');
-      for (const [key, value] of Object.entries(naming.suffixes as Record<string, string>)) {
-        lines.push(`- **${key}**: ${value}`);
-      }
-      lines.push('');
-    }
-
-    if (naming.testing && typeof naming.testing === 'object') {
-      lines.push('### Testing Naming', '');
-      for (const [key, value] of Object.entries(naming.testing as Record<string, string>)) {
-        lines.push(`- **${key}**: ${value}`);
-      }
-      lines.push('');
-    }
-
-    // Handle flat naming structure (backwards compatibility)
-    const flatKeys = Object.keys(naming).filter((k) => !['general', 'suffixes', 'testing'].includes(k));
-    if (flatKeys.length > 0) {
-      for (const key of flatKeys) {
-        if (typeof naming[key] === 'string') {
-          lines.push(`- **${key}**: ${naming[key]}`);
-        }
-      }
-      lines.push('');
-    }
-  }
-
-  // Testing Configuration
-  if (profile.testing) {
-    lines.push('## Testing', '');
-    lines.push(`- Framework: ${profile.testing.framework}`);
-    lines.push(`- Assertions: ${profile.testing.assertionLibrary}`);
-    lines.push(`- Mocking: ${profile.testing.mockingLibrary}`);
-
-    if (profile.testing.types) {
-      lines.push('', '### Test Types', '');
-      if (profile.testing.types.unit) {
-        lines.push(`- **Unit tests**: suffix \`*${profile.testing.types.unit.suffix}.java\``);
-      }
-      if (profile.testing.types.integration) {
-        lines.push(
-          `- **Integration tests**: suffix \`*${profile.testing.types.integration.suffix}.java\` (maven-failsafe)`
-        );
-      }
-      if (profile.testing.types.e2e?.suffix) {
-        lines.push(`- **E2E tests**: suffix \`*${profile.testing.types.e2e.suffix}.java\``);
-      }
-      if (profile.testing.types.architecture) {
-        lines.push(
-          `- **Architecture tests**: ${profile.testing.types.architecture.tool} (recommended: ${profile.testing.types.architecture.recommended})`
-        );
-      }
-    }
-
-    if (profile.testing.testcontainers?.enabled) {
-      lines.push('', '### Testcontainers', '');
-      lines.push('Enabled containers:');
-      if (profile.testing.testcontainers.containers) {
-        for (const c of profile.testing.testcontainers.containers) {
-          lines.push(`- ${c}`);
-        }
-      }
+  if (profile.ddd.patterns) {
+    lines.push('### Enabled Patterns', '');
+    for (const [pattern, enabled] of Object.entries(profile.ddd.patterns)) {
+      if (enabled) lines.push(`- ${pattern}`);
     }
     lines.push('');
   }
 
-  // HTTP Clients
-  if (profile.httpClients) {
-    lines.push('## HTTP Clients', '');
-
-    if (profile.httpClients.simple) {
-      lines.push(`### ${profile.httpClients.simple.tool} (Simple Cases)`, '');
-      if (profile.httpClients.simple.description) {
-        lines.push(profile.httpClients.simple.description, '');
-      }
-      if (profile.httpClients.simple.useWhen) {
-        lines.push('**Use when:**');
-        for (const use of profile.httpClients.simple.useWhen) {
-          lines.push(`- ${use}`);
-        }
-        lines.push('');
-      }
+  if (profile.ddd.valueObjectGuidelines) {
+    const vo = profile.ddd.valueObjectGuidelines;
+    lines.push(
+      '### Value Object Guidelines',
+      '',
+      `- Use Records: ${vo.useRecords}`,
+      `- Immutable: ${vo.immutable}`,
+      `- Self-validating: ${vo.selfValidating}`
+    );
+    if (vo.examples) {
+      lines.push('', '**Examples:**', ...vo.examples.map((ex) => `- ${ex}`));
     }
-
-    if (profile.httpClients.complex) {
-      lines.push(`### ${profile.httpClients.complex.tool} (Complex Cases)`, '');
-      if (profile.httpClients.complex.description) {
-        lines.push(profile.httpClients.complex.description, '');
-      }
-      if (profile.httpClients.complex.useWhen) {
-        lines.push('**Use when:**');
-        for (const use of profile.httpClients.complex.useWhen) {
-          lines.push(`- ${use}`);
-        }
-        lines.push('');
-      }
-    }
+    lines.push('');
   }
 
-  // Observability
-  if (profile.observability?.enabled) {
-    lines.push('## Observability', '');
+  if (profile.ddd.aggregateGuidelines) {
+    const ag = profile.ddd.aggregateGuidelines;
+    lines.push(
+      '### Aggregate Guidelines',
+      '',
+      `- Single Entry Point: ${ag.singleEntryPoint}`,
+      `- Protect Invariants: ${ag.protectInvariants}`,
+      `- Small Aggregates: ${ag.smallAggregates}`,
+      `- Reference by Identity: ${ag.referenceByIdentity}`,
+      ''
+    );
+  }
 
-    if (profile.observability.logging) {
-      lines.push('### Logging', '');
-      if (profile.observability.logging.framework) {
-        lines.push(`- Framework: ${profile.observability.logging.framework}`);
-      }
-      if (profile.observability.logging.format) {
-        lines.push(`- Format: ${profile.observability.logging.format}`);
-      }
-      if (profile.observability.logging.structuredLogging) {
-        lines.push(`- Structured Logging: ${profile.observability.logging.structuredLogging}`);
-      }
-      if (profile.observability.logging.mdc) {
-        lines.push(`- MDC fields: ${profile.observability.logging.mdc.join(', ')}`);
-      }
-      if (profile.observability.logging.avoid) {
-        lines.push('', '**Avoid:**');
-        for (const a of profile.observability.logging.avoid) {
-          lines.push(`- ${a}`);
-        }
-      }
-      lines.push('');
+  return lines;
+}
+
+function formatCqrsSection(profile: Profile): string[] {
+  if (!profile.cqrs?.enabled) return [];
+
+  const lines: string[] = ['## CQRS', '', `**Separation:** ${profile.cqrs.separation}`, ''];
+
+  if (profile.cqrs.patterns?.commands) {
+    const cmd = profile.cqrs.patterns.commands;
+    lines.push('### Commands', '', `- Suffix: ${cmd.suffix}`, `- Handler: ${cmd.handler}`);
+    if (cmd.examples) lines.push(`- Examples: ${cmd.examples.join(', ')}`);
+    lines.push('');
+  }
+
+  if (profile.cqrs.patterns?.queries) {
+    const qry = profile.cqrs.patterns.queries;
+    lines.push('### Queries', '', `- Suffix: ${qry.suffix}`, `- Handler: ${qry.handler}`);
+    if (qry.examples) lines.push(`- Examples: ${qry.examples.join(', ')}`);
+    lines.push('');
+  }
+
+  return lines;
+}
+
+function formatEventDrivenSection(profile: Profile): string[] {
+  if (!profile.eventDriven?.enabled) return [];
+
+  const lines: string[] = ['## Event-Driven Architecture', '', `**Approach:** ${profile.eventDriven.approach}`, ''];
+
+  if (profile.eventDriven.patterns?.domainEvents) {
+    const de = profile.eventDriven.patterns.domainEvents;
+    lines.push('### Domain Events', '', `- Suffix: ${de.suffix}`, `- Past Tense: ${de.pastTense}`);
+    if (de.examples) lines.push(`- Examples: ${de.examples.join(', ')}`);
+    lines.push('');
+  }
+
+  if (profile.eventDriven.patterns?.messaging) {
+    const msg = profile.eventDriven.patterns.messaging;
+    lines.push('### Messaging', '', `- Broker: ${msg.broker}`);
+    if (msg.topicNaming) lines.push(`- Topic Naming: ${msg.topicNaming}`);
+    if (msg.examples) lines.push(`- Examples: ${msg.examples.join(', ')}`);
+    lines.push('');
+  }
+
+  return lines;
+}
+
+function formatCodeQualitySection(profile: Profile): string[] {
+  if (!profile.codeQuality) return [];
+
+  const cq = profile.codeQuality;
+  const lines: string[] = [
+    '## Code Quality Rules',
+    '',
+    `- Max method lines: ${cq.maxMethodLines}`,
+    `- Max class lines: ${cq.maxClassLines}`,
+    `- Max file lines: ${cq.maxFileLines}`,
+    `- Max parameters: ${cq.maxMethodParameters}`,
+    `- Max cyclomatic complexity: ${cq.maxCyclomaticComplexity}`,
+    `- Require documentation: ${cq.requireDocumentation}`,
+    `- Require tests: ${cq.requireTests}`,
+    `- Minimum test coverage: ${cq.minimumTestCoverage}%`,
+  ];
+
+  if (cq.principles?.length) {
+    lines.push('', '**Principles:**', ...cq.principles.map((p) => `- ${p}`));
+  }
+  lines.push('');
+
+  return lines;
+}
+
+function formatNamingSection(profile: Profile): string[] {
+  if (!profile.naming) return [];
+
+  const lines: string[] = ['## Naming Conventions', ''];
+  const naming = profile.naming as Record<string, unknown>;
+
+  const formatSubsection = (title: string, obj: Record<string, string>) => {
+    lines.push(`### ${title}`, '');
+    for (const [key, value] of Object.entries(obj)) {
+      lines.push(`- **${key}**: ${value}`);
     }
+    lines.push('');
+  };
 
-    if (profile.observability.metrics) {
-      lines.push('### Metrics', '');
-      if (profile.observability.metrics.framework) {
-        lines.push(`- Framework: ${profile.observability.metrics.framework}`);
-      }
-      if (profile.observability.metrics.registry) {
-        lines.push(`- Registry: ${profile.observability.metrics.registry}`);
-      }
-      lines.push('');
-    }
+  if (naming.general && typeof naming.general === 'object') {
+    formatSubsection('General', naming.general as Record<string, string>);
+  }
+  if (naming.suffixes && typeof naming.suffixes === 'object') {
+    formatSubsection('Suffixes', naming.suffixes as Record<string, string>);
+  }
+  if (naming.testing && typeof naming.testing === 'object') {
+    formatSubsection('Testing Naming', naming.testing as Record<string, string>);
+  }
 
-    if (profile.observability.tracing) {
-      lines.push('### Tracing', '');
-      if (profile.observability.tracing.framework) {
-        lines.push(`- Framework: ${profile.observability.tracing.framework}`);
-      }
-      if (profile.observability.tracing.propagation) {
-        lines.push(`- Propagation: ${profile.observability.tracing.propagation}`);
-      }
-      if (profile.observability.tracing.exporters) {
-        lines.push(`- Exporters: ${profile.observability.tracing.exporters.join(', ')}`);
-      }
-      lines.push('');
-    }
-
-    if (profile.observability.healthChecks) {
-      lines.push('### Health Checks', '');
-      if (profile.observability.healthChecks.actuatorEndpoints) {
-        lines.push('**Endpoints:**');
-        for (const ep of profile.observability.healthChecks.actuatorEndpoints) {
-          lines.push(`- ${ep}`);
-        }
-      }
-      lines.push('');
+  // Handle flat naming structure (backwards compatibility)
+  const flatKeys = Object.keys(naming).filter((k) => !['general', 'suffixes', 'testing'].includes(k));
+  for (const key of flatKeys) {
+    if (typeof naming[key] === 'string') {
+      lines.push(`- **${key}**: ${naming[key]}`);
     }
   }
+  if (flatKeys.length > 0) lines.push('');
+
+  return lines;
+}
+
+function formatTestingSection(profile: Profile): string[] {
+  if (!profile.testing) return [];
+
+  const lines: string[] = [
+    '## Testing',
+    '',
+    `- Framework: ${profile.testing.framework}`,
+    `- Assertions: ${profile.testing.assertionLibrary}`,
+    `- Mocking: ${profile.testing.mockingLibrary}`,
+  ];
+
+  if (profile.testing.types) {
+    lines.push('', '### Test Types', '');
+    const types = profile.testing.types;
+    if (types.unit) lines.push(`- **Unit tests**: suffix \`*${types.unit.suffix}.java\``);
+    if (types.integration)
+      lines.push(`- **Integration tests**: suffix \`*${types.integration.suffix}.java\` (maven-failsafe)`);
+    if (types.e2e?.suffix) lines.push(`- **E2E tests**: suffix \`*${types.e2e.suffix}.java\``);
+    if (types.architecture)
+      lines.push(
+        `- **Architecture tests**: ${types.architecture.tool} (recommended: ${types.architecture.recommended})`
+      );
+  }
+
+  if (profile.testing.testcontainers?.enabled) {
+    lines.push('', '### Testcontainers', '', 'Enabled containers:');
+    if (profile.testing.testcontainers.containers) {
+      lines.push(...profile.testing.testcontainers.containers.map((c) => `- ${c}`));
+    }
+  }
+  lines.push('');
+
+  return lines;
+}
+
+function formatHttpClientsSection(profile: Profile): string[] {
+  if (!profile.httpClients) return [];
+
+  const lines: string[] = ['## HTTP Clients', ''];
+
+  const formatClient = (client: { tool?: string; description?: string; useWhen?: string[] }, label: string) => {
+    if (!client) return;
+    lines.push(`### ${client.tool} (${label})`, '');
+    if (client.description) lines.push(client.description, '');
+    if (client.useWhen) {
+      lines.push('**Use when:**', ...client.useWhen.map((use) => `- ${use}`), '');
+    }
+  };
+
+  if (profile.httpClients.simple) formatClient(profile.httpClients.simple, 'Simple Cases');
+  if (profile.httpClients.complex) formatClient(profile.httpClients.complex, 'Complex Cases');
+
+  return lines;
+}
+
+function formatObservabilitySection(profile: Profile): string[] {
+  if (!profile.observability?.enabled) return [];
+
+  const lines: string[] = ['## Observability', ''];
+
+  if (profile.observability.logging) {
+    const log = profile.observability.logging;
+    lines.push('### Logging', '');
+    if (log.framework) lines.push(`- Framework: ${log.framework}`);
+    if (log.format) lines.push(`- Format: ${log.format}`);
+    if (log.structuredLogging) lines.push(`- Structured Logging: ${log.structuredLogging}`);
+    if (log.mdc) lines.push(`- MDC fields: ${log.mdc.join(', ')}`);
+    if (log.avoid) {
+      lines.push('', '**Avoid:**', ...log.avoid.map((a) => `- ${a}`));
+    }
+    lines.push('');
+  }
+
+  if (profile.observability.metrics) {
+    lines.push('### Metrics', '');
+    if (profile.observability.metrics.framework) lines.push(`- Framework: ${profile.observability.metrics.framework}`);
+    if (profile.observability.metrics.registry) lines.push(`- Registry: ${profile.observability.metrics.registry}`);
+    lines.push('');
+  }
+
+  if (profile.observability.tracing) {
+    const tr = profile.observability.tracing;
+    lines.push('### Tracing', '');
+    if (tr.framework) lines.push(`- Framework: ${tr.framework}`);
+    if (tr.propagation) lines.push(`- Propagation: ${tr.propagation}`);
+    if (tr.exporters) lines.push(`- Exporters: ${tr.exporters.join(', ')}`);
+    lines.push('');
+  }
+
+  if (profile.observability.healthChecks?.actuatorEndpoints) {
+    lines.push(
+      '### Health Checks',
+      '',
+      '**Endpoints:**',
+      ...profile.observability.healthChecks.actuatorEndpoints.map((ep) => `- ${ep}`),
+      ''
+    );
+  }
+
+  return lines;
+}
+
+function formatRemainingProfileSections(profile: Profile): string[] {
+  const lines: string[] = [];
 
   // API Documentation
   if (profile.apiDocumentation?.enabled) {
-    lines.push('## API Documentation', '');
-    lines.push(`- Tool: ${profile.apiDocumentation.tool}`);
-    if (profile.apiDocumentation.version) {
-      lines.push(`- Version: ${profile.apiDocumentation.version}`);
-    }
+    lines.push('## API Documentation', '', `- Tool: ${profile.apiDocumentation.tool}`);
+    if (profile.apiDocumentation.version) lines.push(`- Version: ${profile.apiDocumentation.version}`);
     if (profile.apiDocumentation.requirements) {
-      lines.push('', '**Requirements:**');
-      for (const r of profile.apiDocumentation.requirements) {
-        lines.push(`- ${r}`);
-      }
+      lines.push('', '**Requirements:**', ...profile.apiDocumentation.requirements.map((r) => `- ${r}`));
     }
     if (profile.apiDocumentation.output) {
-      lines.push('', '**Output:**');
-      for (const o of profile.apiDocumentation.output) {
-        lines.push(`- ${o}`);
-      }
+      lines.push('', '**Output:**', ...profile.apiDocumentation.output.map((o) => `- ${o}`));
     }
     lines.push('');
   }
@@ -564,34 +525,24 @@ export function formatProfileAsMarkdown(_profileId: string, profile: Profile): s
       );
     }
     if (profile.security.practices) {
-      lines.push('', '**Practices:**');
-      for (const p of profile.security.practices) {
-        lines.push(`- ${p}`);
-      }
+      lines.push('', '**Practices:**', ...profile.security.practices.map((p) => `- ${p}`));
     }
     lines.push('');
   }
 
   // Error Handling
   if (profile.errorHandling) {
-    lines.push('## Error Handling', '');
-    lines.push(`- Format: ${profile.errorHandling.format}`);
-    if (profile.errorHandling.globalHandler) {
-      lines.push(`- Global Handler: ${profile.errorHandling.globalHandler}`);
+    lines.push('## Error Handling', '', `- Format: ${profile.errorHandling.format}`);
+    if (profile.errorHandling.globalHandler) lines.push(`- Global Handler: ${profile.errorHandling.globalHandler}`);
+    if (profile.errorHandling.customExceptions?.domain) {
+      lines.push('', '**Domain Exceptions:**', ...profile.errorHandling.customExceptions.domain.map((e) => `- ${e}`));
     }
-    if (profile.errorHandling.customExceptions) {
-      if (profile.errorHandling.customExceptions.domain) {
-        lines.push('', '**Domain Exceptions:**');
-        for (const e of profile.errorHandling.customExceptions.domain) {
-          lines.push(`- ${e}`);
-        }
-      }
-      if (profile.errorHandling.customExceptions.application) {
-        lines.push('', '**Application Exceptions:**');
-        for (const e of profile.errorHandling.customExceptions.application) {
-          lines.push(`- ${e}`);
-        }
-      }
+    if (profile.errorHandling.customExceptions?.application) {
+      lines.push(
+        '',
+        '**Application Exceptions:**',
+        ...profile.errorHandling.customExceptions.application.map((e) => `- ${e}`)
+      );
     }
     lines.push('');
   }
@@ -601,9 +552,7 @@ export function formatProfileAsMarkdown(_profileId: string, profile: Profile): s
     lines.push('## Database', '');
     if (profile.database.migrations) {
       lines.push(`- Migrations: ${profile.database.migrations.tool}`);
-      if (profile.database.migrations.naming) {
-        lines.push(`- Naming: ${profile.database.migrations.naming}`);
-      }
+      if (profile.database.migrations.naming) lines.push(`- Naming: ${profile.database.migrations.naming}`);
     }
     if (profile.database.auditing?.enabled) {
       lines.push(`- Auditing: enabled (fields: ${profile.database.auditing.fields?.join(', ') || 'N/A'})`);
@@ -616,28 +565,20 @@ export function formatProfileAsMarkdown(_profileId: string, profile: Profile): s
 
   // Mapping
   if (profile.mapping) {
-    lines.push('## Object Mapping', '');
-    lines.push(`- Tool: ${profile.mapping.tool}`);
-    if (profile.mapping.componentModel) {
-      lines.push(`- Component Model: ${profile.mapping.componentModel}`);
-    }
+    lines.push('## Object Mapping', '', `- Tool: ${profile.mapping.tool}`);
+    if (profile.mapping.componentModel) lines.push(`- Component Model: ${profile.mapping.componentModel}`);
     if (profile.mapping.patterns) {
-      lines.push('', '**Patterns:**');
-      for (const p of profile.mapping.patterns) {
-        lines.push(`- ${p}`);
-      }
+      lines.push('', '**Patterns:**', ...profile.mapping.patterns.map((p) => `- ${p}`));
     }
     lines.push('');
   }
 
   // Technologies
-  if (profile.technologies && profile.technologies.length > 0) {
+  if (profile.technologies?.length) {
     lines.push('## Technologies', '');
     for (const tech of profile.technologies) {
       lines.push(`### ${tech.name}${tech.version ? ` (${tech.version})` : ''}`);
-      if (tech.tool) {
-        lines.push(`Tool: ${tech.tool}`);
-      }
+      if (tech.tool) lines.push(`Tool: ${tech.tool}`);
       if (tech.specificRules && Object.keys(tech.specificRules).length > 0) {
         lines.push('**Rules:**');
         for (const [key, value] of Object.entries(tech.specificRules)) {
@@ -647,6 +588,32 @@ export function formatProfileAsMarkdown(_profileId: string, profile: Profile): s
       lines.push('');
     }
   }
+
+  return lines;
+}
+
+/**
+ * Format a profile as markdown for LLM context.
+ */
+export function formatProfileAsMarkdown(_profileId: string, profile: Profile): string {
+  const lines: string[] = [`# Coding Standards Profile: ${profile.name}`, ''];
+
+  if (profile.description) {
+    lines.push(profile.description, '');
+  }
+
+  lines.push(
+    ...formatArchitectureSection(profile),
+    ...formatDddSection(profile),
+    ...formatCqrsSection(profile),
+    ...formatEventDrivenSection(profile),
+    ...formatCodeQualitySection(profile),
+    ...formatNamingSection(profile),
+    ...formatTestingSection(profile),
+    ...formatHttpClientsSection(profile),
+    ...formatObservabilitySection(profile),
+    ...formatRemainingProfileSections(profile)
+  );
 
   return lines.join('\n');
 }

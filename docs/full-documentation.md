@@ -298,7 +298,7 @@ Expert code review.
 | `java-spring-backend` | Java 21 + Spring Boot | Hexagonal + DDD |
 | `nodejs` | Node.js + TypeScript | Clean Architecture |
 | `python` | Python + FastAPI | Clean Architecture |
-| `frontend` | React/Vue/Angular | Component-based |
+| `react` | React 18+ + TypeScript | Component-based |
 | `minimal` | Any | Basic standards |
 
 ### Using a Profile
@@ -561,7 +561,7 @@ corbat-mcp/
 │   │   ├── java-spring-backend.yaml
 │   │   ├── nodejs.yaml
 │   │   ├── python.yaml
-│   │   ├── frontend.yaml
+│   │   ├── react.yaml
 │   │   ├── minimal.yaml
 │   │   └── _template.yaml
 │   └── custom/           # Your custom profiles

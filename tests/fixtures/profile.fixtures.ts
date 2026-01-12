@@ -263,12 +263,12 @@ export const ProfileFixtures = {
   },
 
   /**
-   * Frontend-focused profile.
+   * React-focused profile.
    */
-  frontend(): Profile {
+  react(): Profile {
     return new ProfileBuilder()
-      .withName('Frontend Profile')
-      .withDescription('Standards for frontend applications')
+      .withName('React Profile')
+      .withDescription('Standards for React applications')
       .withArchitecture('clean')
       .withCodeQuality({
         maxMethodLines: 30,

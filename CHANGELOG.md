@@ -14,7 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `minimal.yaml` - Lightweight standards for MVPs and small projects
   - `nodejs.yaml` - Node.js/TypeScript backend standards
   - `python.yaml` - Python/FastAPI backend standards
-  - `frontend.yaml` - React/Vue frontend standards
+  - `react.yaml` - React + TypeScript standards
 - GitHub Actions CI workflow with multi-node testing
 - Test coverage thresholds (80% lines, 70% branches)
 - Troubleshooting section in README

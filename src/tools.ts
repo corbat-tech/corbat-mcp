@@ -177,7 +177,7 @@ async function handleGetContext(
   const projectRules = getProjectRules(taskType, projectConfig);
 
   // Build concise, scannable output
-  const lines: string[] = ['# Context for: ' + task, '', '---', ''];
+  const lines: string[] = [`# Context for: ${task}`, '', '---', ''];
 
   // Stack Detection (concise)
   if (detectedStack) {
@@ -455,7 +455,7 @@ async function handleHealth(): Promise<{ content: Array<{ type: 'text'; text: st
     const lines = [
       '# Corbat Health',
       '',
-      `**Status:** OK`,
+      '**Status:** OK',
       `**Version:** ${config.serverVersion}`,
       `**Load time:** ${loadTimeMs}ms`,
       '',

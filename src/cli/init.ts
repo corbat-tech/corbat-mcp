@@ -726,7 +726,7 @@ ${c.cyan}╔══════════════════════�
 
       const saveLocation = await this.select(
         'Where to save?',
-        [`profiles/custom/${filename} (corbat-mcp)`, `.corbat/${filename} (project local)`, `Custom path...`],
+        [`profiles/custom/${filename} (corbat-mcp)`, `.corbat/${filename} (project local)`, 'Custom path...'],
         0
       );
 

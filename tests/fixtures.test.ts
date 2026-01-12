@@ -116,10 +116,10 @@ describe('ProfileFixtures', () => {
     expect(profile.observability?.enabled).toBe(true);
   });
 
-  it('should create a frontend profile', () => {
-    const profile = ProfileFixtures.frontend();
+  it('should create a react profile', () => {
+    const profile = ProfileFixtures.react();
 
-    expect(profile.name).toBe('Frontend Profile');
+    expect(profile.name).toBe('React Profile');
     expect(profile.architecture?.type).toBe('clean');
   });
 

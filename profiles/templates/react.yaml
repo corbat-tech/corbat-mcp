@@ -1,12 +1,11 @@
 # ============================================================================
-# CORBAT MCP - Frontend Profile
+# CORBAT MCP - React Profile
 # ============================================================================
-# Production-ready standards for modern frontend applications.
-# Covers React, Vue, and framework-agnostic best practices.
+# Production-ready standards for React applications with TypeScript.
 # ============================================================================
 
-name: "Frontend Standards"
-description: "Production-ready standards for React/Vue frontend applications with TypeScript, focusing on component architecture, state management, and user experience"
+name: "React Standards"
+description: "Production-ready standards for React applications with TypeScript, focusing on hooks, component architecture, state management, and accessibility"
 
 # ----------------------------------------------------------------------------
 # ARCHITECTURE

@@ -232,14 +232,14 @@ const STACK_PATTERNS: StackPattern[] = [
     profile: 'python',
     confidence: 'high',
   },
-  // Frontend React/Vue
+  // React (Vite)
   {
     files: ['package.json', 'vite.config.ts', 'vite.config.js'],
     language: 'TypeScript',
-    framework: 'React/Vue',
+    framework: 'React',
     buildTool: 'Vite',
     testFramework: 'Vitest',
-    profile: 'frontend',
+    profile: 'react',
     confidence: 'medium',
   },
   // Generic JavaScript
@@ -624,7 +624,7 @@ export const TECHNICAL_DECISIONS: Record<
  */
 export function getTechnicalDecision(
   category: string,
-  context: string,
+  _context: string,
   projectConfig?: ProjectConfig | null
 ): {
   options: Array<{

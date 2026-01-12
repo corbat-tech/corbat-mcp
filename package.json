@@ -55,7 +55,8 @@
   "files": [
     "dist",
     "profiles",
-    "standards"
+    "standards",
+    "assets"
   ],
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.0.0",

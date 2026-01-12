@@ -12,6 +12,10 @@
 
 </div>
 
+<p align="center">
+  <img src="assets/demo.gif" alt="CORBAT Demo" width="800">
+</p>
+
 ---
 
 ## The Problem

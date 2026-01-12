@@ -425,6 +425,151 @@ export interface StandardDocument {
   content: string;
 }
 
+// ============================================================================
+// AGENT MODE TYPES - New schemas for intelligent agent behavior
+// ============================================================================
+
+/**
+ * Task types for guardrails system.
+ */
+export const TaskTypeSchema = z.enum([
+  'feature',
+  'bugfix',
+  'refactor',
+  'test',
+  'documentation',
+  'performance',
+  'security',
+  'infrastructure',
+]);
+
+export type TaskType = z.infer<typeof TaskTypeSchema>;
+
+/**
+ * Guardrails - mandatory rules by task type.
+ */
+export const GuardrailsSchema = z.object({
+  taskType: TaskTypeSchema,
+  mandatory: z.array(z.string()),
+  recommended: z.array(z.string()),
+  avoid: z.array(z.string()),
+});
+
+export type Guardrails = z.infer<typeof GuardrailsSchema>;
+
+/**
+ * Project configuration schema (.corbat.json).
+ */
+export const ProjectConfigSchema = z.object({
+  profile: z.string().optional(),
+  autoInject: z.boolean().default(true),
+  rules: z
+    .object({
+      always: z.array(z.string()).default([]),
+      onNewFile: z.array(z.string()).default([]),
+      onTest: z.array(z.string()).default([]),
+      onRefactor: z.array(z.string()).default([]),
+    })
+    .optional(),
+  overrides: z
+    .object({
+      maxMethodLines: z.number().optional(),
+      maxClassLines: z.number().optional(),
+      maxFileLines: z.number().optional(),
+      minimumTestCoverage: z.number().optional(),
+    })
+    .optional(),
+  decisions: z.record(z.string()).optional(),
+  guardrails: z.record(TaskTypeSchema, GuardrailsSchema).optional(),
+});
+
+export type ProjectConfig = z.infer<typeof ProjectConfigSchema>;
+
+/**
+ * Detected project stack.
+ */
+export const DetectedStackSchema = z.object({
+  language: z.string(),
+  framework: z.string().optional(),
+  buildTool: z.string().optional(),
+  testFramework: z.string().optional(),
+  suggestedProfile: z.string(),
+  confidence: z.enum(['high', 'medium', 'low']),
+  detectedFiles: z.array(z.string()),
+});
+
+export type DetectedStack = z.infer<typeof DetectedStackSchema>;
+
+/**
+ * Technical decision request/response.
+ */
+export const TechnicalDecisionSchema = z.object({
+  context: z.string(),
+  category: z.enum([
+    'database',
+    'cache',
+    'messaging',
+    'authentication',
+    'api-design',
+    'testing',
+    'deployment',
+    'monitoring',
+    'security',
+    'architecture',
+  ]),
+  options: z.array(
+    z.object({
+      name: z.string(),
+      description: z.string(),
+      pros: z.array(z.string()),
+      cons: z.array(z.string()),
+      useWhen: z.array(z.string()),
+    })
+  ),
+  recommendation: z.string(),
+  reasoning: z.string(),
+  implementationGuide: z.string().optional(),
+});
+
+export type TechnicalDecision = z.infer<typeof TechnicalDecisionSchema>;
+
+/**
+ * Full context response for agent mode.
+ */
+export const FullContextSchema = z.object({
+  taskType: TaskTypeSchema,
+  detectedStack: DetectedStackSchema.optional(),
+  profile: z.string(),
+  guardrails: GuardrailsSchema,
+  projectRules: z.array(z.string()),
+  architecture: z.string(),
+  namingConventions: z.string(),
+  codeQuality: z.string(),
+  workflow: z.string(),
+  relevantStandards: z.array(z.string()),
+});
+
+export type FullContext = z.infer<typeof FullContextSchema>;
+
+/**
+ * Code validation result.
+ */
+export const ValidationResultSchema = z.object({
+  isValid: z.boolean(),
+  score: z.number().min(0).max(100),
+  issues: z.array(
+    z.object({
+      severity: z.enum(['critical', 'warning', 'suggestion']),
+      rule: z.string(),
+      message: z.string(),
+      location: z.string().optional(),
+    })
+  ),
+  summary: z.string(),
+});
+
+export type ValidationResult = z.infer<typeof ValidationResultSchema>;
+
 /**
  * Default architecture layers for hexagonal.
  */

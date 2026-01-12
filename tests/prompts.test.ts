@@ -40,8 +40,25 @@ describe('Prompts Definition', () => {
     expect(prompt?.arguments.find((a) => a.name === 'role')?.required).toBe(true);
   });
 
-  it('should have 5 prompts total', () => {
-    expect(prompts).toHaveLength(5);
+  // Agent Mode Prompts
+  it('should have agent_mode prompt', () => {
+    const prompt = prompts.find((p) => p.name === 'agent_mode');
+
+    expect(prompt).toBeDefined();
+    expect(prompt?.description).toContain('AGENT MODE');
+    expect(prompt?.arguments.find((a) => a.name === 'task')?.required).toBe(true);
+  });
+
+  it('should have quick_implement prompt', () => {
+    const prompt = prompts.find((p) => p.name === 'quick_implement');
+
+    expect(prompt).toBeDefined();
+    expect(prompt?.description).toContain('Quick implementation');
+    expect(prompt?.arguments.find((a) => a.name === 'task')?.required).toBe(true);
+  });
+
+  it('should have 7 prompts total (5 original + 2 agent mode)', () => {
+    expect(prompts).toHaveLength(7);
   });
 
   it('should require code argument for code_review', () => {

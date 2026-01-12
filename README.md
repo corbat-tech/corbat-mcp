@@ -16,7 +16,7 @@
 
 <br>
 
-[Quick Start](#quick-start) · [Profiles](#available-profiles) · [How It Works](#how-it-works) · [Documentation](#standards-documentation)
+[Quick Start](#quick-start) · [Agent Mode](#agent-mode) · [Profiles](#available-profiles) · [How It Works](#how-it-works) · [Documentation](#standards-documentation)
 
 </div>
 
@@ -46,7 +46,18 @@ git clone https://github.com/victormartingil/corbat-mcp.git
 cd corbat-mcp && npm install && npm run build
 ```
 
-Add to your Claude Code settings (`~/.config/claude-code/settings.json`):
+### Claude Code (CLI)
+
+```bash
+claude mcp add corbat node /absolute/path/to/corbat-mcp/dist/index.js
+
+# Verify installation
+claude mcp list
+```
+
+### Claude Desktop (App)
+
+Edit `~/.config/Claude/claude_desktop_config.json` (Linux/Mac) or `%APPDATA%\Claude\claude_desktop_config.json` (Windows):
 
 ```json
 {
@@ -58,6 +69,8 @@ Add to your Claude Code settings (`~/.config/claude-code/settings.json`):
   }
 }
 ```
+
+Restart Claude Desktop after saving.
 
 **Done!** Ask Claude: *"Review this code using corbat standards"*
 
@@ -80,6 +93,85 @@ Now you can simply write:
 ```
 
 Claude will automatically apply your coding standards without extra verbosity.
+
+---
+
+## Agent Mode
+
+**NEW!** Corbat now includes **Agent Mode** — a fully autonomous development experience that injects all relevant context automatically.
+
+### Key Features
+
+| Feature | Description |
+|---------|-------------|
+| **Auto Context Injection** | Get all standards, guardrails, and workflow in a single call |
+| **Stack Auto-Detection** | Automatically detects your project (Java, Node, Python, etc.) |
+| **Task Classification** | Classifies tasks (feature, bugfix, refactor) and applies specific guardrails |
+| **Technical Decisions** | Get recommendations aligned with project standards |
+| **Project Config** | Override defaults with `.corbat.json` per project |
+
+### Agent Mode Tools
+
+```
+"Get full context for: Create a payment service"
+```
+
+| Tool | Description |
+|------|-------------|
+| `get_full_context` | **Primary tool** - returns everything in one call |
+| `detect_project_stack` | Auto-detect technology stack |
+| `get_guardrails` | Get mandatory rules by task type |
+| `validate_against_standards` | Validate code before delivery |
+| `make_technical_decision` | Get recommendations (database, cache, etc.) |
+| `load_project_config` | Load project-specific `.corbat.json` |
+
+### Agent Mode Prompts
+
+```
+"Use agent_mode prompt with task: Create a payment service"
+```
+
+| Prompt | Description |
+|--------|-------------|
+| `agent_mode` | Full autonomous mode with complete context |
+| `quick_implement` | Lighter version with essential guardrails |
+
+### Guardrails by Task Type
+
+Corbat automatically applies specific guardrails based on task classification:
+
+| Task Type | Key Guardrails |
+|-----------|----------------|
+| `feature` | TDD, SOLID, 80%+ coverage, naming conventions |
+| `bugfix` | Reproduce with test first, minimal change |
+| `refactor` | All tests must pass, no behavior changes |
+| `test` | AAA pattern, one assertion per test |
+| `security` | Validate inputs, parameterized queries, no hardcoded secrets |
+
+### Project Configuration
+
+Create a `.corbat.json` in your project root:
+
+```json
+{
+  "profile": "nodejs",
+  "autoInject": true,
+  "rules": {
+    "always": ["Use TypeScript strict mode", "Prefer composition over inheritance"],
+    "onNewFile": ["Add license header"],
+    "onTest": ["Use Arrange-Act-Assert pattern"]
+  },
+  "overrides": {
+    "maxMethodLines": 25,
+    "minimumTestCoverage": 90
+  },
+  "decisions": {
+    "database": "PostgreSQL",
+    "cache": "Redis",
+    "messaging": "Kafka"
+  }
+}
+```
 
 ---
 
@@ -134,6 +226,8 @@ Claude will automatically apply your coding standards without extra verbosity.
 
 ### Exposed Capabilities
 
+#### Original Tools (7)
+
 | Type | Name | Description |
 |------|------|-------------|
 | **Tool** | `get_coding_standards` | Full standards for a profile |
@@ -141,11 +235,38 @@ Claude will automatically apply your coding standards without extra verbosity.
 | **Tool** | `get_architecture_guidelines` | Architecture rules only |
 | **Tool** | `get_naming_conventions` | Naming rules only |
 | **Tool** | `search_standards` | Search by topic |
+| **Tool** | `health_check` | Server status and metrics |
+| **Tool** | `get_development_workflow` | 6-phase workflow guide |
+
+#### Agent Mode Tools (6)
+
+| Type | Name | Description |
+|------|------|-------------|
+| **Tool** | `get_full_context` | Complete context in one call |
+| **Tool** | `detect_project_stack` | Auto-detect technology stack |
+| **Tool** | `get_guardrails` | Rules by task type |
+| **Tool** | `validate_against_standards` | Code validation |
+| **Tool** | `make_technical_decision` | Technical recommendations |
+| **Tool** | `load_project_config` | Load .corbat.json |
+
+#### Resources
+
+| Type | Name | Description |
+|------|------|-------------|
 | **Resource** | `corbat://profiles/{id}` | Read profile as markdown |
 | **Resource** | `corbat://standards/{cat}` | Read standards by category |
+
+#### Prompts (7)
+
+| Type | Name | Description |
+|------|------|-------------|
 | **Prompt** | `code_review` | Pre-built code review |
 | **Prompt** | `refactor_suggestion` | Pre-built refactoring |
 | **Prompt** | `architecture_check` | Pre-built arch validation |
+| **Prompt** | `implement_feature` | Guided implementation |
+| **Prompt** | `expert_review` | Multi-role expert review |
+| **Prompt** | `agent_mode` | Full autonomous mode |
+| **Prompt** | `quick_implement` | Quick implementation |
 
 ---
 
@@ -157,9 +278,11 @@ corbat-mcp/
 │   ├── index.ts          # MCP server entry point
 │   ├── config.ts         # Configuration (Zod validated)
 │   ├── profiles.ts       # Profile loading
-│   ├── tools.ts          # MCP tools
+│   ├── tools.ts          # MCP tools (13 total)
 │   ├── resources.ts      # MCP resources
-│   └── prompts.ts        # MCP prompts
+│   ├── prompts.ts        # MCP prompts (7 total)
+│   ├── agent.ts          # Agent mode (guardrails, detection, decisions)
+│   └── types.ts          # Zod schemas and types
 │
 ├── profiles/
 │   ├── templates/        # Official profiles (don't edit)

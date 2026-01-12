@@ -1,5 +1,13 @@
 import { config } from './config.js';
 import { formatProfileAsMarkdown, getProfile, loadStandards } from './profiles.js';
+import {
+  classifyTaskType,
+  detectProjectStack,
+  formatGuardrailsAsMarkdown,
+  getGuardrails,
+  getProjectRules,
+  loadProjectConfig,
+} from './agent.js';
 
 /**
  * Prompt definitions for MCP.
@@ -96,6 +104,48 @@ export const prompts = [
       {
         name: 'profile',
         description: 'Profile ID to use for standards (optional)',
+        required: false,
+      },
+    ],
+  },
+  // ============================================================================
+  // AGENT MODE PROMPTS
+  // ============================================================================
+  {
+    name: 'agent_mode',
+    description:
+      'AGENT MODE: Comprehensive prompt that auto-injects ALL relevant context (guardrails, standards, architecture, workflow) for any task. Use this for a fully autonomous development experience.',
+    arguments: [
+      {
+        name: 'task',
+        description: 'The task to implement (e.g., "Create a payment service", "Fix the login bug")',
+        required: true,
+      },
+      {
+        name: 'project_dir',
+        description: 'Project directory path for auto-detection and .corbat.json loading (optional)',
+        required: false,
+      },
+      {
+        name: 'profile',
+        description: 'Override profile ID (optional, will be auto-detected if not provided)',
+        required: false,
+      },
+    ],
+  },
+  {
+    name: 'quick_implement',
+    description:
+      'Quick implementation mode with essential guardrails. Less verbose than agent_mode but still ensures quality. Good for smaller tasks.',
+    arguments: [
+      {
+        name: 'task',
+        description: 'The task to implement',
+        required: true,
+      },
+      {
+        name: 'profile',
+        description: 'Profile ID to use (optional)',
         required: false,
       },
     ],
@@ -387,6 +437,205 @@ For each critical issue:
 - What was done well
 
 Be thorough, critical, and specific. Do not assume the code is correct just because it exists.`,
+            },
+          },
+        ],
+      };
+    }
+
+    // ============================================================================
+    // AGENT MODE PROMPTS
+    // ============================================================================
+
+    case 'agent_mode': {
+      const task = args?.task;
+      if (!task) return null;
+
+      const projectDir = args?.project_dir;
+      const profileOverride = args?.profile;
+
+      // Classify task type
+      const taskType = classifyTaskType(task);
+
+      // Try to detect project stack and load config
+      let detectedStack = null;
+      let projectConfig = null;
+
+      if (projectDir) {
+        detectedStack = await detectProjectStack(projectDir);
+        projectConfig = await loadProjectConfig(projectDir);
+      }
+
+      // Determine profile
+      const finalProfileId =
+        profileOverride || projectConfig?.profile || detectedStack?.suggestedProfile || profileId;
+
+      const finalProfile = await getProfile(finalProfileId);
+      if (!finalProfile) return null;
+
+      // Get guardrails and rules
+      const guardrails = getGuardrails(taskType, projectConfig);
+      const projectRules = getProjectRules(taskType, projectConfig);
+
+      // Build comprehensive agent context
+      const agentContext: string[] = [
+        '# CORBAT AGENT MODE',
+        '',
+        '> You are operating in AGENT MODE with full coding standards context.',
+        '> Follow ALL guidelines below strictly. This ensures consistent, high-quality code.',
+        '',
+        '---',
+        '',
+        '## TASK ANALYSIS',
+        '',
+        `**Task:** ${task}`,
+        `**Classified as:** ${taskType.toUpperCase()}`,
+        `**Active Profile:** ${finalProfileId}`,
+        '',
+      ];
+
+      // Add detected stack
+      if (detectedStack) {
+        agentContext.push('## DETECTED PROJECT STACK', '');
+        agentContext.push(`| Property | Value |`);
+        agentContext.push(`|----------|-------|`);
+        agentContext.push(`| Language | ${detectedStack.language} |`);
+        agentContext.push(`| Framework | ${detectedStack.framework || 'N/A'} |`);
+        agentContext.push(`| Build Tool | ${detectedStack.buildTool || 'N/A'} |`);
+        agentContext.push(`| Test Framework | ${detectedStack.testFramework || 'N/A'} |`);
+        agentContext.push('');
+      }
+
+      // Add guardrails - CRITICAL
+      agentContext.push('---', '');
+      agentContext.push('## GUARDRAILS (Non-negotiable)', '');
+      agentContext.push(formatGuardrailsAsMarkdown(guardrails));
+      agentContext.push('');
+
+      // Add project-specific rules
+      if (projectRules.length > 0) {
+        agentContext.push('---', '', '## PROJECT-SPECIFIC RULES', '');
+        for (const rule of projectRules) {
+          agentContext.push(`- 📌 ${rule}`);
+        }
+        agentContext.push('');
+      }
+
+      // Add full profile
+      agentContext.push('---', '');
+      agentContext.push(formatProfileAsMarkdown(finalProfileId, finalProfile));
+
+      // Add selected standards
+      agentContext.push('---', '', '## RELEVANT STANDARDS', '');
+      for (const standard of standards.slice(0, 3)) {
+        agentContext.push(`### ${standard.name}`, '');
+        const truncated = standard.content.length > 1500
+          ? standard.content.slice(0, 1500) + '\n\n...(see full doc with search_standards)'
+          : standard.content;
+        agentContext.push(truncated, '');
+      }
+
+      // Add workflow
+      agentContext.push('---', '', '## MANDATORY WORKFLOW', '');
+      agentContext.push(`
+You MUST follow this workflow:
+
+### PHASE 1: CLARIFY
+- Analyze the task for ambiguities
+- ASK questions if requirements are unclear
+- Confirm understanding before proceeding
+
+### PHASE 2: PLAN
+- List all requirements
+- Create task checklist:
+  \`\`\`
+  [ ] 1. Task - Description
+      [ ] 1.1 Write tests
+      [ ] 1.2 Implement
+  \`\`\`
+
+### PHASE 3: BUILD (TDD)
+For EACH task:
+1. 🔴 RED: Write failing test first
+2. 🟢 GREEN: Implement minimum to pass
+3. 🔵 REFACTOR: Clean up, tests stay green
+
+### PHASE 4: VERIFY
+- [ ] Code compiles
+- [ ] All tests pass
+- [ ] Linter passes
+- [ ] No regressions
+
+### PHASE 5: SELF-REVIEW
+Adopt expert role and find:
+- CRITICAL issues (must fix)
+- RECOMMENDED improvements
+- SUGGESTIONS
+
+### PHASE 6: REFINE
+Fix issues in up to 3 cycles until quality criteria met.
+`);
+
+      agentContext.push('---', '', '## BEGIN IMPLEMENTATION', '');
+      agentContext.push(`Start with Phase 1 (CLARIFY). If requirements are clear, proceed to Phase 2 (PLAN).`);
+
+      return {
+        messages: [
+          {
+            role: 'user',
+            content: {
+              type: 'text',
+              text: agentContext.join('\n'),
+            },
+          },
+        ],
+      };
+    }
+
+    case 'quick_implement': {
+      const task = args?.task;
+      if (!task) return null;
+
+      const taskType = classifyTaskType(task);
+      const guardrails = getGuardrails(taskType, null);
+
+      const quickContext = `# QUICK IMPLEMENTATION MODE
+
+## Task
+${task}
+
+## Task Type: ${taskType.toUpperCase()}
+
+## Essential Guardrails
+
+### MUST DO:
+${guardrails.mandatory.slice(0, 4).map((r) => `- ✅ ${r}`).join('\n')}
+
+### MUST AVOID:
+${guardrails.avoid.slice(0, 4).map((r) => `- ❌ ${r}`).join('\n')}
+
+## Profile Standards
+${context}
+
+---
+
+## Quick Workflow
+
+1. **Understand** - Clarify if needed
+2. **Plan** - Brief task list
+3. **Implement** - With tests (TDD preferred)
+4. **Verify** - Tests pass, linter clean
+5. **Review** - Quick self-check
+
+Begin implementation. Ask questions if requirements are unclear.`;
+
+      return {
+        messages: [
+          {
+            role: 'user',
+            content: {
+              type: 'text',
+              text: quickContext,
             },
           },
         ],

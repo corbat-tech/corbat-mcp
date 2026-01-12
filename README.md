@@ -63,6 +63,26 @@ Add to your Claude Code settings (`~/.config/claude-code/settings.json`):
 
 ---
 
+## Usage Shortcut (Recommended)
+
+To avoid writing "use corbat standards" every time, add this line to your **Claude User Preferences** (Settings > Profile > User Preferences):
+
+```
+When I write "@corbat" or "(corbat)" in my message, automatically consult the corbat MCP (workflow, architecture, naming, standards) before responding.
+```
+
+Now you can simply write:
+
+```
+"Create a payment service @corbat"
+"Refactor this controller (corbat)"
+"@corbat review this code"
+```
+
+Claude will automatically apply your coding standards without extra verbosity.
+
+---
+
 ## Available Profiles
 
 | Profile | Stack | Description |

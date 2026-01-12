@@ -6,7 +6,7 @@
 
 **Your architecture rules, TDD workflow, and SOLID principles — injected automatically into every AI response.**
 
-[![CI](https://github.com/victormartingil/corbat-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/victormartingil/corbat-mcp/actions/workflows/ci.yml)
+[![CI](https://github.com/corbat-tech/corbat-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/corbat-tech/corbat-mcp/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![MCP](https://img.shields.io/badge/MCP-1.0-blue.svg)](https://modelcontextprotocol.io/)
 
@@ -66,7 +66,7 @@ Corbat: ✓ Detected Java/Spring project
 
 **Step 1** — Clone and build:
 ```bash
-git clone https://github.com/victormartingil/corbat-mcp.git
+git clone https://github.com/corbat-tech/corbat-mcp.git
 cd corbat-mcp && npm install && npm run build
 ```
 
@@ -358,7 +358,7 @@ which node  # Use this absolute path in config
 
 - [Full Documentation](docs/full-documentation.md)
 - [Model Context Protocol](https://modelcontextprotocol.io/)
-- [Report Issues](https://github.com/victormartingil/corbat-mcp/issues)
+- [Report Issues](https://github.com/corbat-tech/corbat-mcp/issues)
 
 ---
 
@@ -366,6 +366,6 @@ which node  # Use this absolute path in config
 
 **Define once. Apply everywhere. Ship faster.**
 
-[Get Started](#quick-start) · [Documentation](docs/full-documentation.md) · [Report Bug](https://github.com/victormartingil/corbat-mcp/issues)
+[Get Started](#quick-start) · [Documentation](docs/full-documentation.md) · [Report Bug](https://github.com/corbat-tech/corbat-mcp/issues)
 
 </div>

@@ -8,9 +8,9 @@
 
 <br>
 
-[![CI](https://github.com/victormartingil/corbat-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/victormartingil/corbat-mcp/actions/workflows/ci.yml)
-[![Coverage](https://img.shields.io/badge/coverage-80%25+-brightgreen.svg)](https://github.com/victormartingil/corbat-mcp)
-[![Tests](https://img.shields.io/badge/tests-78%20passing-brightgreen.svg)](https://github.com/victormartingil/corbat-mcp)
+[![CI](https://github.com/corbat-tech/corbat-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/corbat-tech/corbat-mcp/actions/workflows/ci.yml)
+[![Coverage](https://img.shields.io/badge/coverage-80%25+-brightgreen.svg)](https://github.com/corbat-tech/corbat-mcp)
+[![Tests](https://img.shields.io/badge/tests-78%20passing-brightgreen.svg)](https://github.com/corbat-tech/corbat-mcp)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Node.js](https://img.shields.io/badge/Node.js-18+-green.svg)](https://nodejs.org/)
 [![MCP](https://img.shields.io/badge/MCP-1.0-blue.svg)](https://modelcontextprotocol.io/)
@@ -73,7 +73,7 @@ Corbat automatically injects:
 ### Step 1: Install
 
 ```bash
-git clone https://github.com/victormartingil/corbat-mcp.git
+git clone https://github.com/corbat-tech/corbat-mcp.git
 cd corbat-mcp
 npm install && npm run build
 ```
@@ -708,6 +708,6 @@ npm run init
 
 <br>
 
-[Back to README](../README.md) · [Model Context Protocol](https://modelcontextprotocol.io/) · [Report Issues](https://github.com/victormartingil/corbat-mcp/issues)
+[Back to README](../README.md) · [Model Context Protocol](https://modelcontextprotocol.io/) · [Report Issues](https://github.com/corbat-tech/corbat-mcp/issues)
 
 </div>

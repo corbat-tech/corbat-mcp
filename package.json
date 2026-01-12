@@ -10,11 +10,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/victormartingil/corbat-mcp.git"
+    "url": "git+https://github.com/corbat-tech/corbat-mcp.git"
   },
-  "homepage": "https://github.com/victormartingil/corbat-mcp#readme",
+  "homepage": "https://github.com/corbat-tech/corbat-mcp#readme",
   "bugs": {
-    "url": "https://github.com/victormartingil/corbat-mcp/issues"
+    "url": "https://github.com/corbat-tech/corbat-mcp/issues"
   },
   "scripts": {
     "build": "tsc",

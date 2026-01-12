@@ -11,43 +11,55 @@
 
 echo "=== Health Check ==="
 cat << 'EOF'
-{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"health_check","arguments":{}}}
+{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"health","arguments":{}}}
 EOF
 
 echo ""
 echo "=== List Profiles ==="
 cat << 'EOF'
-{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"list_profiles","arguments":{}}}
+{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"profiles","arguments":{}}}
 EOF
 
 echo ""
-echo "=== Get Coding Standards (default profile) ==="
+echo "=== Get Context (Primary Tool) ==="
 cat << 'EOF'
-{"jsonrpc":"2.0","id":3,"method":"tools/call","params":{"name":"get_coding_standards","arguments":{"profile":"default"}}}
+{"jsonrpc":"2.0","id":3,"method":"tools/call","params":{"name":"get_context","arguments":{"task":"Create a payment service"}}}
 EOF
 
 echo ""
-echo "=== Get Architecture Guidelines ==="
+echo "=== Get Context with Project Directory ==="
 cat << 'EOF'
-{"jsonrpc":"2.0","id":4,"method":"tools/call","params":{"name":"get_architecture_guidelines","arguments":{"profile":"default"}}}
+{"jsonrpc":"2.0","id":4,"method":"tools/call","params":{"name":"get_context","arguments":{"task":"Fix authentication bug","project_dir":"/path/to/your/project"}}}
 EOF
 
 echo ""
-echo "=== Get Naming Conventions ==="
+echo "=== Validate Code ==="
 cat << 'EOF'
-{"jsonrpc":"2.0","id":5,"method":"tools/call","params":{"name":"get_naming_conventions","arguments":{"profile":"default"}}}
+{"jsonrpc":"2.0","id":5,"method":"tools/call","params":{"name":"validate","arguments":{"code":"public class UserService {\n  public void createUser(String name) {\n    // TODO: implement\n  }\n}"}}}
+EOF
+
+echo ""
+echo "=== Validate Code with Task Type ==="
+cat << 'EOF'
+{"jsonrpc":"2.0","id":6,"method":"tools/call","params":{"name":"validate","arguments":{"code":"@Test void shouldCreateUser() { }","task_type":"test"}}}
 EOF
 
 echo ""
 echo "=== Search Standards (kafka) ==="
 cat << 'EOF'
-{"jsonrpc":"2.0","id":6,"method":"tools/call","params":{"name":"search_standards","arguments":{"query":"kafka"}}}
+{"jsonrpc":"2.0","id":7,"method":"tools/call","params":{"name":"search","arguments":{"query":"kafka"}}}
 EOF
 
 echo ""
 echo "=== Search Standards (testing) ==="
 cat << 'EOF'
-{"jsonrpc":"2.0","id":7,"method":"tools/call","params":{"name":"search_standards","arguments":{"query":"testing"}}}
+{"jsonrpc":"2.0","id":8,"method":"tools/call","params":{"name":"search","arguments":{"query":"testing"}}}
+EOF
+
+echo ""
+echo "=== Search Standards (docker) ==="
+cat << 'EOF'
+{"jsonrpc":"2.0","id":9,"method":"tools/call","params":{"name":"search","arguments":{"query":"docker"}}}
 EOF
 
 # ============================================
@@ -56,6 +68,13 @@ EOF
 
 echo ""
 echo "=== To run the server interactively ==="
-echo "npm run dev"
+echo "node dist/index.js"
 echo ""
 echo "Then paste JSON-RPC messages to stdin"
+echo ""
+echo "=== Available Tools (5) ==="
+echo "  get_context  - PRIMARY: Get all standards for a task"
+echo "  validate     - Check code against standards"
+echo "  search       - Search documentation"
+echo "  profiles     - List available profiles"
+echo "  health       - Server status"

@@ -171,7 +171,7 @@ Corbat includes an intelligent **Agent Mode** that automatically:
 ### Using Agent Mode
 
 ```
-"Use get_full_context for: Create a payment service"
+"Use get_context for: Create a payment service"
 ```
 
 Returns **everything** in one call:
@@ -237,35 +237,62 @@ This overrides defaults for your specific project.
 
 ## All Tools & Prompts
 
-### Tools (13)
+### Tools (5)
 
-| Tool | Description |
-|------|-------------|
-| `get_full_context` | **Primary** - Everything in one call |
-| `get_coding_standards` | Full standards for a profile |
-| `get_architecture_guidelines` | Architecture only |
-| `get_naming_conventions` | Naming rules only |
-| `get_guardrails` | Rules by task type |
-| `detect_project_stack` | Auto-detect tech stack |
-| `validate_against_standards` | Validate code |
-| `make_technical_decision` | Get recommendations |
-| `search_standards` | Search documentation |
-| `list_profiles` | List all profiles |
-| `load_project_config` | Load .corbat.json |
-| `health_check` | Server status |
-| `get_development_workflow` | 6-phase workflow |
+| Tool | Description | Parameters |
+|------|-------------|------------|
+| `get_context` | **Primary** - Get all standards for a task | `task` (required), `project_dir` (optional) |
+| `validate` | Check code against standards | `code` (required), `task_type` (optional: feature/bugfix/refactor/test) |
+| `search` | Search standards documentation | `query` (required) |
+| `profiles` | List all available profiles | none |
+| `health` | Server status and diagnostics | none |
 
-### Prompts (7)
+### Prompts (2)
 
 | Prompt | Description |
 |--------|-------------|
-| `agent_mode` | Full autonomous mode |
-| `quick_implement` | Fast mode with essentials |
-| `code_review` | Detailed code review |
-| `refactor_suggestion` | Refactoring advice |
-| `architecture_check` | Architecture validation |
-| `implement_feature` | Guided implementation |
-| `expert_review` | Multi-role expert review |
+| `implement` | Guided implementation with full workflow and guardrails |
+| `review` | Expert code review against standards |
+
+### Tool Details
+
+#### `get_context` (Primary Tool)
+
+Returns everything needed for a task in one call:
+- Auto-detected project stack (Java, Node, Python, etc.)
+- Task classification (feature, bugfix, refactor, test, etc.)
+- Guardrails (MUST do / MUST avoid)
+- Architecture guidelines
+- Naming conventions
+- Development workflow
+
+```
+Example: get_context({ task: "Create a payment service" })
+```
+
+#### `validate`
+
+Validates code against your coding standards:
+- Architecture compliance
+- SOLID principles
+- Naming conventions
+- Test patterns (if task_type is "test")
+- Returns compliance score (0-100) and issues
+
+```
+Example: validate({ code: "public class UserService {...}", task_type: "feature" })
+```
+
+#### `search`
+
+Searches the standards documentation:
+- Architecture patterns (hexagonal, clean, DDD)
+- Testing guidelines
+- Technology-specific docs (Kafka, Docker, Kubernetes)
+
+```
+Example: search({ query: "hexagonal architecture" })
+```
 
 ---
 
@@ -349,8 +376,8 @@ Corbat enforces a 6-phase workflow:
 corbat-mcp/
 ├── src/
 │   ├── index.ts        # MCP server
-│   ├── tools.ts        # 13 tools
-│   ├── prompts.ts      # 7 prompts
+│   ├── tools.ts        # 5 tools
+│   ├── prompts.ts      # 2 prompts
 │   ├── agent.ts        # Agent mode logic
 │   ├── profiles.ts     # Profile loading
 │   └── cli/

@@ -16,7 +16,7 @@ Content-Type: application/json
   "id": 1,
   "method": "tools/call",
   "params": {
-    "name": "health_check",
+    "name": "health",
     "arguments": {}
   }
 }
@@ -35,13 +35,17 @@ Content-Type: application/json
   "id": 2,
   "method": "tools/call",
   "params": {
-    "name": "list_profiles",
+    "name": "profiles",
     "arguments": {}
   }
 }
 
-### Get coding standards for default profile
-# @name getCodingStandards
+### ============================================
+### Get Context (Primary Tool)
+### ============================================
+
+### Get full context for a feature task
+# @name getContextFeature
 POST http://localhost:3000/rpc HTTP/1.1
 Content-Type: application/json
 
@@ -50,15 +54,15 @@ Content-Type: application/json
   "id": 3,
   "method": "tools/call",
   "params": {
-    "name": "get_coding_standards",
+    "name": "get_context",
     "arguments": {
-      "profile": "default"
+      "task": "Create a payment service with Stripe integration"
     }
   }
 }
 
-### Get coding standards for Node.js profile
-# @name getCodingStandardsNodejs
+### Get context for a bugfix task
+# @name getContextBugfix
 POST http://localhost:3000/rpc HTTP/1.1
 Content-Type: application/json
 
@@ -67,19 +71,15 @@ Content-Type: application/json
   "id": 4,
   "method": "tools/call",
   "params": {
-    "name": "get_coding_standards",
+    "name": "get_context",
     "arguments": {
-      "profile": "nodejs"
+      "task": "Fix null pointer in OrderService.calculateTotal"
     }
   }
 }
 
-### ============================================
-### Architecture Guidelines
-### ============================================
-
-### Get architecture guidelines
-# @name getArchitectureGuidelines
+### Get context for a refactor task
+# @name getContextRefactor
 POST http://localhost:3000/rpc HTTP/1.1
 Content-Type: application/json
 
@@ -88,19 +88,15 @@ Content-Type: application/json
   "id": 5,
   "method": "tools/call",
   "params": {
-    "name": "get_architecture_guidelines",
+    "name": "get_context",
     "arguments": {
-      "profile": "default"
+      "task": "Refactor UserRepository to use the new database layer"
     }
   }
 }
 
-### ============================================
-### Naming Conventions
-### ============================================
-
-### Get naming conventions
-# @name getNamingConventions
+### Get context with specific project directory
+# @name getContextWithDir
 POST http://localhost:3000/rpc HTTP/1.1
 Content-Type: application/json
 
@@ -109,9 +105,49 @@ Content-Type: application/json
   "id": 6,
   "method": "tools/call",
   "params": {
-    "name": "get_naming_conventions",
+    "name": "get_context",
     "arguments": {
-      "profile": "default"
+      "task": "Add user authentication",
+      "project_dir": "/path/to/your/project"
+    }
+  }
+}
+
+### ============================================
+### Validate Code
+### ============================================
+
+### Validate a Java class
+# @name validateJavaClass
+POST http://localhost:3000/rpc HTTP/1.1
+Content-Type: application/json
+
+{
+  "jsonrpc": "2.0",
+  "id": 7,
+  "method": "tools/call",
+  "params": {
+    "name": "validate",
+    "arguments": {
+      "code": "public class UserService {\n  private final UserRepository userRepository;\n  \n  public UserService(UserRepository userRepository) {\n    this.userRepository = userRepository;\n  }\n  \n  public User createUser(String name, String email) {\n    var user = new User(name, email);\n    return userRepository.save(user);\n  }\n}"
+    }
+  }
+}
+
+### Validate a test class
+# @name validateTestClass
+POST http://localhost:3000/rpc HTTP/1.1
+Content-Type: application/json
+
+{
+  "jsonrpc": "2.0",
+  "id": 8,
+  "method": "tools/call",
+  "params": {
+    "name": "validate",
+    "arguments": {
+      "code": "@Test\nvoid shouldCreateUser() {\n  // Arrange\n  var name = \"John\";\n  var email = \"john@example.com\";\n  \n  // Act\n  var user = userService.createUser(name, email);\n  \n  // Assert\n  assertThat(user.getName()).isEqualTo(name);\n}",
+      "task_type": "test"
     }
   }
 }
@@ -127,10 +163,10 @@ Content-Type: application/json
 
 {
   "jsonrpc": "2.0",
-  "id": 7,
+  "id": 9,
   "method": "tools/call",
   "params": {
-    "name": "search_standards",
+    "name": "search",
     "arguments": {
       "query": "kafka"
     }
@@ -144,10 +180,10 @@ Content-Type: application/json
 
 {
   "jsonrpc": "2.0",
-  "id": 8,
+  "id": 10,
   "method": "tools/call",
   "params": {
-    "name": "search_standards",
+    "name": "search",
     "arguments": {
       "query": "testing"
     }
@@ -161,29 +197,46 @@ Content-Type: application/json
 
 {
   "jsonrpc": "2.0",
-  "id": 9,
+  "id": 11,
   "method": "tools/call",
   "params": {
-    "name": "search_standards",
+    "name": "search",
     "arguments": {
       "query": "docker"
     }
   }
 }
 
-### Search for observability documentation
-# @name searchObservability
+### Search for hexagonal architecture
+# @name searchHexagonal
 POST http://localhost:3000/rpc HTTP/1.1
 Content-Type: application/json
 
 {
   "jsonrpc": "2.0",
-  "id": 10,
+  "id": 12,
   "method": "tools/call",
   "params": {
-    "name": "search_standards",
+    "name": "search",
     "arguments": {
-      "query": "observability"
+      "query": "hexagonal architecture"
+    }
+  }
+}
+
+### Search for SOLID principles
+# @name searchSOLID
+POST http://localhost:3000/rpc HTTP/1.1
+Content-Type: application/json
+
+{
+  "jsonrpc": "2.0",
+  "id": 13,
+  "method": "tools/call",
+  "params": {
+    "name": "search",
+    "arguments": {
+      "query": "SOLID principles"
     }
   }
 }

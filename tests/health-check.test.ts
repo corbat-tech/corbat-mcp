@@ -1,54 +1,48 @@
 import { describe, expect, it } from 'vitest';
 import { handleToolCall } from '../src/tools.js';
 
-describe('health_check tool', () => {
-  it('should return healthy status with profile and standards info', async () => {
-    const result = await handleToolCall('health_check', {});
+describe('health tool (Simplified API)', () => {
+  it('should return healthy status', async () => {
+    const result = await handleToolCall('health', {});
 
     expect(result.isError).toBeUndefined();
     expect(result.content).toHaveLength(1);
     expect(result.content[0].type).toBe('text');
 
     const text = result.content[0].text;
-    expect(text).toContain('# Corbat MCP Health Check');
-    expect(text).toContain('**Status:** healthy');
-    expect(text).toContain('**Version:**');
-    expect(text).toContain('## Profiles');
-    expect(text).toContain('## Standards');
-    expect(text).toContain('## Configuration');
-    expect(text).toContain('## Performance');
+    expect(text).toContain('Corbat Health');
+    expect(text).toContain('OK');
+    expect(text).toContain('Version');
   });
 
-  it('should include profile count and IDs', async () => {
-    const result = await handleToolCall('health_check', {});
+  it('should include profile count', async () => {
+    const result = await handleToolCall('health', {});
     const text = result.content[0].text;
 
-    expect(text).toContain('- Count:');
-    expect(text).toContain('- Available:');
+    expect(text).toContain('Profiles');
+    expect(text).toContain('java-spring-backend');
   });
 
-  it('should include standards categories', async () => {
-    const result = await handleToolCall('health_check', {});
+  it('should include standards count', async () => {
+    const result = await handleToolCall('health', {});
     const text = result.content[0].text;
 
-    expect(text).toContain('- Documents:');
-    expect(text).toContain('- Categories:');
+    expect(text).toContain('Standards');
+    expect(text).toContain('documents');
   });
 
-  it('should include performance metrics', async () => {
-    const result = await handleToolCall('health_check', {});
+  it('should include load time', async () => {
+    const result = await handleToolCall('health', {});
     const text = result.content[0].text;
 
-    expect(text).toContain('- Load Time:');
-    expect(text).toMatch(/Load Time: \d+ms/);
+    expect(text).toContain('Load time');
+    expect(text).toMatch(/\d+ms/);
   });
 
-  it('should include timestamp in ISO format', async () => {
-    const result = await handleToolCall('health_check', {});
+  it('should include default profile', async () => {
+    const result = await handleToolCall('health', {});
     const text = result.content[0].text;
 
-    expect(text).toContain('**Timestamp:**');
-    // ISO format check
-    expect(text).toMatch(/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/);
+    expect(text).toContain('Default profile');
   });
 });

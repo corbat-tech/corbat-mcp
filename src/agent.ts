@@ -1,4 +1,4 @@
-import { readFile, access } from 'node:fs/promises';
+import { access, readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import {
   type DetectedStack,
@@ -643,9 +643,7 @@ export function getTechnicalDecision(
   // Check if project has a predefined decision
   const predefinedDecision = projectConfig?.decisions?.[category];
   if (predefinedDecision) {
-    const option = decision.options.find(
-      (o) => o.name.toLowerCase() === predefinedDecision.toLowerCase()
-    );
+    const option = decision.options.find((o) => o.name.toLowerCase() === predefinedDecision.toLowerCase());
     if (option) {
       return {
         options: decision.options,

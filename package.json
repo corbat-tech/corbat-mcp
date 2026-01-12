@@ -1,12 +1,20 @@
 {
   "name": "corbat-mcp",
-  "version": "1.0.0",
-  "description": "MCP server for coding standards and best practices - Hexagonal Architecture, DDD, Clean Code",
+  "version": "1.1.0",
+  "description": "AI coding standards that apply themselves - MCP server for Claude",
   "type": "module",
   "main": "dist/index.js",
   "bin": {
     "corbat-mcp": "dist/index.js",
     "corbat-init": "dist/cli/init.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/victormartingil/corbat-mcp.git"
+  },
+  "homepage": "https://github.com/victormartingil/corbat-mcp#readme",
+  "bugs": {
+    "url": "https://github.com/victormartingil/corbat-mcp/issues"
   },
   "scripts": {
     "build": "tsc",
@@ -17,7 +25,7 @@
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "clean": "rm -rf dist",
-    "prepublishOnly": "npm run build",
+    "prepublishOnly": "npm run validate && npm run build",
     "lint": "biome lint .",
     "lint:fix": "biome lint --write .",
     "format": "biome format --write .",
@@ -30,13 +38,16 @@
   "keywords": [
     "mcp",
     "model-context-protocol",
+    "claude",
+    "ai",
     "coding-standards",
     "best-practices",
     "hexagonal-architecture",
     "ddd",
-    "clean-code"
+    "clean-code",
+    "tdd"
   ],
-  "author": "Corbat",
+  "author": "Victor Martin Gil",
   "license": "MIT",
   "engines": {
     "node": ">=18.0.0"

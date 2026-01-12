@@ -1,38 +1,32 @@
 import { describe, expect, it } from 'vitest';
 import { tools } from '../src/tools.js';
 
-describe('Tools Definition', () => {
-  it('should have get_coding_standards tool', () => {
-    const tool = tools.find((t) => t.name === 'get_coding_standards');
-
-    expect(tool).toBeDefined();
-    expect(tool?.description).toContain('coding standards');
-    expect(tool?.inputSchema.properties).toHaveProperty('profile');
+describe('Tools Definition (Simplified API)', () => {
+  it('should have exactly 5 tools', () => {
+    expect(tools).toHaveLength(5);
   });
 
-  it('should have list_profiles tool', () => {
-    const tool = tools.find((t) => t.name === 'list_profiles');
+  it('should have get_context tool (PRIMARY)', () => {
+    const tool = tools.find((t) => t.name === 'get_context');
 
     expect(tool).toBeDefined();
-    expect(tool?.description).toContain('profiles');
+    expect(tool?.description).toContain('PRIMARY');
+    expect(tool?.description).toContain('COMPLETE');
+    expect(tool?.inputSchema.properties).toHaveProperty('task');
+    expect(tool?.inputSchema.required).toContain('task');
   });
 
-  it('should have get_architecture_guidelines tool', () => {
-    const tool = tools.find((t) => t.name === 'get_architecture_guidelines');
+  it('should have validate tool', () => {
+    const tool = tools.find((t) => t.name === 'validate');
 
     expect(tool).toBeDefined();
-    expect(tool?.description).toContain('architecture');
+    expect(tool?.description).toContain('Validate');
+    expect(tool?.inputSchema.properties).toHaveProperty('code');
+    expect(tool?.inputSchema.required).toContain('code');
   });
 
-  it('should have get_naming_conventions tool', () => {
-    const tool = tools.find((t) => t.name === 'get_naming_conventions');
-
-    expect(tool).toBeDefined();
-    expect(tool?.description).toContain('naming');
-  });
-
-  it('should have search_standards tool', () => {
-    const tool = tools.find((t) => t.name === 'search_standards');
+  it('should have search tool', () => {
+    const tool = tools.find((t) => t.name === 'search');
 
     expect(tool).toBeDefined();
     expect(tool?.description).toContain('Search');
@@ -40,72 +34,36 @@ describe('Tools Definition', () => {
     expect(tool?.inputSchema.required).toContain('query');
   });
 
-  it('should have health_check tool', () => {
-    const tool = tools.find((t) => t.name === 'health_check');
+  it('should have profiles tool', () => {
+    const tool = tools.find((t) => t.name === 'profiles');
 
     expect(tool).toBeDefined();
-    expect(tool?.description).toContain('health');
+    expect(tool?.description).toContain('profiles');
   });
 
-  it('should have get_development_workflow tool', () => {
-    const tool = tools.find((t) => t.name === 'get_development_workflow');
+  it('should have health tool', () => {
+    const tool = tools.find((t) => t.name === 'health');
 
     expect(tool).toBeDefined();
-    expect(tool?.description).toContain('workflow');
+    expect(tool?.description).toContain('status');
   });
 
-  // Agent Mode Tools
-  it('should have get_full_context tool', () => {
-    const tool = tools.find((t) => t.name === 'get_full_context');
-
-    expect(tool).toBeDefined();
-    expect(tool?.description).toContain('COMPLETE context');
-    expect(tool?.inputSchema.required).toContain('task_description');
-  });
-
-  it('should have detect_project_stack tool', () => {
-    const tool = tools.find((t) => t.name === 'detect_project_stack');
-
-    expect(tool).toBeDefined();
-    expect(tool?.description).toContain('Auto-detect');
-  });
-
-  it('should have get_guardrails tool', () => {
-    const tool = tools.find((t) => t.name === 'get_guardrails');
-
-    expect(tool).toBeDefined();
-    expect(tool?.description).toContain('Guardrails');
-  });
-
-  it('should have validate_against_standards tool', () => {
-    const tool = tools.find((t) => t.name === 'validate_against_standards');
-
-    expect(tool).toBeDefined();
-    expect(tool?.description).toContain('Validate');
-  });
-
-  it('should have make_technical_decision tool', () => {
-    const tool = tools.find((t) => t.name === 'make_technical_decision');
-
-    expect(tool).toBeDefined();
-    expect(tool?.description).toContain('recommendation');
-  });
-
-  it('should have load_project_config tool', () => {
-    const tool = tools.find((t) => t.name === 'load_project_config');
-
-    expect(tool).toBeDefined();
-    expect(tool?.description).toContain('.corbat.json');
-  });
-
-  it('should have 13 tools total (7 original + 6 agent mode)', () => {
-    expect(tools).toHaveLength(13);
-  });
-
-  it('should have valid input schemas', () => {
+  it('should have valid input schemas for all tools', () => {
     for (const tool of tools) {
       expect(tool.inputSchema.type).toBe('object');
       expect(tool.inputSchema.properties).toBeDefined();
     }
+  });
+
+  it('should have optional project_dir for get_context', () => {
+    const tool = tools.find((t) => t.name === 'get_context');
+    expect(tool?.inputSchema.properties).toHaveProperty('project_dir');
+    expect(tool?.inputSchema.required).not.toContain('project_dir');
+  });
+
+  it('should have optional task_type for validate', () => {
+    const tool = tools.find((t) => t.name === 'validate');
+    expect(tool?.inputSchema.properties).toHaveProperty('task_type');
+    expect(tool?.inputSchema.required).not.toContain('task_type');
   });
 });

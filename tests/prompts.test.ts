@@ -1,79 +1,56 @@
 import { describe, expect, it } from 'vitest';
 import { prompts } from '../src/prompts.js';
 
-describe('Prompts Definition', () => {
-  it('should have code_review prompt', () => {
-    const prompt = prompts.find((p) => p.name === 'code_review');
+describe('Prompts Definition (Simplified API)', () => {
+  it('should have exactly 2 prompts', () => {
+    expect(prompts).toHaveLength(2);
+  });
+
+  it('should have implement prompt', () => {
+    const prompt = prompts.find((p) => p.name === 'implement');
 
     expect(prompt).toBeDefined();
-    expect(prompt?.description).toContain('Review code');
+    expect(prompt?.description).toContain('implementation');
     expect(prompt?.arguments).toHaveLength(2);
   });
 
-  it('should have refactor_suggestion prompt', () => {
-    const prompt = prompts.find((p) => p.name === 'refactor_suggestion');
+  it('should have review prompt', () => {
+    const prompt = prompts.find((p) => p.name === 'review');
 
     expect(prompt).toBeDefined();
-    expect(prompt?.description).toContain('refactoring');
+    expect(prompt?.description).toContain('Review');
+    expect(prompt?.arguments).toHaveLength(2);
   });
 
-  it('should have architecture_check prompt', () => {
-    const prompt = prompts.find((p) => p.name === 'architecture_check');
+  it('should require task argument for implement', () => {
+    const prompt = prompts.find((p) => p.name === 'implement');
+    const taskArg = prompt?.arguments.find((a) => a.name === 'task');
 
-    expect(prompt).toBeDefined();
-    expect(prompt?.description).toContain('architecture');
+    expect(taskArg).toBeDefined();
+    expect(taskArg?.required).toBe(true);
   });
 
-  it('should have implement_feature prompt', () => {
-    const prompt = prompts.find((p) => p.name === 'implement_feature');
+  it('should have optional project_dir for implement', () => {
+    const prompt = prompts.find((p) => p.name === 'implement');
+    const projectDirArg = prompt?.arguments.find((a) => a.name === 'project_dir');
 
-    expect(prompt).toBeDefined();
-    expect(prompt?.description).toContain('workflow');
-    expect(prompt?.arguments.find((a) => a.name === 'feature')?.required).toBe(true);
+    expect(projectDirArg).toBeDefined();
+    expect(projectDirArg?.required).toBe(false);
   });
 
-  it('should have expert_review prompt', () => {
-    const prompt = prompts.find((p) => p.name === 'expert_review');
-
-    expect(prompt).toBeDefined();
-    expect(prompt?.description).toContain('expert review');
-    expect(prompt?.arguments.find((a) => a.name === 'role')?.required).toBe(true);
-  });
-
-  // Agent Mode Prompts
-  it('should have agent_mode prompt', () => {
-    const prompt = prompts.find((p) => p.name === 'agent_mode');
-
-    expect(prompt).toBeDefined();
-    expect(prompt?.description).toContain('AGENT MODE');
-    expect(prompt?.arguments.find((a) => a.name === 'task')?.required).toBe(true);
-  });
-
-  it('should have quick_implement prompt', () => {
-    const prompt = prompts.find((p) => p.name === 'quick_implement');
-
-    expect(prompt).toBeDefined();
-    expect(prompt?.description).toContain('Quick implementation');
-    expect(prompt?.arguments.find((a) => a.name === 'task')?.required).toBe(true);
-  });
-
-  it('should have 7 prompts total (5 original + 2 agent mode)', () => {
-    expect(prompts).toHaveLength(7);
-  });
-
-  it('should require code argument for code_review', () => {
-    const prompt = prompts.find((p) => p.name === 'code_review');
+  it('should require code argument for review', () => {
+    const prompt = prompts.find((p) => p.name === 'review');
     const codeArg = prompt?.arguments.find((a) => a.name === 'code');
 
+    expect(codeArg).toBeDefined();
     expect(codeArg?.required).toBe(true);
   });
 
-  it('should have optional profile argument for prompts that use it', () => {
-    const promptsWithProfile = prompts.filter((p) => p.arguments.some((a) => a.name === 'profile'));
+  it('should have optional role for review', () => {
+    const prompt = prompts.find((p) => p.name === 'review');
+    const roleArg = prompt?.arguments.find((a) => a.name === 'role');
 
-    for (const prompt of promptsWithProfile) {
-      const profileArg = prompt.arguments.find((a) => a.name === 'profile');
-      expect(profileArg?.required).toBe(false);
-    }
+    expect(roleArg).toBeDefined();
+    expect(roleArg?.required).toBe(false);
   });
 });

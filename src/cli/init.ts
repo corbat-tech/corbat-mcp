@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 
+import { access, readFile, readdir, writeFile } from 'node:fs/promises';
+import { dirname, join } from 'node:path';
 import { createInterface } from 'node:readline';
-import { readFile, writeFile, access, readdir } from 'node:fs/promises';
-import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { parse, stringify } from 'yaml';
+import { stringify } from 'yaml';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -106,7 +106,7 @@ class CorbatInit {
     });
 
     const answer = await this.question(`\n${c.yellow}Enter number [${defaultIndex + 1}]: ${c.reset}`);
-    const index = answer ? parseInt(answer, 10) - 1 : defaultIndex;
+    const index = answer ? Number.parseInt(answer, 10) - 1 : defaultIndex;
 
     if (index >= 0 && index < options.length) {
       return options[index];
@@ -279,7 +279,9 @@ class CorbatInit {
     this.print(`  ${c.bright}Language:${c.reset}      ${info.language}`);
 
     if (info.framework) {
-      this.print(`  ${c.bright}Framework:${c.reset}     ${info.framework}${info.springVersion ? ` ${info.springVersion}` : ''}`);
+      this.print(
+        `  ${c.bright}Framework:${c.reset}     ${info.framework}${info.springVersion ? ` ${info.springVersion}` : ''}`
+      );
     }
 
     if (info.buildTool) {
@@ -327,13 +329,17 @@ class CorbatInit {
     // Architecture
     this.print(`\n${c.magenta}━━━ Architecture ━━━${c.reset}`);
 
-    const archType = await this.select('Architecture pattern:', [
-      'hexagonal (Ports & Adapters)',
-      'clean (Clean Architecture)',
-      'layered (Traditional N-Tier)',
-      'modular-monolith',
-      'microservices',
-    ], 0);
+    const archType = await this.select(
+      'Architecture pattern:',
+      [
+        'hexagonal (Ports & Adapters)',
+        'clean (Clean Architecture)',
+        'layered (Traditional N-Tier)',
+        'modular-monolith',
+        'microservices',
+      ],
+      0
+    );
 
     const enforceLayerDeps = await this.confirm('Enforce layer dependencies?', true);
 
@@ -347,9 +353,7 @@ class CorbatInit {
     this.print(`\n${c.magenta}━━━ CQRS ━━━${c.reset}`);
 
     const cqrsEnabled = await this.confirm('Enable CQRS?', info.framework === 'Spring Boot');
-    const cqrsSeparation = cqrsEnabled
-      ? await this.select('CQRS separation:', ['logical', 'physical'], 0)
-      : 'logical';
+    const cqrsSeparation = cqrsEnabled ? await this.select('CQRS separation:', ['logical', 'physical'], 0) : 'logical';
 
     // Event-Driven
     this.print(`\n${c.magenta}━━━ Event-Driven Architecture ━━━${c.reset}`);
@@ -380,7 +384,11 @@ class CorbatInit {
       assertionLib = await this.select('Assertion library:', ['AssertJ', 'Hamcrest', 'JUnit assertions'], 0);
       mockingLib = await this.select('Mocking library:', ['Mockito', 'EasyMock', 'JMockit'], 0);
     } else if (info.language === 'TypeScript' || info.language === 'JavaScript') {
-      testFramework = await this.select('Test framework:', ['Vitest', 'Jest', 'Mocha'], info.testFramework === 'Vitest' ? 0 : 1);
+      testFramework = await this.select(
+        'Test framework:',
+        ['Vitest', 'Jest', 'Mocha'],
+        info.testFramework === 'Vitest' ? 0 : 1
+      );
       assertionLib = testFramework === 'Vitest' ? 'Vitest' : 'Jest';
       mockingLib = testFramework === 'Vitest' ? 'Vitest' : 'Jest';
     } else if (info.language === 'Python') {
@@ -427,11 +435,11 @@ class CorbatInit {
         approach: eventApproach,
       },
       codeQuality: {
-        maxMethodLines: parseInt(maxMethodLinesStr, 10) || 20,
-        maxClassLines: parseInt(maxClassLinesStr, 10) || 200,
-        maxFileLines: parseInt(maxFileLinesStr, 10) || 400,
-        maxMethodParameters: parseInt(maxParamsStr, 10) || 4,
-        minimumTestCoverage: parseInt(minCoverageStr, 10) || 80,
+        maxMethodLines: Number.parseInt(maxMethodLinesStr, 10) || 20,
+        maxClassLines: Number.parseInt(maxClassLinesStr, 10) || 200,
+        maxFileLines: Number.parseInt(maxFileLinesStr, 10) || 400,
+        maxMethodParameters: Number.parseInt(maxParamsStr, 10) || 4,
+        minimumTestCoverage: Number.parseInt(minCoverageStr, 10) || 80,
       },
       testing: {
         framework: testFramework,
@@ -520,12 +528,22 @@ class CorbatInit {
     return stringify(profile, { lineWidth: 120 });
   }
 
-  private getDefaultLayers(archType: string): Array<{ name: string; description: string; allowedDependencies: string[] }> {
+  private getDefaultLayers(
+    archType: string
+  ): Array<{ name: string; description: string; allowedDependencies: string[] }> {
     if (archType === 'hexagonal') {
       return [
         { name: 'domain', description: 'Core business logic. NO external dependencies.', allowedDependencies: [] },
-        { name: 'application', description: 'Use cases and ports. Depends only on domain.', allowedDependencies: ['domain'] },
-        { name: 'infrastructure', description: 'Adapters and frameworks.', allowedDependencies: ['domain', 'application'] },
+        {
+          name: 'application',
+          description: 'Use cases and ports. Depends only on domain.',
+          allowedDependencies: ['domain'],
+        },
+        {
+          name: 'infrastructure',
+          description: 'Adapters and frameworks.',
+          allowedDependencies: ['domain', 'application'],
+        },
       ];
     }
 
@@ -534,7 +552,11 @@ class CorbatInit {
         { name: 'entities', description: 'Enterprise business rules.', allowedDependencies: [] },
         { name: 'usecases', description: 'Application business rules.', allowedDependencies: ['entities'] },
         { name: 'adapters', description: 'Interface adapters.', allowedDependencies: ['entities', 'usecases'] },
-        { name: 'frameworks', description: 'Frameworks and drivers.', allowedDependencies: ['entities', 'usecases', 'adapters'] },
+        {
+          name: 'frameworks',
+          description: 'Frameworks and drivers.',
+          allowedDependencies: ['entities', 'usecases', 'adapters'],
+        },
       ];
     }
 
@@ -638,8 +660,12 @@ class CorbatInit {
     this.print('');
     this.print(`${c.bright}Architecture:${c.reset} ${config.architecture.type}`);
     this.print(`${c.bright}DDD:${c.reset}          ${config.ddd.enabled ? 'Enabled' : 'Disabled'}`);
-    this.print(`${c.bright}CQRS:${c.reset}         ${config.cqrs.enabled ? `Enabled (${config.cqrs.separation})` : 'Disabled'}`);
-    this.print(`${c.bright}Event-Driven:${c.reset} ${config.eventDriven.enabled ? `Enabled (${config.eventDriven.approach})` : 'Disabled'}`);
+    this.print(
+      `${c.bright}CQRS:${c.reset}         ${config.cqrs.enabled ? `Enabled (${config.cqrs.separation})` : 'Disabled'}`
+    );
+    this.print(
+      `${c.bright}Event-Driven:${c.reset} ${config.eventDriven.enabled ? `Enabled (${config.eventDriven.approach})` : 'Disabled'}`
+    );
     this.print('');
     this.print(`${c.bright}Code Quality:${c.reset}`);
     this.print(`  - Max method lines: ${config.codeQuality.maxMethodLines}`);
@@ -677,13 +703,11 @@ ${c.cyan}╔══════════════════════�
       this.print(`${c.yellow}⚠ Could not auto-detect project type.${c.reset}`);
       this.print(`${c.dim}  Starting from scratch...${c.reset}\n`);
 
-      const lang = await this.select('Select your primary language:', [
-        'Java',
-        'TypeScript',
-        'JavaScript',
-        'Python',
-        'Other',
-      ], 0);
+      const lang = await this.select(
+        'Select your primary language:',
+        ['Java', 'TypeScript', 'JavaScript', 'Python', 'Other'],
+        0
+      );
 
       this.detectedInfo.language = lang;
     }
@@ -700,11 +724,11 @@ ${c.cyan}╔══════════════════════�
     if (shouldSave) {
       const filename = `${config.name.toLowerCase().replace(/\s+/g, '-')}.yaml`;
 
-      const saveLocation = await this.select('Where to save?', [
-        `profiles/custom/${filename} (corbat-mcp)`,
-        `.corbat/${filename} (project local)`,
-        `Custom path...`,
-      ], 0);
+      const saveLocation = await this.select(
+        'Where to save?',
+        [`profiles/custom/${filename} (corbat-mcp)`, `.corbat/${filename} (project local)`, `Custom path...`],
+        0
+      );
 
       let savePath: string;
 
@@ -748,11 +772,7 @@ ${c.cyan}╔══════════════════════�
           decisions: {},
         };
 
-        await writeFile(
-          join(this.projectDir, '.corbat.json'),
-          JSON.stringify(corbatJson, null, 2),
-          'utf-8'
-        );
+        await writeFile(join(this.projectDir, '.corbat.json'), JSON.stringify(corbatJson, null, 2), 'utf-8');
 
         this.print(`${c.green}✓ Created .corbat.json${c.reset}`);
       }

@@ -43,9 +43,7 @@ export function invalidateCache(): void {
 async function loadProfilesFromDir(dir: string, profiles: Map<string, Profile>): Promise<void> {
   try {
     const files = await readdir(dir);
-    const yamlFiles = files.filter(
-      (f) => (f.endsWith('.yaml') || f.endsWith('.yml')) && !f.startsWith('_')
-    );
+    const yamlFiles = files.filter((f) => (f.endsWith('.yaml') || f.endsWith('.yml')) && !f.startsWith('_'));
 
     for (const file of yamlFiles) {
       const filePath = join(dir, file);

@@ -11,6 +11,8 @@ profiles/
 │   ├── nodejs.yaml               # Node.js + TypeScript
 │   ├── python.yaml               # Python + FastAPI/Django
 │   ├── react.yaml                # React + TypeScript
+│   ├── angular.yaml              # Angular 19+ + TypeScript
+│   ├── vue.yaml                  # Vue 3.5+ + TypeScript
 │   ├── minimal.yaml              # Configuración mínima
 │   └── _template.yaml            # Plantilla para crear nuevos perfiles
 │
@@ -52,6 +54,8 @@ get_coding_standards(profile: "mi-proyecto")
 | `nodejs` | Backend/fullstack con TypeScript | Node.js, TypeScript, Express/Nest |
 | `python` | Backend con tipado estricto | Python 3.11+, FastAPI/Django |
 | `react` | Aplicaciones React modernas | React 18+, TypeScript |
+| `angular` | Aplicaciones Angular modernas con signals y zoneless | Angular 19+, TypeScript |
+| `vue` | Aplicaciones Vue modernas con Composition API | Vue 3.5+, TypeScript |
 | `minimal` | Configuración mínima para empezar | Cualquiera |
 
 ## Estructura de un Perfil

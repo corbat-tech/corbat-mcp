@@ -1,0 +1,598 @@
+# ============================================================================
+# CORBAT MCP - Vue Profile
+# ============================================================================
+# Production-ready standards for Vue 3.4+ applications.
+# Covers Composition API, script setup, Pinia, and modern Vue patterns.
+# Updated for Vue 3.5/3.6 best practices (2025-2026).
+# ============================================================================
+
+name: "Vue Standards"
+description: "Production-ready standards for Vue 3.4+ applications with TypeScript, focusing on Composition API, script setup, Pinia, Vapor Mode readiness, and modern Vue ecosystem"
+
+# ----------------------------------------------------------------------------
+# ARCHITECTURE
+# ----------------------------------------------------------------------------
+architecture:
+  type: "feature-based"
+  enforceLayerDependencies: true
+  layers:
+    - name: features
+      description: "Feature modules containing views, components, and composables for specific features"
+      allowedDependencies:
+        - shared
+        - core
+      packages:
+        - "src/features/*"
+        - "src/views/*"
+
+    - name: shared
+      description: "Reusable components, composables, and utilities used across features"
+      allowedDependencies:
+        - core
+      packages:
+        - "src/shared"
+        - "src/components"
+        - "src/composables"
+        - "src/utils"
+
+    - name: core
+      description: "Application core: router, stores, API client, types"
+      allowedDependencies: []
+      packages:
+        - "src/core"
+        - "src/stores"
+        - "src/api"
+        - "src/types"
+
+# ----------------------------------------------------------------------------
+# CODE QUALITY
+# ----------------------------------------------------------------------------
+codeQuality:
+  maxMethodLines: 30
+  maxClassLines: 200
+  maxFileLines: 300
+  maxMethodParameters: 4
+  maxCyclomaticComplexity: 10
+  requireDocumentation: true
+  requireTests: true
+  minimumTestCoverage: 70
+
+  principles:
+    - "Composition API with script setup"
+    - "Single File Components (SFC)"
+    - "Composables for reusable logic"
+    - "Props down, events up"
+    - "Pinia for global state"
+    - "TypeScript for type safety"
+    - "Prefer computed over methods for derived state"
+
+# ----------------------------------------------------------------------------
+# NAMING CONVENTIONS
+# ----------------------------------------------------------------------------
+naming:
+  general:
+    component: "PascalCase (UserCard.vue)"
+    composable: "useCamelCase (useUser.ts)"
+    store: "useCamelCaseStore (useUserStore.ts)"
+    util: "camelCase"
+    constant: "SCREAMING_SNAKE_CASE"
+    type: "PascalCase"
+    interface: "PascalCase (no I prefix)"
+    enum: "PascalCase"
+
+  files:
+    component: "PascalCase.vue"
+    composable: "useName.ts"
+    store: "nameStore.ts or useName.ts"
+    util: "camelCase.ts"
+    type: "name.types.ts or types.ts"
+    test: "Name.spec.ts or Name.test.ts"
+
+  folders:
+    feature: "kebab-case"
+    component: "PascalCase (component folder)"
+
+  props:
+    boolean: "is/has/should prefix (isActive, hasError)"
+    handler: "onAction (onClick, onSubmit)"
+    data: "descriptive noun (user, items)"
+
+  emits:
+    event: "kebab-case (update:modelValue, item-selected)"
+    handler: "onEventName in parent"
+
+# ----------------------------------------------------------------------------
+# VUE 3 MODERN PATTERNS
+# ----------------------------------------------------------------------------
+modernPatterns:
+  scriptSetup:
+    required: true
+    description: "Always use <script setup> for components"
+    example: |
+      <script setup lang="ts">
+      import { ref, computed } from 'vue'
+      import type { User } from '@/types'
+
+      const props = defineProps<{
+        user: User
+      }>()
+
+      const emit = defineEmits<{
+        (e: 'select', id: string): void
+      }>()
+
+      const isActive = ref(false)
+      </script>
+
+  compositionAPI:
+    required: true
+    description: "Use Composition API, avoid Options API"
+    patterns:
+      - "ref() for primitive reactive values"
+      - "reactive() for objects (use sparingly)"
+      - "computed() for derived state"
+      - "watch() / watchEffect() for side effects"
+      - "Composables for reusable logic"
+
+  defineModel:
+    description: "Use defineModel for v-model binding (Vue 3.4+)"
+    example: |
+      <script setup lang="ts">
+      const modelValue = defineModel<string>({ required: true })
+      // Automatically handles :modelValue + @update:modelValue
+      </script>
+
+  propsDefaults:
+    description: "Use withDefaults for props with defaults"
+    example: |
+      const props = withDefaults(defineProps<{
+        size?: 'sm' | 'md' | 'lg'
+        disabled?: boolean
+      }>(), {
+        size: 'md',
+        disabled: false
+      })
+
+  genericComponents:
+    description: "Use generic components for type-safe reusable components"
+    example: |
+      <script setup lang="ts" generic="T extends { id: string }">
+      defineProps<{
+        items: T[]
+        selected?: T
+      }>()
+
+      defineEmits<{
+        (e: 'select', item: T): void
+      }>()
+      </script>
+
+# ----------------------------------------------------------------------------
+# VAPOR MODE (Vue 3.6+)
+# ----------------------------------------------------------------------------
+vaporMode:
+  status: "Experimental in Vue 3.6"
+  description: "Vapor Mode eliminates Virtual DOM for faster rendering"
+  benefits:
+    - "No Virtual DOM overhead"
+    - "100,000 components mounted in ~100ms"
+    - "Smaller bundle size (<10KB base)"
+    - "Improved memory usage with Alien Signals"
+    - "Drop-in performance upgrade"
+
+  requirements:
+    - "Must use Composition API (not Options API)"
+    - "Must use <script setup> syntax"
+    - "Component-level opt-in"
+
+  preparation:
+    - "Ensure all components use Composition API"
+    - "Migrate from Options API if needed"
+    - "Avoid mixins and extends"
+    - "Use modern reactivity patterns"
+
+  rules:
+    - "Write Vapor-ready code now for future compatibility"
+    - "Composition API is mandatory for Vapor Mode"
+    - "Test in isolated branches when experimenting"
+    - "Benchmark performance improvements"
+
+# ----------------------------------------------------------------------------
+# COMPOSABLES
+# ----------------------------------------------------------------------------
+composables:
+  description: "Extract reusable logic into composables"
+  patterns:
+    - "Name: useSomething"
+    - "Return reactive state and methods"
+    - "Handle cleanup in onUnmounted"
+    - "Support SSR when needed"
+
+  structure: |
+    // composables/useUser.ts
+    export function useUser(userId: Ref<string>) {
+      const user = ref<User | null>(null)
+      const isLoading = ref(false)
+      const error = ref<Error | null>(null)
+
+      async function fetchUser() {
+        isLoading.value = true
+        try {
+          user.value = await api.getUser(userId.value)
+        } catch (e) {
+          error.value = e as Error
+        } finally {
+          isLoading.value = false
+        }
+      }
+
+      watch(userId, fetchUser, { immediate: true })
+
+      return {
+        user: readonly(user),
+        isLoading: readonly(isLoading),
+        error: readonly(error),
+        refetch: fetchUser
+      }
+    }
+
+  rules:
+    - "Prefix with 'use'"
+    - "Return readonly refs when state shouldn't be modified externally"
+    - "Accept refs as parameters for reactivity"
+    - "Handle cleanup (removeEventListener, clearInterval)"
+    - "Document parameters and return values"
+
+# ----------------------------------------------------------------------------
+# STATE MANAGEMENT
+# ----------------------------------------------------------------------------
+stateManagement:
+  local:
+    tool: "ref / reactive"
+    useWhen:
+      - "Component-specific state"
+      - "Form state"
+      - "UI state (modals, dropdowns)"
+
+  shared:
+    tool: "Pinia"
+    useWhen:
+      - "State shared across multiple components"
+      - "Complex state logic"
+      - "State that persists across routes"
+      - "State that needs devtools support"
+
+  server:
+    tool: "TanStack Query (Vue Query) or VueUse useFetch"
+    useWhen:
+      - "API data fetching"
+      - "Caching server state"
+      - "Optimistic updates"
+      - "Background refetching"
+
+  piniaPatterns:
+    setup: |
+      // stores/userStore.ts
+      export const useUserStore = defineStore('user', () => {
+        // State
+        const user = ref<User | null>(null)
+        const isLoading = ref(false)
+
+        // Getters (computed)
+        const isLoggedIn = computed(() => !!user.value)
+        const fullName = computed(() =>
+          user.value ? `${user.value.firstName} ${user.value.lastName}` : ''
+        )
+
+        // Actions
+        async function login(credentials: Credentials) {
+          isLoading.value = true
+          try {
+            user.value = await authApi.login(credentials)
+          } finally {
+            isLoading.value = false
+          }
+        }
+
+        function logout() {
+          user.value = null
+        }
+
+        return {
+          user: readonly(user),
+          isLoading: readonly(isLoading),
+          isLoggedIn,
+          fullName,
+          login,
+          logout
+        }
+      })
+
+  rules:
+    - "Prefer Setup Stores over Options Stores"
+    - "Use readonly() for state that shouldn't be modified directly"
+    - "Colocate related state, getters, and actions"
+    - "Use storeToRefs() when destructuring reactive state"
+
+# ----------------------------------------------------------------------------
+# TYPESCRIPT
+# ----------------------------------------------------------------------------
+technologies:
+  - name: typescript
+    version: "5.x"
+    specificRules:
+      strict: true
+      noImplicitAny: true
+      strictNullChecks: true
+      noUnusedLocals: true
+      noUnusedParameters: true
+
+  - name: vue
+    version: "3.5+"
+    specificRules:
+      scriptSetup: true
+      compositionAPI: true
+      defineModel: true
+      typescript: true
+      vaporModeReady: "use Composition API for future compatibility"
+
+  - name: linting
+    tools:
+      - "ESLint"
+      - "eslint-plugin-vue"
+      - "Prettier"
+      - "@vue/eslint-config-typescript"
+
+# ----------------------------------------------------------------------------
+# TESTING
+# ----------------------------------------------------------------------------
+testing:
+  framework: "Vitest"
+  assertionLibrary: "Vitest"
+  componentTesting: "Vue Testing Library"
+
+  types:
+    unit:
+      suffix: ".spec.ts"
+      location: "co-located or __tests__/"
+      coverage: 70
+
+    component:
+      suffix: ".spec.ts"
+      location: "co-located"
+      tool: "Vue Testing Library"
+      patterns:
+        - "Test user interactions"
+        - "Use screen queries"
+        - "Avoid testing implementation details"
+
+    integration:
+      suffix: ".integration.spec.ts"
+      location: "tests/integration"
+
+    e2e:
+      tool: "Playwright or Cypress"
+      location: "e2e/"
+
+  patterns:
+    arrange_act_assert: true
+    behavior_testing: true
+    mock_api_calls: true
+    testing_library_vue: true
+
+  example: |
+    import { render, screen } from '@testing-library/vue'
+    import userEvent from '@testing-library/user-event'
+    import UserCard from './UserCard.vue'
+
+    test('displays user name and handles click', async () => {
+      const user = userEvent.setup()
+      const onClick = vi.fn()
+
+      render(UserCard, {
+        props: { name: 'John Doe' },
+        attrs: { onClick }
+      })
+
+      expect(screen.getByText('John Doe')).toBeInTheDocument()
+
+      await user.click(screen.getByRole('button'))
+      expect(onClick).toHaveBeenCalled()
+    })
+
+  rules:
+    - "Prefer Vue Testing Library over @vue/test-utils directly"
+    - "Test user-visible behavior"
+    - "Mock Pinia stores when testing components"
+    - "Use createTestingPinia() for store tests"
+
+# ----------------------------------------------------------------------------
+# STYLING
+# ----------------------------------------------------------------------------
+styling:
+  approach: "Scoped CSS, CSS Modules, or Tailwind CSS"
+  tools:
+    - "Scoped CSS (default)"
+    - "Tailwind CSS"
+    - "CSS Modules"
+    - "UnoCSS"
+
+  rules:
+    - "Use <style scoped> by default"
+    - "Use :deep() for styling child components"
+    - "CSS variables for theming"
+    - "Mobile-first responsive design"
+    - "Avoid !important"
+
+  example: |
+    <style scoped>
+    .card {
+      @apply p-4 rounded-lg shadow;
+    }
+
+    /* Deep selector for child components */
+    :deep(.child-class) {
+      color: var(--text-primary);
+    }
+    </style>
+
+# ----------------------------------------------------------------------------
+# PERFORMANCE
+# ----------------------------------------------------------------------------
+performance:
+  rendering:
+    - "Use v-once for static content"
+    - "Use v-memo for expensive list items"
+    - "Avoid v-if + v-for on same element"
+    - "Use computed properties over methods in templates"
+    - "Use shallowRef for large objects that don't need deep reactivity"
+
+  lazyLoading:
+    - "Lazy load routes with defineAsyncComponent"
+    - "Use Suspense for async components"
+    - "Dynamic imports for heavy libraries"
+
+  lists:
+    - "Always use :key with unique identifier"
+    - "Use v-memo for expensive item rendering"
+    - "Virtual scrolling for large lists (vue-virtual-scroller)"
+
+  rules:
+    - "Avoid reactive() for large objects (use ref)"
+    - "Use shallowRef/shallowReactive when appropriate"
+    - "Debounce expensive watchers"
+    - "Use computed with memo"
+
+# ----------------------------------------------------------------------------
+# ROUTING
+# ----------------------------------------------------------------------------
+routing:
+  tool: "Vue Router 4"
+  patterns:
+    - "Lazy load all routes"
+    - "Use typed routes (vue-router auto)"
+    - "Navigation guards for auth"
+    - "Route-level code splitting"
+
+  example: |
+    const routes: RouteRecordRaw[] = [
+      {
+        path: '/users',
+        component: () => import('@/views/UsersView.vue'),
+        meta: { requiresAuth: true }
+      }
+    ]
+
+# ----------------------------------------------------------------------------
+# API INTEGRATION
+# ----------------------------------------------------------------------------
+api:
+  client: "Axios or ofetch with TanStack Query"
+  patterns:
+    - "Centralize API configuration"
+    - "Type all responses"
+    - "Use interceptors for auth/errors"
+    - "TanStack Query for caching"
+
+  structure: |
+    // api/client.ts
+    export const api = ofetch.create({
+      baseURL: import.meta.env.VITE_API_URL,
+      onRequest({ options }) {
+        const token = useAuthStore().token
+        if (token) {
+          options.headers.set('Authorization', `Bearer ${token}`)
+        }
+      }
+    })
+
+    // api/users.ts
+    export const usersApi = {
+      getAll: () => api<User[]>('/users'),
+      getById: (id: string) => api<User>(`/users/${id}`),
+      create: (data: CreateUserDto) => api<User>('/users', { method: 'POST', body: data })
+    }
+
+  tanstackQuery: |
+    // composables/useUsers.ts
+    export function useUsers() {
+      return useQuery({
+        queryKey: ['users'],
+        queryFn: () => usersApi.getAll()
+      })
+    }
+
+# ----------------------------------------------------------------------------
+# VUEUSE
+# ----------------------------------------------------------------------------
+vueuse:
+  description: "Use VueUse for common composables"
+  recommended:
+    - "useLocalStorage / useSessionStorage"
+    - "useDebounceFn / useThrottleFn"
+    - "useEventListener"
+    - "useIntersectionObserver"
+    - "useDark / useColorMode"
+    - "useBreakpoints"
+    - "useFetch (simple cases)"
+
+  rules:
+    - "Prefer VueUse over custom implementations"
+    - "Check VueUse first before writing a composable"
+
+# ----------------------------------------------------------------------------
+# PROJECT STRUCTURE
+# ----------------------------------------------------------------------------
+# Recommended folder structure:
+#
+# src/
+# ├── api/                       # API client and endpoints
+# │   ├── client.ts
+# │   └── users.ts
+# │
+# ├── assets/                    # Static assets
+# │   └── images/
+# │
+# ├── components/                # Global/shared components
+# │   ├── ui/                   # Base UI components
+# │   │   ├── Button.vue
+# │   │   ├── Input.vue
+# │   │   └── Modal.vue
+# │   └── layout/               # Layout components
+# │       ├── Header.vue
+# │       └── Sidebar.vue
+# │
+# ├── composables/               # Global composables
+# │   ├── useAuth.ts
+# │   └── useApi.ts
+# │
+# ├── features/                  # Feature modules
+# │   ├── auth/
+# │   │   ├── components/
+# │   │   ├── composables/
+# │   │   ├── views/
+# │   │   │   ├── LoginView.vue
+# │   │   │   └── RegisterView.vue
+# │   │   └── index.ts
+# │   └── dashboard/
+# │
+# ├── stores/                    # Pinia stores
+# │   ├── auth.ts
+# │   └── user.ts
+# │
+# ├── types/                     # TypeScript types
+# │   ├── user.ts
+# │   └── api.ts
+# │
+# ├── utils/                     # Utility functions
+# │   └── format.ts
+# │
+# ├── views/                     # Route views (alternative to features)
+# │   └── HomeView.vue
+# │
+# ├── App.vue
+# ├── main.ts
+# └── router.ts
+#
+# e2e/                           # E2E tests
+# └── specs/

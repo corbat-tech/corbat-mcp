@@ -207,7 +207,9 @@ Corbat adapts its rules based on what you're doing:
 | `java-spring-backend` | Enterprise Java | Hexagonal + DDD |
 | `nodejs` | Node.js/TypeScript APIs | Clean Architecture |
 | `python` | Python/FastAPI | Clean Architecture |
-| `react` | React applications | Component-based |
+| `react` | React applications | Feature-based |
+| `angular` | Angular 19+ applications | Feature-based + Signals |
+| `vue` | Vue 3.5+ applications | Feature-based + Composition |
 | `minimal` | MVPs, prototypes | Basic standards |
 
 **Auto-detection**: Corbat reads `pom.xml`, `package.json`, `requirements.txt`, etc. to select the right profile.

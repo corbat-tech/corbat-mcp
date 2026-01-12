@@ -212,6 +212,16 @@ const STACK_PATTERNS: StackPattern[] = [
     profile: 'java-spring-backend',
     confidence: 'high',
   },
+  // Angular (must come before generic Node.js)
+  {
+    files: ['angular.json'],
+    language: 'TypeScript',
+    framework: 'Angular',
+    buildTool: 'Angular CLI',
+    testFramework: 'Jest/Vitest',
+    profile: 'angular',
+    confidence: 'high',
+  },
   // Node.js/TypeScript
   {
     files: ['package.json', 'tsconfig.json'],
@@ -289,6 +299,7 @@ export async function detectProjectStack(projectDir: string): Promise<DetectedSt
       // Additional detection for more specific frameworks
       let framework = pattern.framework;
       let testFramework = pattern.testFramework;
+      let suggestedProfile = pattern.profile;
 
       // Check for specific framework indicators
       if (detectedFiles.includes('package.json')) {
@@ -296,12 +307,23 @@ export async function detectProjectStack(projectDir: string): Promise<DetectedSt
           const packageJson = JSON.parse(await readFile(join(projectDir, 'package.json'), 'utf-8'));
           const deps = { ...packageJson.dependencies, ...packageJson.devDependencies };
 
-          if (deps.react) framework = 'React';
-          else if (deps.vue) framework = 'Vue';
-          else if (deps.angular) framework = 'Angular';
-          else if (deps.express) framework = 'Express';
-          else if (deps.fastify) framework = 'Fastify';
-          else if (deps.nestjs || deps['@nestjs/core']) framework = 'NestJS';
+          // Frontend frameworks (set profile accordingly)
+          if (deps.react) {
+            framework = 'React';
+            suggestedProfile = 'react';
+          } else if (deps.vue) {
+            framework = 'Vue';
+            suggestedProfile = 'vue';
+          } else if (deps['@angular/core']) {
+            framework = 'Angular';
+            suggestedProfile = 'angular';
+          } else if (deps.express) {
+            framework = 'Express';
+          } else if (deps.fastify) {
+            framework = 'Fastify';
+          } else if (deps.nestjs || deps['@nestjs/core']) {
+            framework = 'NestJS';
+          }
 
           if (deps.vitest) testFramework = 'Vitest';
           else if (deps.jest) testFramework = 'Jest';
@@ -328,7 +350,7 @@ export async function detectProjectStack(projectDir: string): Promise<DetectedSt
         framework,
         buildTool: pattern.buildTool,
         testFramework,
-        suggestedProfile: pattern.profile,
+        suggestedProfile,
         confidence: pattern.confidence,
         detectedFiles,
       };

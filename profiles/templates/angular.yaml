@@ -1,0 +1,494 @@
+# ============================================================================
+# CORBAT MCP - Angular Profile
+# ============================================================================
+# Production-ready standards for Angular applications (v19+).
+# Covers standalone components, signals, zoneless, new control flow, and modern patterns.
+# Updated for Angular 19/20/21 best practices (2025-2026).
+# ============================================================================
+
+name: "Angular Standards"
+description: "Production-ready standards for Angular 19+ applications with TypeScript, focusing on standalone components, signals, zoneless change detection, and modern Angular patterns"
+
+# ----------------------------------------------------------------------------
+# ARCHITECTURE
+# ----------------------------------------------------------------------------
+architecture:
+  type: "feature-based"
+  enforceLayerDependencies: true
+  layers:
+    - name: features
+      description: "Feature modules with standalone components, each feature is self-contained"
+      allowedDependencies:
+        - shared
+        - core
+      packages:
+        - "src/app/features/*"
+
+    - name: shared
+      description: "Reusable standalone components, directives, pipes used across features"
+      allowedDependencies:
+        - core
+      packages:
+        - "src/app/shared"
+        - "src/app/shared/components"
+        - "src/app/shared/directives"
+        - "src/app/shared/pipes"
+
+    - name: core
+      description: "Singleton services, guards, interceptors, models - provided in root"
+      allowedDependencies: []
+      packages:
+        - "src/app/core"
+        - "src/app/core/services"
+        - "src/app/core/guards"
+        - "src/app/core/interceptors"
+        - "src/app/core/models"
+
+# ----------------------------------------------------------------------------
+# CODE QUALITY
+# ----------------------------------------------------------------------------
+codeQuality:
+  maxMethodLines: 25
+  maxClassLines: 300
+  maxFileLines: 400
+  maxMethodParameters: 4
+  maxCyclomaticComplexity: 10
+  requireDocumentation: true
+  requireTests: true
+  minimumTestCoverage: 70
+
+  principles:
+    - "Single Responsibility - one component, one purpose"
+    - "Smart/Dumb components pattern (container/presentational)"
+    - "Prefer standalone components over NgModules"
+    - "Use signals for reactive state"
+    - "Prefer new control flow (@if, @for, @switch)"
+    - "OnPush change detection by default"
+    - "Inject function over constructor injection"
+
+# ----------------------------------------------------------------------------
+# NAMING CONVENTIONS
+# ----------------------------------------------------------------------------
+naming:
+  general:
+    component: "PascalCase + .component.ts suffix"
+    service: "PascalCase + .service.ts suffix"
+    directive: "camelCase selector + .directive.ts suffix"
+    pipe: "camelCase name + .pipe.ts suffix"
+    guard: "camelCase + .guard.ts suffix"
+    interceptor: "camelCase + .interceptor.ts suffix"
+    model: "PascalCase + .model.ts suffix"
+    interface: "PascalCase (no I prefix)"
+    enum: "PascalCase"
+    constant: "SCREAMING_SNAKE_CASE"
+
+  selectors:
+    component: "app-feature-name (kebab-case with app prefix)"
+    directive: "appDirectiveName (camelCase with app prefix)"
+
+  files:
+    component: "feature-name.component.ts"
+    template: "feature-name.component.html"
+    styles: "feature-name.component.scss"
+    spec: "feature-name.component.spec.ts"
+    service: "feature-name.service.ts"
+    module: "feature-name.module.ts (legacy only)"
+
+  folders:
+    feature: "kebab-case"
+    shared: "kebab-case"
+
+# ----------------------------------------------------------------------------
+# ANGULAR 19+ MODERN PATTERNS
+# ----------------------------------------------------------------------------
+modernPatterns:
+  standaloneComponents:
+    required: true
+    description: "All new components must be standalone"
+    example: |
+      @Component({
+        selector: 'app-user-card',
+        standalone: true,
+        imports: [RouterLink],
+        template: `...`
+      })
+
+  signals:
+    required: true
+    description: "Use signals for component state (all stable in v20+)"
+    patterns:
+      - "signal() for writable state"
+      - "computed() for derived state"
+      - "linkedSignal() for derived state that can be overwritten"
+      - "effect() for side effects (sparingly)"
+      - "input() for component inputs (signal-based)"
+      - "output() for component outputs"
+      - "model() for two-way binding"
+      - "viewChild() / viewChildren() for queries (signal-based)"
+      - "contentChild() / contentChildren() for content queries"
+    example: |
+      // Component state
+      count = signal(0);
+      doubleCount = computed(() => this.count() * 2);
+
+      // Linked signal (can be reset/overwritten)
+      selectedId = linkedSignal(() => this.items()[0]?.id);
+
+      // Signal-based inputs/outputs
+      name = input.required<string>();
+      clicked = output<void>();
+
+      // Signal-based queries
+      inputRef = viewChild<ElementRef>('inputElement');
+
+  zoneless:
+    recommended: true
+    description: "Zoneless change detection (stable in v20.2+)"
+    benefits:
+      - "60% improvement in startup time"
+      - "Better Core Web Vitals"
+      - "Smaller bundle size (no zone.js)"
+      - "Cleaner stack traces"
+      - "No patching for new browser APIs"
+    setup: |
+      // app.config.ts
+      export const appConfig: ApplicationConfig = {
+        providers: [
+          provideExperimentalZonelessChangeDetection()
+        ]
+      };
+    rules:
+      - "Remove zone.js from angular.json build and test"
+      - "Use signals or call markForCheck() to trigger CD"
+      - "Avoid NgZone.onMicrotaskEmpty, onUnstable, onStable"
+      - "AsyncPipe works automatically"
+      - "OnPush not required but recommended"
+
+  controlFlow:
+    required: true
+    description: "Use new built-in control flow"
+    patterns:
+      - "@if / @else instead of *ngIf"
+      - "@for with track instead of *ngFor"
+      - "@switch / @case instead of ngSwitch"
+      - "@defer for lazy loading"
+    example: |
+      @if (user()) {
+        <app-user-card [user]="user()" />
+      } @else {
+        <app-loading />
+      }
+
+      @for (item of items(); track item.id) {
+        <app-item [data]="item" />
+      } @empty {
+        <p>No items found</p>
+      }
+
+  deferredLoading:
+    description: "Use @defer for performance optimization"
+    triggers:
+      - "@defer (on viewport) - lazy load when visible"
+      - "@defer (on interaction) - lazy load on click/focus"
+      - "@defer (on idle) - lazy load when browser idle"
+      - "@defer (when condition) - lazy load when condition true"
+
+  inject:
+    required: true
+    description: "Prefer inject() function over constructor injection"
+    example: |
+      // Preferred
+      private userService = inject(UserService);
+      private router = inject(Router);
+
+      // Avoid (legacy)
+      constructor(private userService: UserService) {}
+
+# ----------------------------------------------------------------------------
+# STATE MANAGEMENT
+# ----------------------------------------------------------------------------
+stateManagement:
+  local:
+    tool: "Signals"
+    useWhen:
+      - "Component-specific state"
+      - "Form state"
+      - "UI state (modals, toggles)"
+    example: |
+      isOpen = signal(false);
+      toggle() { this.isOpen.update(v => !v); }
+
+  shared:
+    tool: "NgRx SignalStore or Services with Signals"
+    useWhen:
+      - "State shared across multiple components"
+      - "Complex state logic"
+      - "State that persists across routes"
+    patterns:
+      - "SignalStore for feature state"
+      - "Service + signals for simple shared state"
+      - "Avoid BehaviorSubject for new code"
+
+  server:
+    tool: "TanStack Query (Angular Query) or HttpClient + Signals"
+    useWhen:
+      - "API data fetching"
+      - "Caching server state"
+      - "Optimistic updates"
+
+  rules:
+    - "Signals over RxJS for synchronous state"
+    - "RxJS for async streams (HTTP, WebSocket, events)"
+    - "toSignal() to convert Observable to Signal"
+    - "toObservable() when you need RxJS operators"
+
+# ----------------------------------------------------------------------------
+# RXJS GUIDELINES
+# ----------------------------------------------------------------------------
+rxjs:
+  usage: "Async operations only"
+  patterns:
+    - "Use async pipe in templates (auto-unsubscribe)"
+    - "Convert to signals with toSignal() when possible"
+    - "takeUntilDestroyed() for manual subscriptions"
+    - "Avoid nested subscribes"
+
+  operators:
+    preferred:
+      - "switchMap for cancellable requests"
+      - "concatMap for sequential operations"
+      - "mergeMap for parallel operations"
+      - "exhaustMap for ignoring while processing"
+      - "debounceTime for user input"
+      - "distinctUntilChanged to prevent duplicates"
+      - "catchError for error handling"
+    avoid:
+      - "subscribe() in components when async pipe works"
+      - "Nested subscribes (use higher-order operators)"
+      - "Manual unsubscribe (use takeUntilDestroyed)"
+
+# ----------------------------------------------------------------------------
+# TYPESCRIPT
+# ----------------------------------------------------------------------------
+technologies:
+  - name: typescript
+    version: "5.x"
+    specificRules:
+      strict: true
+      noImplicitAny: true
+      strictNullChecks: true
+      noUnusedLocals: true
+      noUnusedParameters: true
+      exactOptionalPropertyTypes: true
+
+  - name: angular
+    version: "19+"
+    specificRules:
+      standalone: true
+      signals: true
+      newControlFlow: true
+      onPushDefault: true
+      zoneless: "recommended (stable in v20.2+)"
+      signalForms: "experimental (v21+)"
+
+  - name: linting
+    tools:
+      - "ESLint"
+      - "@angular-eslint"
+      - "Prettier"
+
+# ----------------------------------------------------------------------------
+# TESTING
+# ----------------------------------------------------------------------------
+testing:
+  framework: "Jest or Vitest"
+  assertionLibrary: "Jest/Vitest matchers"
+  componentTesting: "Angular Testing Library"
+
+  types:
+    unit:
+      suffix: ".spec.ts"
+      location: "co-located with source"
+      coverage: 70
+
+    component:
+      suffix: ".spec.ts"
+      location: "co-located"
+      tool: "Angular Testing Library"
+      patterns:
+        - "Test user interactions, not implementation"
+        - "Use screen queries (getByRole, getByText)"
+        - "Avoid testing internal component state"
+
+    integration:
+      suffix: ".integration.spec.ts"
+      location: "tests/integration"
+
+    e2e:
+      tool: "Playwright or Cypress"
+      location: "e2e/"
+
+  patterns:
+    arrange_act_assert: true
+    behavior_testing: true
+    mock_services: true
+    testing_library_queries: true
+
+  rules:
+    - "Prefer Angular Testing Library over TestBed directly"
+    - "Test user-visible behavior"
+    - "Avoid implementation details (internal state, private methods)"
+    - "Use jest-preset-angular or analog for Vitest"
+
+# ----------------------------------------------------------------------------
+# STYLING
+# ----------------------------------------------------------------------------
+styling:
+  approach: "Component-scoped SCSS or Tailwind CSS"
+  tools:
+    - "SCSS (default)"
+    - "Tailwind CSS"
+    - "CSS Variables for theming"
+
+  rules:
+    - "Use ViewEncapsulation.Emulated (default)"
+    - "Avoid ViewEncapsulation.None"
+    - ":host for component root styles"
+    - "CSS custom properties for theming"
+    - "Mobile-first responsive design"
+    - "BEM naming for complex components (optional with Tailwind)"
+
+# ----------------------------------------------------------------------------
+# PERFORMANCE
+# ----------------------------------------------------------------------------
+performance:
+  changeDetection:
+    - "OnPush by default for all components"
+    - "Use signals to minimize change detection"
+    - "Avoid function calls in templates"
+    - "Use pure pipes for transformations"
+
+  lazyLoading:
+    - "Lazy load routes with loadComponent/loadChildren"
+    - "Use @defer for below-fold content"
+    - "Preload strategies for critical routes"
+
+  bundling:
+    - "Use esbuild (default in Angular 17+)"
+    - "Analyze bundle with source-map-explorer"
+    - "Tree-shake unused code"
+
+  rules:
+    - "trackBy function for @for loops (now 'track' expression)"
+    - "Lazy load images with loading='lazy'"
+    - "Use OnPush + signals for optimal performance"
+    - "Avoid unnecessary template re-evaluations"
+
+# ----------------------------------------------------------------------------
+# ROUTING
+# ----------------------------------------------------------------------------
+routing:
+  patterns:
+    - "Functional guards (canActivate, canMatch)"
+    - "Functional resolvers"
+    - "Lazy loading with loadComponent"
+    - "Route-level providers"
+
+  example: |
+    export const routes: Routes = [
+      {
+        path: 'users',
+        loadComponent: () => import('./users/users.component'),
+        canActivate: [authGuard],
+        providers: [UserService]
+      }
+    ];
+
+# ----------------------------------------------------------------------------
+# HTTP & API
+# ----------------------------------------------------------------------------
+api:
+  client: "HttpClient with interceptors"
+  patterns:
+    - "Centralize API configuration"
+    - "Use functional interceptors"
+    - "Type all responses"
+    - "Handle errors globally"
+
+  interceptors:
+    - "Auth token injection"
+    - "Error handling"
+    - "Loading state"
+    - "Retry logic"
+
+  example: |
+    export const authInterceptor: HttpInterceptorFn = (req, next) => {
+      const token = inject(AuthService).token();
+      if (token) {
+        req = req.clone({
+          setHeaders: { Authorization: `Bearer ${token}` }
+        });
+      }
+      return next(req);
+    };
+
+# ----------------------------------------------------------------------------
+# FORMS
+# ----------------------------------------------------------------------------
+forms:
+  preferred: "Reactive Forms"
+  patterns:
+    - "FormBuilder for complex forms"
+    - "Typed forms (FormGroup<T>)"
+    - "Custom validators as functions"
+    - "Async validators for server validation"
+
+  rules:
+    - "Prefer Reactive Forms over Template-driven"
+    - "Use FormControl signals (.value signal in Angular 18+)"
+    - "Centralize validation messages"
+    - "Handle form state (pristine, touched, valid)"
+
+# ----------------------------------------------------------------------------
+# PROJECT STRUCTURE
+# ----------------------------------------------------------------------------
+# Recommended folder structure:
+#
+# src/app/
+# ├── core/                      # Singleton services, guards, interceptors
+# │   ├── services/
+# │   │   ├── auth.service.ts
+# │   │   └── api.service.ts
+# │   ├── guards/
+# │   │   └── auth.guard.ts
+# │   ├── interceptors/
+# │   │   └── auth.interceptor.ts
+# │   └── models/
+# │       └── user.model.ts
+# │
+# ├── shared/                    # Reusable standalone components
+# │   ├── components/
+# │   │   ├── button/
+# │   │   │   ├── button.component.ts
+# │   │   │   └── button.component.spec.ts
+# │   │   └── modal/
+# │   ├── directives/
+# │   ├── pipes/
+# │   └── utils/
+# │
+# ├── features/                  # Feature modules (standalone)
+# │   ├── auth/
+# │   │   ├── login/
+# │   │   │   ├── login.component.ts
+# │   │   │   └── login.component.spec.ts
+# │   │   ├── register/
+# │   │   └── auth.routes.ts
+# │   ├── dashboard/
+# │   └── settings/
+# │
+# ├── app.component.ts           # Root standalone component
+# ├── app.config.ts              # Application configuration
+# └── app.routes.ts              # Root routes
+#
+# e2e/                           # End-to-end tests
+# └── specs/

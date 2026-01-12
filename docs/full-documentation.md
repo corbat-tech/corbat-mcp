@@ -2,39 +2,75 @@
 
 # CORBAT
 
-### Your AI Coding Standards Assistant
+### Complete Documentation
 
-*Define once, apply everywhere*
+*Stop repeating yourself. Start coding.*
 
 <br>
 
 [![CI](https://github.com/victormartingil/corbat-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/victormartingil/corbat-mcp/actions/workflows/ci.yml)
+[![Coverage](https://img.shields.io/badge/coverage-80%25+-brightgreen.svg)](https://github.com/victormartingil/corbat-mcp)
+[![Tests](https://img.shields.io/badge/tests-78%20passing-brightgreen.svg)](https://github.com/victormartingil/corbat-mcp)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Node.js](https://img.shields.io/badge/Node.js-18+-green.svg)](https://nodejs.org/)
-[![MCP](https://img.shields.io/badge/MCP-Compatible-blue.svg)](https://modelcontextprotocol.io/)
+[![MCP](https://img.shields.io/badge/MCP-1.0-blue.svg)](https://modelcontextprotocol.io/)
 
 </div>
 
 ---
 
-## What is Corbat?
+## Table of Contents
 
-Corbat is an MCP server that makes AI assistants follow YOUR coding standards automatically.
-
-```
-You: "Create a payment service @corbat"
-
-AI: [Automatically applies your architecture, naming conventions,
-     TDD workflow, DDD patterns, and code quality rules]
-```
-
-**No more repeating** "use hexagonal architecture", "follow TDD", "apply SOLID principles"...
+- [What is Corbat?](#what-is-corbat)
+- [Quick Start](#quick-start)
+- [How It Works](#how-it-works)
+- [Tools Reference](#tools-reference)
+- [Prompts Reference](#prompts-reference)
+- [Profiles](#profiles)
+- [Configuration](#configuration)
+- [Task-Specific Guardrails](#task-specific-guardrails)
+- [Development Workflow](#development-workflow)
+- [Project Structure](#project-structure)
+- [Environment Variables](#environment-variables)
+- [Troubleshooting](#troubleshooting)
 
 ---
 
-## Quick Start (2 minutes)
+## What is Corbat?
 
-### 1. Install
+Corbat is an MCP server that **automatically injects your coding standards** into AI responses.
+
+### The Problem
+
+Every time you ask AI to write code, you repeat yourself:
+
+```
+"Create a payment service. Use hexagonal architecture. Follow TDD.
+ Apply SOLID. Use our naming conventions. Ensure 80% coverage..."
+```
+
+### The Solution
+
+Define standards once. Corbat applies them automatically.
+
+```
+You: "Create a payment service"
+
+Corbat automatically injects:
+  ✓ Hexagonal architecture
+  ✓ TDD workflow
+  ✓ SOLID principles
+  ✓ Your naming conventions
+  ✓ 80%+ coverage requirement
+```
+
+**Result**: Claude generates code that follows ALL your standards.
+
+---
+
+## Quick Start
+
+### Step 1: Install
 
 ```bash
 git clone https://github.com/victormartingil/corbat-mcp.git
@@ -42,7 +78,7 @@ cd corbat-mcp
 npm install && npm run build
 ```
 
-### 2. Connect to Claude
+### Step 2: Connect to Claude
 
 **Claude Code (CLI):**
 ```bash
@@ -50,6 +86,7 @@ claude mcp add corbat node /absolute/path/to/corbat-mcp/dist/index.js
 ```
 
 **Claude Desktop:**
+
 Edit `~/.config/Claude/claude_desktop_config.json`:
 ```json
 {
@@ -62,29 +99,229 @@ Edit `~/.config/Claude/claude_desktop_config.json`:
 }
 ```
 
-### 3. Use it
+### Step 3: Use It
 
 ```
-"Review this code using corbat"
-"Create a user service @corbat"
+"Create a user service"
 ```
 
-**Done!** Claude now applies your coding standards automatically.
+Corbat auto-detects your stack and applies standards. **Done.**
 
 ---
 
-## Create Your Project Profile (Interactive)
+## How It Works
 
-Run the profile generator in your project directory:
+```
+┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
+│  Your Prompt    │────▶│     Corbat      │────▶│  Claude + Rules │
+│                 │     │                 │     │                 │
+│ "Create user    │     │ 1. Detect stack │     │ Generates code  │
+│  service"       │     │ 2. Classify task│     │ following ALL   │
+│                 │     │ 3. Load profile │     │ your standards  │
+│                 │     │ 4. Inject rules │     │                 │
+└─────────────────┘     └─────────────────┘     └─────────────────┘
+```
+
+### Auto-Detection
+
+Corbat reads your project files to detect:
+
+| File | Detection |
+|------|-----------|
+| `pom.xml` | Java + Maven |
+| `build.gradle` | Java + Gradle |
+| `package.json` | Node.js |
+| `requirements.txt` | Python |
+| `Gemfile` | Ruby |
+
+### Task Classification
+
+Corbat analyzes your prompt to classify the task:
+
+| Keywords | Classification |
+|----------|----------------|
+| "create", "add", "implement" | FEATURE |
+| "fix", "bug", "error" | BUGFIX |
+| "refactor", "clean", "improve" | REFACTOR |
+| "test", "spec", "coverage" | TEST |
+
+Each classification triggers **specific guardrails**.
+
+---
+
+## Tools Reference
+
+### `get_context` (Primary Tool)
+
+Returns **everything** needed for a task in one call.
+
+**Parameters:**
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `task` | string | Yes | What you want to implement |
+| `project_dir` | string | No | Path for auto-detection |
+
+**Returns:**
+- Detected stack (language, framework, build tool)
+- Task classification
+- Active profile
+- Guardrails (MUST / AVOID)
+- Architecture rules
+- Naming conventions
+- Development workflow
+
+**Example:**
+```
+get_context({ task: "Create a payment service" })
+```
+
+---
+
+### `validate`
+
+Checks code against your standards.
+
+**Parameters:**
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `code` | string | Yes | Code to validate |
+| `task_type` | string | No | feature, bugfix, refactor, test |
+
+**Returns:**
+- Compliance score (0-100)
+- Issues found
+- Recommendations
+
+**Example:**
+```
+validate({
+  code: "public class PaymentService { ... }",
+  task_type: "feature"
+})
+```
+
+---
+
+### `search`
+
+Searches the standards documentation.
+
+**Parameters:**
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `query` | string | Yes | Search term |
+
+**Example:**
+```
+search({ query: "hexagonal architecture" })
+search({ query: "kafka" })
+search({ query: "testing patterns" })
+```
+
+**Available Topics:**
+- Architecture: hexagonal, clean, DDD, CQRS
+- Testing: TDD, unit, integration, E2E
+- DevOps: Docker, Kubernetes, CI/CD
+- Observability: logging, metrics, tracing
+
+---
+
+### `profiles`
+
+Lists all available profiles.
+
+**Parameters:** None
+
+**Returns:** List of profiles with descriptions.
+
+---
+
+### `health`
+
+Server diagnostics.
+
+**Parameters:** None
+
+**Returns:**
+- Server status
+- Loaded profiles count
+- Standards documents count
+- Cache status
+
+---
+
+## Prompts Reference
+
+### `implement`
+
+Guided implementation with full workflow.
+
+**Parameters:**
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `task` | string | Yes | What to implement |
+| `project_dir` | string | No | Path for auto-detection |
+
+**Workflow injected:**
+1. CLARIFY - Confirm requirements
+2. PLAN - Create task checklist
+3. BUILD - TDD: Red → Green → Refactor
+4. VERIFY - Tests pass, linter clean
+5. REVIEW - Self-check against standards
+
+---
+
+### `review`
+
+Expert code review.
+
+**Parameters:**
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+| `code` | string | Yes | Code to review |
+| `role` | string | No | architect, backend, security, performance, frontend |
+
+**Review output:**
+- CRITICAL ISSUES (must fix)
+- WARNINGS (should fix)
+- SUGGESTIONS (nice to have)
+- SCORE (1-10)
+
+---
+
+## Profiles
+
+### Built-in Profiles
+
+| Profile | Stack | Architecture |
+|---------|-------|--------------|
+| `java-spring-backend` | Java 21 + Spring Boot | Hexagonal + DDD |
+| `nodejs` | Node.js + TypeScript | Clean Architecture |
+| `python` | Python + FastAPI | Clean Architecture |
+| `frontend` | React/Vue/Angular | Component-based |
+| `minimal` | Any | Basic standards |
+
+### Using a Profile
+
+**Automatic:** Corbat detects based on project files.
+
+**Explicit in prompt:**
+```
+"Create a service using profile nodejs"
+```
+
+**Explicit in config:**
+```json
+{ "profile": "nodejs" }
+```
+
+### Creating Custom Profiles
+
+#### Option 1: Interactive Generator (Recommended)
 
 ```bash
 cd /your/project
 npx /path/to/corbat-mcp/dist/cli/init.js
-```
-
-Or if installed globally:
-```bash
-corbat-init
 ```
 
 **What happens:**
@@ -94,7 +331,7 @@ corbat-init
 ║   CORBAT PROFILE GENERATOR                                ║
 ╚═══════════════════════════════════════════════════════════╝
 
-🔍 Scanning project...
+Scanning project...
 
 ✓ Detected configuration:
 
@@ -102,217 +339,29 @@ corbat-init
   Framework:     Spring Boot 3.4.1
   Build Tool:    Maven
   Java Version:  21
-  Tests:         JUnit5
-  Docker:        Yes
 
-Use detected configuration as base? [Y/n]
+Use detected configuration? [Y/n]
 
 ━━━ Architecture ━━━
-Architecture pattern:
-  → 1) hexagonal (Ports & Adapters)
-    2) clean (Clean Architecture)
-    3) layered (Traditional N-Tier)
+  → 1) hexagonal
+    2) clean
+    3) layered
 
-━━━ Domain-Driven Design ━━━
-Enable DDD patterns? [Y/n]
-Enforce ubiquitous language? [Y/n]
-
-━━━ Code Quality Thresholds ━━━
+━━━ Code Quality ━━━
 Max lines per method [20]:
 Min test coverage % [80]:
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-                    PROFILE SUMMARY
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-Name:         spring-boot-project
-Architecture: hexagonal
-DDD:          Enabled
-CQRS:         Enabled (logical)
-Testing:      JUnit5 + AssertJ
-
-Save this profile? [Y/n]
-
-✓ Profile saved to: profiles/custom/spring-boot-project.yaml
+✓ Profile saved to: profiles/custom/my-project.yaml
 ✓ Created .corbat.json
 ```
 
-**That's it!** Your project now has custom standards.
-
----
-
-## Usage Shortcut
-
-Add this to your **Claude User Preferences** (Settings > Profile):
-
-```
-When I write "@corbat" in my message, automatically use the corbat MCP
-to apply coding standards, architecture guidelines, and development workflow.
-```
-
-Now just write:
-```
-"Create a payment service @corbat"
-"Fix this bug @corbat"
-"@corbat review this code"
-```
-
----
-
-## Agent Mode
-
-Corbat includes an intelligent **Agent Mode** that automatically:
-
-1. **Detects** your project stack (Java/Node/Python/etc.)
-2. **Classifies** your task (feature, bugfix, refactor, etc.)
-3. **Applies** specific guardrails for that task type
-4. **Injects** all relevant standards in one call
-
-### Using Agent Mode
-
-```
-"Use get_context for: Create a payment service"
-```
-
-Returns **everything** in one call:
-- Task classification
-- Guardrails (must do / must avoid)
-- Architecture rules
-- Naming conventions
-- Workflow phases
-- Relevant documentation
-
-### Guardrails by Task Type
-
-| Task | Key Rules |
-|------|-----------|
-| `feature` | TDD required, 80%+ coverage, SOLID principles |
-| `bugfix` | Reproduce with test first, minimal change only |
-| `refactor` | No behavior changes, tests must pass before/after |
-| `test` | AAA pattern, one assertion per test |
-| `security` | Validate inputs, parameterized queries |
-
----
-
-## Project Configuration
-
-Create `.corbat.json` in your project root:
-
-```json
-{
-  "profile": "my-project",
-  "autoInject": true,
-  "rules": {
-    "always": ["Use TypeScript strict mode"],
-    "onNewFile": ["Add license header"],
-    "onTest": ["Use AAA pattern"]
-  },
-  "decisions": {
-    "database": "PostgreSQL",
-    "cache": "Redis"
-  }
-}
-```
-
-This overrides defaults for your specific project.
-
----
-
-## Available Profiles
-
-| Profile | Stack | Use Case |
-|---------|-------|----------|
-| `java-spring-backend` | Java 21 + Spring Boot | Enterprise APIs |
-| `nodejs` | Node.js + TypeScript | Backend services |
-| `python` | Python + FastAPI | Async APIs |
-| `frontend` | React/Vue + TypeScript | Web apps |
-| `minimal` | Any | Quick prototypes |
-
-**Use a specific profile:**
-```
-"Apply corbat standards with profile nodejs"
-```
-
----
-
-## All Tools & Prompts
-
-### Tools (5)
-
-| Tool | Description | Parameters |
-|------|-------------|------------|
-| `get_context` | **Primary** - Get all standards for a task | `task` (required), `project_dir` (optional) |
-| `validate` | Check code against standards | `code` (required), `task_type` (optional: feature/bugfix/refactor/test) |
-| `search` | Search standards documentation | `query` (required) |
-| `profiles` | List all available profiles | none |
-| `health` | Server status and diagnostics | none |
-
-### Prompts (2)
-
-| Prompt | Description |
-|--------|-------------|
-| `implement` | Guided implementation with full workflow and guardrails |
-| `review` | Expert code review against standards |
-
-### Tool Details
-
-#### `get_context` (Primary Tool)
-
-Returns everything needed for a task in one call:
-- Auto-detected project stack (Java, Node, Python, etc.)
-- Task classification (feature, bugfix, refactor, test, etc.)
-- Guardrails (MUST do / MUST avoid)
-- Architecture guidelines
-- Naming conventions
-- Development workflow
-
-```
-Example: get_context({ task: "Create a payment service" })
-```
-
-#### `validate`
-
-Validates code against your coding standards:
-- Architecture compliance
-- SOLID principles
-- Naming conventions
-- Test patterns (if task_type is "test")
-- Returns compliance score (0-100) and issues
-
-```
-Example: validate({ code: "public class UserService {...}", task_type: "feature" })
-```
-
-#### `search`
-
-Searches the standards documentation:
-- Architecture patterns (hexagonal, clean, DDD)
-- Testing guidelines
-- Technology-specific docs (Kafka, Docker, Kubernetes)
-
-```
-Example: search({ query: "hexagonal architecture" })
-```
-
----
-
-## Create Custom Profiles
-
-### Option 1: Interactive (Recommended)
-
-```bash
-cd /your/project
-npx /path/to/corbat-mcp/dist/cli/init.js
-```
-
-### Option 2: Manual
+#### Option 2: Manual
 
 ```bash
 cp profiles/templates/_template.yaml profiles/custom/my-project.yaml
-# Edit the file
 ```
 
-### Profile Structure
+Edit the file:
 
 ```yaml
 name: "My Project Standards"
@@ -345,27 +394,148 @@ naming:
 testing:
   framework: JUnit5
   assertionLibrary: AssertJ
-
-technologies:
-  - name: Java
-    version: "21"
-  - name: Spring Boot
-    version: "3.4"
 ```
+
+---
+
+## Configuration
+
+### Project Configuration (`.corbat.json`)
+
+Create in your project root:
+
+```json
+{
+  "profile": "my-project",
+  "rules": {
+    "always": [
+      "Use TypeScript strict mode",
+      "Prefer functional programming"
+    ],
+    "never": [
+      "Use any type",
+      "Skip error handling"
+    ],
+    "onNewFile": [
+      "Add license header"
+    ],
+    "onTest": [
+      "Use AAA pattern"
+    ]
+  },
+  "decisions": {
+    "database": "PostgreSQL",
+    "cache": "Redis",
+    "messaging": "Kafka"
+  }
+}
+```
+
+### Fields
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `profile` | string | Profile to use |
+| `rules.always` | string[] | Always apply |
+| `rules.never` | string[] | Never do |
+| `rules.onNewFile` | string[] | When creating files |
+| `rules.onTest` | string[] | When writing tests |
+| `decisions` | object | Technology decisions |
+
+---
+
+## Task-Specific Guardrails
+
+### FEATURE
+
+**MUST:**
+- Write tests BEFORE implementation (TDD)
+- Ensure 80%+ test coverage
+- Apply SOLID principles
+- Follow naming conventions
+- Document public APIs
+- Validate all inputs
+
+**AVOID:**
+- God classes (>200 lines)
+- God methods (>20 lines)
+- Hard-coded configuration
+- Mixing business logic with infrastructure
+- Circular dependencies
+
+---
+
+### BUGFIX
+
+**MUST:**
+- Write a failing test that reproduces the bug FIRST
+- Make minimal changes to fix
+- Verify no regression in existing tests
+- Document root cause
+
+**AVOID:**
+- Refactoring unrelated code
+- Adding features while fixing
+- Changing APIs unnecessarily
+
+---
+
+### REFACTOR
+
+**MUST:**
+- All tests pass BEFORE starting
+- Make incremental changes
+- Tests must pass AFTER each change
+- No behavior modifications
+
+**AVOID:**
+- Behavior changes
+- Big bang refactoring
+- Refactoring without tests
+
+---
+
+### TEST
+
+**MUST:**
+- Arrange-Act-Assert pattern
+- One logical assertion per test
+- Descriptive names: `should_X_when_Y`
+- Independent and repeatable tests
+
+**AVOID:**
+- Testing implementation details
+- Flaky tests
+- Order-dependent tests
+- Mocking everything
 
 ---
 
 ## Development Workflow
 
-Corbat enforces a 6-phase workflow:
+Corbat enforces this workflow:
 
 ```
-1. CLARIFY   → Ask questions if unclear
-2. PLAN      → Create task checklist
-3. BUILD     → TDD: Test → Code → Refactor
-4. VERIFY    → Tests pass, linter clean
-5. REVIEW    → Self-review as expert
-6. REFINE    → Fix issues (up to 3 cycles)
+┌─────────────────────────────────────────────────────────────────┐
+│                                                                 │
+│  1. CLARIFY    Ask questions if anything is unclear             │
+│       ↓                                                         │
+│  2. PLAN       Create task checklist                            │
+│       ↓        [ ] Task 1                                       │
+│                    [ ] Write test                               │
+│                    [ ] Implement                                │
+│                [ ] Task 2                                       │
+│       ↓                                                         │
+│  3. BUILD      TDD cycle for each task:                         │
+│       ↓        RED → GREEN → REFACTOR                           │
+│                                                                 │
+│  4. VERIFY     ✓ Tests pass                                     │
+│       ↓        ✓ Linter clean                                   │
+│                ✓ Build succeeds                                 │
+│                                                                 │
+│  5. REVIEW     Self-review against standards                    │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
 ```
 
 ---
@@ -375,17 +545,42 @@ Corbat enforces a 6-phase workflow:
 ```
 corbat-mcp/
 ├── src/
-│   ├── index.ts        # MCP server
-│   ├── tools.ts        # 5 tools
-│   ├── prompts.ts      # 2 prompts
-│   ├── agent.ts        # Agent mode logic
-│   ├── profiles.ts     # Profile loading
+│   ├── index.ts          # MCP server entry point
+│   ├── tools.ts          # 5 tools definitions
+│   ├── prompts.ts        # 2 prompts definitions
+│   ├── agent.ts          # Auto-detection & guardrails
+│   ├── profiles.ts       # Profile loading & caching
+│   ├── types.ts          # Zod schemas & types
+│   ├── config.ts         # Environment configuration
+│   ├── resources.ts      # MCP resources
 │   └── cli/
-│       └── init.ts     # Interactive profile generator
+│       └── init.ts       # Interactive profile generator
+│
 ├── profiles/
-│   ├── templates/      # Official profiles
-│   └── custom/         # Your profiles
-└── standards/          # Markdown documentation
+│   ├── templates/        # Built-in profiles
+│   │   ├── java-spring-backend.yaml
+│   │   ├── nodejs.yaml
+│   │   ├── python.yaml
+│   │   ├── frontend.yaml
+│   │   ├── minimal.yaml
+│   │   └── _template.yaml
+│   └── custom/           # Your custom profiles
+│
+├── standards/            # Searchable documentation (15 files)
+│   ├── architecture/
+│   ├── clean-code/
+│   ├── testing/
+│   ├── spring-boot/
+│   ├── event-driven/
+│   ├── observability/
+│   ├── containerization/
+│   ├── kubernetes/
+│   ├── cicd/
+│   └── ...
+│
+├── tests/                # 78 tests, 80%+ coverage
+├── docs/
+└── examples/
 ```
 
 ---
@@ -394,9 +589,13 @@ corbat-mcp/
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `CORBAT_PROFILES_DIR` | `./profiles` | Profiles location |
-| `CORBAT_STANDARDS_DIR` | `./standards` | Standards location |
+| `CORBAT_PROFILES_DIR` | `./profiles` | Profiles directory |
+| `CORBAT_STANDARDS_DIR` | `./standards` | Standards directory |
 | `CORBAT_DEFAULT_PROFILE` | `java-spring-backend` | Default profile |
+| `CORBAT_CACHE_TTL_MS` | `60000` | Cache TTL in ms |
+| `CORBAT_LOG_LEVEL` | `info` | debug, info, warn, error |
+| `CORBAT_VERBOSE_ERRORS` | `false` | Show detailed errors |
+| `NODE_ENV` | `development` | Environment mode |
 
 ---
 
@@ -405,9 +604,11 @@ corbat-mcp/
 <details>
 <summary><b>Claude can't find corbat</b></summary>
 
-1. Use **absolute path** in config
-2. Ensure `node` is in PATH
-3. Restart Claude
+1. Use **absolute path** in config (not relative)
+2. Verify: `ls /your/path/to/corbat-mcp/dist/index.js`
+3. Check `node` is in PATH: `which node`
+4. Restart Claude completely
+5. Check Claude's MCP logs
 
 </details>
 
@@ -415,8 +616,40 @@ corbat-mcp/
 <summary><b>Profile not found</b></summary>
 
 1. Check file exists in `profiles/custom/` or `profiles/templates/`
-2. File must end in `.yaml`
-3. Filename = profile ID (without extension)
+2. File must end in `.yaml` (not `.yml`)
+3. Filename = profile ID (e.g., `nodejs.yaml` → `nodejs`)
+4. Run `profiles` tool to list available
+
+</details>
+
+<details>
+<summary><b>Wrong stack detected</b></summary>
+
+Override with `.corbat.json`:
+```json
+{ "profile": "nodejs" }
+```
+
+Or specify in prompt: *"...using profile nodejs"*
+
+</details>
+
+<details>
+<summary><b>Standards not being applied</b></summary>
+
+1. Check if `.corbat.json` exists in project root
+2. Verify profile exists
+3. Try explicit: *"Use corbat get_context for: your task"*
+
+</details>
+
+<details>
+<summary><b>Permission errors (macOS/Linux)</b></summary>
+
+```bash
+chmod +x /path/to/corbat-mcp/dist/index.js
+which node  # Use this absolute path in config
+```
 
 </details>
 
@@ -437,30 +670,40 @@ npm run init
 
 ---
 
+## Quality Metrics
+
+| Metric | Value |
+|--------|-------|
+| Test coverage | 80%+ |
+| Tests passing | 78 |
+| TypeScript | Strict mode |
+| Linting | Biome |
+| Architecture validation | dependency-cruiser |
+
+---
+
 ## Contributing
 
-1. Fork it
-2. Create branch (`git checkout -b feature/x`)
-3. Commit (`git commit -m 'Add x'`)
-4. Push (`git push origin feature/x`)
-5. Open PR
+1. Fork the repository
+2. Create feature branch: `git checkout -b feature/amazing`
+3. Commit changes: `git commit -m 'Add amazing feature'`
+4. Push branch: `git push origin feature/amazing`
+5. Open Pull Request
 
 ---
 
 ## License
 
-[MIT](LICENSE)
+[MIT](../LICENSE)
 
 ---
 
 <div align="center">
 
-**Stop repeating coding standards.**
-
-**Define once, apply everywhere.**
+**Define once. Apply everywhere. Ship faster.**
 
 <br>
 
-[Model Context Protocol](https://modelcontextprotocol.io/) · [Report Issues](https://github.com/victormartingil/corbat-mcp/issues)
+[Back to README](../README.md) · [Model Context Protocol](https://modelcontextprotocol.io/) · [Report Issues](https://github.com/victormartingil/corbat-mcp/issues)
 
 </div>

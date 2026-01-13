@@ -1,6 +1,6 @@
 {
-  "name": "corbat-mcp",
-  "version": "1.1.0",
+  "name": "@corbat-tech/mcp",
+  "version": "1.0.0",
   "description": "AI coding standards that apply themselves - MCP server for Claude",
   "type": "module",
   "main": "dist/index.js",
@@ -47,8 +47,11 @@
     "clean-code",
     "tdd"
   ],
-  "author": "Victor Martin Gil",
+  "author": "Corbat <info@corbat.tech> (https://corbat.tech)",
   "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
   "engines": {
     "node": ">=18.0.0"
   },

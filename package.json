@@ -1,5 +1,5 @@
 {
-  "name": "@corbat-tech/mcp",
+  "name": "@corbat-tech/coding-standards-mcp",
   "version": "1.0.0",
   "description": "AI coding standards that apply themselves - MCP server for Claude",
   "type": "module",

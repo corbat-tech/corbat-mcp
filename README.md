@@ -349,6 +349,25 @@ npx @corbat-tech/coding-standards-mcp
 
 ---
 
+## Benchmark Results
+
+We tested Claude generating code **with and without** Corbat MCP across 4 scenarios: service creation, CRUD features, bugfixes, and refactoring.
+
+| Metric | Without MCP | With MCP | Improvement |
+|--------|:-----------:|:--------:|:-----------:|
+| **Quality Score** | 63/100 | 93/100 | **+48%** |
+| **Code Smells** | 13 | 0 | **-100%** |
+| **SOLID Compliance** | 50% | 89% | **+78%** |
+| **Test Assertions** | 24 | 52 | **+117%** |
+| **Cyclomatic Complexity** | 3.2 avg | 2.1 avg | **-34%** |
+| **Execution Time** | 48s | 40s | **-17%** |
+
+**Key finding**: Code with Corbat MCP passes SonarQube quality gates. Code without MCP fails.
+
+📊 [View Full Benchmark Report](docs/comparison-tests/RESULTS-REPORT.md)
+
+---
+
 ## Links
 
 - [Full Documentation](docs/full-documentation.md)

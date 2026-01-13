@@ -1,0 +1,38 @@
+{
+  "timestamp": "2026-01-13T12:00:00.000Z",
+  "mode": "with-mcp",
+  "stacks": {
+    "typescript": {
+      "test-1": { "lines_of_code": 333, "num_tests": 15 },
+      "test-2": { "lines_of_code": 506, "num_tests": 22 },
+      "test-3": { "lines_of_code": 270, "num_tests": 16 },
+      "test-4": { "lines_of_code": 571, "num_tests": 16 },
+      "test-5": { "lines_of_code": 560, "num_tests": 25 }
+    },
+    "java-spring": {
+      "test-1": { "lines_of_code": 484, "num_tests": 13 },
+      "test-2": { "lines_of_code": 775, "num_tests": 25 },
+      "test-3": { "lines_of_code": 517, "num_tests": 16 },
+      "test-4": { "lines_of_code": 711, "num_tests": 10 },
+      "test-5": { "lines_of_code": 958, "num_tests": 34 }
+    },
+    "react": {
+      "test-1": { "lines_of_code": 382, "num_tests": 30 },
+      "test-2": { "lines_of_code": 635, "num_tests": 36 },
+      "test-3": { "lines_of_code": 400, "num_tests": 28 },
+      "test-4": { "lines_of_code": 649, "num_tests": 49 },
+      "test-5": { "lines_of_code": 817, "num_tests": 51 }
+    },
+    "python": {
+      "test-1": { "lines_of_code": 412, "num_tests": 40 },
+      "test-2": { "lines_of_code": 515, "num_tests": 27 },
+      "test-3": { "lines_of_code": 437, "num_tests": 41 },
+      "test-4": { "lines_of_code": 621, "num_tests": 33 },
+      "test-5": { "lines_of_code": 594, "num_tests": 31 }
+    }
+  },
+  "totals": {
+    "total_lines_of_code": 11147,
+    "total_tests": 558
+  }
+}

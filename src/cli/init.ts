@@ -726,14 +726,14 @@ ${c.cyan}╔══════════════════════�
 
       const saveLocation = await this.select(
         'Where to save?',
-        [`profiles/custom/${filename} (corbat-mcp)`, `.corbat/${filename} (project local)`, 'Custom path...'],
+        [`profiles/custom/${filename} (coding-standards-mcp)`, `.corbat/${filename} (project local)`, 'Custom path...'],
         0
       );
 
       let savePath: string;
 
       if (saveLocation.includes('profiles/custom')) {
-        // Save to corbat-mcp profiles
+        // Save to coding-standards-mcp profiles
         const corbatRoot = join(__dirname, '..', '..');
         savePath = join(corbatRoot, 'profiles', 'custom', filename);
       } else if (saveLocation.includes('.corbat')) {

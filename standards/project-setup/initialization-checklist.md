@@ -2,7 +2,7 @@
 
 ## Overview
 
-This checklist guides the complete setup of a new Spring Boot backend application following Corbat standards.
+This checklist guides the complete setup of a new Spring Boot backend application following Corbat MCP standards.
 
 ## Project Creation Steps
 

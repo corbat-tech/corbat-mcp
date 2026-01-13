@@ -1,4 +1,4 @@
-# Corbat MCP Profiles
+# CORBAT MCP — Profiles
 
 Los perfiles definen los estándares de código y mejores prácticas que el LLM aplicará durante el desarrollo.
 

@@ -1,13 +1,13 @@
 <div align="center">
 
-# CORBAT
+# CORBAT - Coding Standards MCP
 
 ### Stop repeating yourself. Start coding.
 
 **Your architecture rules, TDD workflow, and SOLID principles — injected automatically into every AI response.**
 
 [![npm version](https://img.shields.io/npm/v/@corbat-tech/coding-standards-mcp.svg)](https://www.npmjs.com/package/@corbat-tech/coding-standards-mcp)
-[![CI](https://github.com/corbat-tech/corbat-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/corbat-tech/corbat-mcp/actions/workflows/ci.yml)
+[![CI](https://github.com/corbat-tech/coding-standards-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/corbat-tech/coding-standards-mcp/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![MCP](https://img.shields.io/badge/MCP-1.0-blue.svg)](https://modelcontextprotocol.io/)
 
@@ -32,7 +32,7 @@ Every time you ask AI to write code, you repeat the same instructions:
 
 ## The Solution
 
-Define your standards once. Corbat injects them automatically.
+Define your standards once. Corbat MCP injects them automatically.
 
 ```
 You: "Create a payment service"
@@ -48,9 +48,9 @@ Corbat: ✓ Detected Java/Spring project
 
 ---
 
-## Why Corbat vs Alternatives?
+## Why Corbat MCP vs Alternatives?
 
-| Feature | Corbat | Linters (ESLint, etc.) | Manual prompts |
+| Feature | Corbat MCP | Linters (ESLint, etc.) | Manual prompts |
 |---------|:------:|:----------------------:|:--------------:|
 | Enforces **before** code is written | ✅ | ❌ | ❌ |
 | Architecture patterns (hexagonal, DDD) | ✅ | ❌ | ⚠️ |
@@ -59,7 +59,7 @@ Corbat: ✓ Detected Java/Spring project
 | Auto-detects your stack | ✅ | ❌ | ❌ |
 | Zero repetition | ✅ | ✅ | ❌ |
 
-**Linters catch errors after the fact. Corbat prevents them.**
+**Linters catch errors after the fact. Corbat MCP prevents them.**
 
 ---
 
@@ -103,13 +103,13 @@ Edit `~/.config/Claude/claude_desktop_config.json`:
 "Create a user service"
 ```
 
-Corbat auto-detects your stack and applies all standards. **That's it.**
+Corbat MCP auto-detects your stack and applies all standards. **That's it.**
 
 ---
 
 ## What You Get
 
-When you ask Claude to create code, Corbat injects this context automatically:
+When you ask Claude to create code, Corbat MCP injects this context automatically:
 
 ```markdown
 # Task: Create payment service
@@ -155,7 +155,7 @@ When you ask Claude to create code, Corbat injects this context automatically:
 
 ## Task-Specific Guardrails
 
-Corbat adapts its rules based on what you're doing:
+Corbat MCP adapts its rules based on what you're doing:
 
 <table>
 <tr>
@@ -211,7 +211,7 @@ Corbat adapts its rules based on what you're doing:
 | `vue` | Vue 3.5+ applications | Feature-based + Composition |
 | `minimal` | MVPs, prototypes | Basic standards |
 
-**Auto-detection**: Corbat reads `pom.xml`, `package.json`, `requirements.txt`, etc. to select the right profile.
+**Auto-detection**: Corbat MCP reads `pom.xml`, `package.json`, `requirements.txt`, etc. to select the right profile.
 
 ---
 
@@ -266,7 +266,7 @@ Create `.corbat.json` in your project root:
 
 ```
 ┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
-│  Your Prompt    │────▶│     Corbat      │────▶│  Claude + Rules │
+│  Your Prompt    │────▶│   Corbat MCP    │────▶│  Claude + Rules │
 │                 │     │                 │     │                 │
 │ "Create user    │     │ 1. Detect stack │     │ Generates code  │
 │  service"       │     │ 2. Classify task│     │ following ALL   │
@@ -279,7 +279,7 @@ Create `.corbat.json` in your project root:
 
 ## Included Documentation
 
-Corbat comes with 15 standards documents you can search:
+Corbat MCP comes with 15 standards documents you can search:
 
 - **Architecture**: Hexagonal, DDD, Clean Architecture
 - **Code Quality**: SOLID, Clean Code, Naming Conventions
@@ -353,7 +353,7 @@ npx @corbat-tech/coding-standards-mcp
 
 - [Full Documentation](docs/full-documentation.md)
 - [Model Context Protocol](https://modelcontextprotocol.io/)
-- [Report Issues](https://github.com/corbat-tech/corbat-mcp/issues)
+- [Report Issues](https://github.com/corbat-tech/coding-standards-mcp/issues)
 
 ---
 
@@ -361,6 +361,6 @@ npx @corbat-tech/coding-standards-mcp
 
 **Define once. Apply everywhere. Ship faster.**
 
-[Get Started](#quick-start) · [Documentation](docs/full-documentation.md) · [Report Bug](https://github.com/corbat-tech/corbat-mcp/issues)
+[Get Started](#quick-start) · [Documentation](docs/full-documentation.md) · [Report Bug](https://github.com/corbat-tech/coding-standards-mcp/issues)
 
 </div>

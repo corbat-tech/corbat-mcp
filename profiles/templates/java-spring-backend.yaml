@@ -5,7 +5,7 @@
 # Based on industry best practices: Hexagonal Architecture, DDD, CQRS, Clean Code.
 # ============================================================================
 
-name: "Corbat Default Standards"
+name: "CORBAT Default Standards"
 description: "Complete enterprise backend standards with Hexagonal Architecture, DDD, CQRS, Event-Driven Design, and comprehensive testing"
 
 # ----------------------------------------------------------------------------

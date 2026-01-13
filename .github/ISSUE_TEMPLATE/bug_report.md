@@ -27,7 +27,7 @@ assignees: ''
 ## Environment
 
 - Node.js version:
-- corbat-mcp version:
+- coding-standards-mcp version:
 - Operating System:
 
 ## Additional Context

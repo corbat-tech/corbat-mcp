@@ -49,7 +49,7 @@ const ConfigSchema = z.object({
   profilesDir: z.string().min(1),
   standardsDir: z.string().min(1),
   defaultProfile: z.string().default('java-spring-backend'),
-  serverName: z.string().default('corbat-mcp'),
+  serverName: z.string().default('coding-standards-mcp'),
   serverVersion: z.string().default('1.0.0'),
   environment: z.enum(['development', 'production', 'test']).default('development'),
   cacheTtlMs: z.number().min(0).default(60_000),
@@ -81,7 +81,7 @@ export function loadConfig(): Config {
     profilesDir: process.env.CORBAT_PROFILES_DIR || join(rootDir, 'profiles'),
     standardsDir: process.env.CORBAT_STANDARDS_DIR || join(rootDir, 'standards'),
     defaultProfile: process.env.CORBAT_DEFAULT_PROFILE || 'java-spring-backend',
-    serverName: 'corbat-mcp',
+    serverName: 'coding-standards-mcp',
     serverVersion: '1.1.0',
     environment,
     cacheTtlMs: process.env.CORBAT_CACHE_TTL_MS

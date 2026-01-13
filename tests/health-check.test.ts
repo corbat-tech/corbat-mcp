@@ -10,7 +10,7 @@ describe('health tool (Simplified API)', () => {
     expect(result.content[0].type).toBe('text');
 
     const text = result.content[0].text;
-    expect(text).toContain('Corbat Health');
+    expect(text).toContain('Corbat MCP Health');
     expect(text).toContain('OK');
     expect(text).toContain('Version');
   });

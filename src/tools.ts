@@ -453,7 +453,7 @@ async function handleHealth(): Promise<{ content: Array<{ type: 'text'; text: st
     const loadTimeMs = Date.now() - startTime;
 
     const lines = [
-      '# Corbat Health',
+      '# Corbat MCP Health',
       '',
       '**Status:** OK',
       `**Version:** ${config.serverVersion}`,
@@ -468,7 +468,7 @@ async function handleHealth(): Promise<{ content: Array<{ type: 'text'; text: st
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
     return {
-      content: [{ type: 'text', text: `# Corbat Health\n\n**Status:** ERROR\n**Error:** ${errorMessage}` }],
+      content: [{ type: 'text', text: `# Corbat MCP Health\n\n**Status:** ERROR\n**Error:** ${errorMessage}` }],
     };
   }
 }

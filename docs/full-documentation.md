@@ -1,6 +1,6 @@
 <div align="center">
 
-# CORBAT
+# CORBAT - Coding Standards MCP
 
 ### Complete Documentation
 
@@ -9,9 +9,9 @@
 <br>
 
 [![npm version](https://img.shields.io/npm/v/@corbat-tech/coding-standards-mcp.svg)](https://www.npmjs.com/package/@corbat-tech/coding-standards-mcp)
-[![CI](https://github.com/corbat-tech/corbat-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/corbat-tech/corbat-mcp/actions/workflows/ci.yml)
-[![Coverage](https://img.shields.io/badge/coverage-80%25+-brightgreen.svg)](https://github.com/corbat-tech/corbat-mcp)
-[![Tests](https://img.shields.io/badge/tests-78%20passing-brightgreen.svg)](https://github.com/corbat-tech/corbat-mcp)
+[![CI](https://github.com/corbat-tech/coding-standards-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/corbat-tech/coding-standards-mcp/actions/workflows/ci.yml)
+[![Coverage](https://img.shields.io/badge/coverage-80%25+-brightgreen.svg)](https://github.com/corbat-tech/coding-standards-mcp)
+[![Tests](https://img.shields.io/badge/tests-78%20passing-brightgreen.svg)](https://github.com/corbat-tech/coding-standards-mcp)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Node.js](https://img.shields.io/badge/Node.js-18+-green.svg)](https://nodejs.org/)
 [![MCP](https://img.shields.io/badge/MCP-1.0-blue.svg)](https://modelcontextprotocol.io/)
@@ -22,7 +22,7 @@
 
 ## Table of Contents
 
-- [What is Corbat?](#what-is-corbat)
+- [What is Corbat MCP?](#what-is-corbat-mcp)
 - [Quick Start](#quick-start)
 - [How It Works](#how-it-works)
 - [Tools Reference](#tools-reference)
@@ -37,9 +37,9 @@
 
 ---
 
-## What is Corbat?
+## What is Corbat MCP?
 
-Corbat is an MCP server that **automatically injects your coding standards** into AI responses.
+Corbat MCP is an MCP server that **automatically injects your coding standards** into AI responses.
 
 ### The Problem
 
@@ -52,12 +52,12 @@ Every time you ask AI to write code, you repeat yourself:
 
 ### The Solution
 
-Define standards once. Corbat applies them automatically.
+Define standards once. Corbat MCP applies them automatically.
 
 ```
 You: "Create a payment service"
 
-Corbat automatically injects:
+Corbat MCP automatically injects:
   ✓ Hexagonal architecture
   ✓ TDD workflow
   ✓ SOLID principles
@@ -98,7 +98,7 @@ Edit `~/.config/Claude/claude_desktop_config.json`:
 "Create a user service"
 ```
 
-Corbat auto-detects your stack and applies standards. **Done.**
+Corbat MCP auto-detects your stack and applies standards. **Done.**
 
 ---
 
@@ -106,7 +106,7 @@ Corbat auto-detects your stack and applies standards. **Done.**
 
 ```
 ┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
-│  Your Prompt    │────▶│     Corbat      │────▶│  Claude + Rules │
+│  Your Prompt    │────▶│   Corbat MCP    │────▶│  Claude + Rules │
 │                 │     │                 │     │                 │
 │ "Create user    │     │ 1. Detect stack │     │ Generates code  │
 │  service"       │     │ 2. Classify task│     │ following ALL   │
@@ -117,7 +117,7 @@ Corbat auto-detects your stack and applies standards. **Done.**
 
 ### Auto-Detection
 
-Corbat reads your project files to detect:
+Corbat MCP reads your project files to detect:
 
 | File | Detection |
 |------|-----------|
@@ -129,7 +129,7 @@ Corbat reads your project files to detect:
 
 ### Task Classification
 
-Corbat analyzes your prompt to classify the task:
+Corbat MCP analyzes your prompt to classify the task:
 
 | Keywords | Classification |
 |----------|----------------|
@@ -298,7 +298,7 @@ Expert code review.
 
 ### Using a Profile
 
-**Automatic:** Corbat detects based on project files.
+**Automatic:** Corbat MCP detects based on project files.
 
 **Explicit in prompt:**
 ```
@@ -508,7 +508,7 @@ Create in your project root:
 
 ## Development Workflow
 
-Corbat enforces this workflow:
+Corbat MCP enforces this workflow:
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -538,7 +538,7 @@ Corbat enforces this workflow:
 ## Project Structure
 
 ```
-corbat-mcp/
+coding-standards-mcp/
 ├── src/
 │   ├── index.ts          # MCP server entry point
 │   ├── tools.ts          # 5 tools definitions
@@ -696,6 +696,6 @@ npx corbat-init
 
 <br>
 
-[Back to README](../README.md) · [Model Context Protocol](https://modelcontextprotocol.io/) · [Report Issues](https://github.com/corbat-tech/corbat-mcp/issues)
+[Back to README](../README.md) · [Model Context Protocol](https://modelcontextprotocol.io/) · [Report Issues](https://github.com/corbat-tech/coding-standards-mcp/issues)
 
 </div>

@@ -11,11 +11,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/corbat-tech/corbat-mcp.git"
+    "url": "git+https://github.com/corbat-tech/coding-standards-mcp.git"
   },
-  "homepage": "https://github.com/corbat-tech/corbat-mcp#readme",
+  "homepage": "https://github.com/corbat-tech/coding-standards-mcp#readme",
   "bugs": {
-    "url": "https://github.com/corbat-tech/corbat-mcp/issues"
+    "url": "https://github.com/corbat-tech/coding-standards-mcp/issues"
   },
   "scripts": {
     "build": "tsc",

@@ -70,7 +70,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^1.9.4",
-    "@types/node": "^20.10.0",
+    "@types/node": "^25.0.6",
     "@vitest/coverage-v8": "^1.0.0",
     "dependency-cruiser": "^16.5.0",
     "tsx": "^4.6.0",

@@ -6,6 +6,7 @@
 
 **Your architecture rules, TDD workflow, and SOLID principles — injected automatically into every AI response.**
 
+[![npm version](https://img.shields.io/npm/v/@corbat-tech/coding-standards-mcp.svg)](https://www.npmjs.com/package/@corbat-tech/coding-standards-mcp)
 [![CI](https://github.com/corbat-tech/corbat-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/corbat-tech/corbat-mcp/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![MCP](https://img.shields.io/badge/MCP-1.0-blue.svg)](https://modelcontextprotocol.io/)
@@ -64,13 +65,7 @@ Corbat: ✓ Detected Java/Spring project
 
 ## Quick Start
 
-**Step 1** — Clone and build:
-```bash
-git clone https://github.com/corbat-tech/corbat-mcp.git
-cd corbat-mcp && npm install && npm run build
-```
-
-**Step 2** — Connect to Claude:
+**Step 1** — Connect to Claude:
 
 <table>
 <tr>
@@ -78,7 +73,7 @@ cd corbat-mcp && npm install && npm run build
 <td>
 
 ```bash
-claude mcp add corbat node /absolute/path/to/corbat-mcp/dist/index.js
+claude mcp add corbat -- npx -y @corbat-tech/coding-standards-mcp
 ```
 
 </td>
@@ -92,8 +87,8 @@ Edit `~/.config/Claude/claude_desktop_config.json`:
 {
   "mcpServers": {
     "corbat": {
-      "command": "node",
-      "args": ["/absolute/path/to/corbat-mcp/dist/index.js"]
+      "command": "npx",
+      "args": ["-y", "@corbat-tech/coding-standards-mcp"]
     }
   }
 }
@@ -103,7 +98,7 @@ Edit `~/.config/Claude/claude_desktop_config.json`:
 </tr>
 </table>
 
-**Step 3** — Use it:
+**Step 2** — Use it:
 ```
 "Create a user service"
 ```
@@ -224,7 +219,7 @@ Corbat adapts its rules based on what you're doing:
 
 ### Option A: Interactive generator
 ```bash
-npx /path/to/corbat-mcp/dist/cli/init.js
+npx corbat-init
 ```
 
 ### Option B: Manual config
@@ -301,11 +296,10 @@ Use `search` tool: *"search kafka"* → Returns event-driven architecture guidel
 <details>
 <summary><b>Claude can't find corbat</b></summary>
 
-1. Use **absolute path** in config (not relative)
-2. Verify: `ls /your/path/to/corbat-mcp/dist/index.js`
-3. Check `node` is in PATH: `which node`
-4. Restart Claude completely
-5. Check Claude's MCP logs
+1. Verify npm/npx is in PATH: `which npx`
+2. Test manually: `npx @corbat-tech/coding-standards-mcp`
+3. Restart Claude completely
+4. Check Claude's MCP logs
 
 </details>
 
@@ -334,8 +328,9 @@ Or specify in prompt: *"...using profile nodejs"*
 <summary><b>Permission errors (macOS/Linux)</b></summary>
 
 ```bash
-chmod +x /path/to/corbat-mcp/dist/index.js
-which node  # Use this absolute path in config
+# Clear npx cache and retry
+npx clear-npx-cache
+npx @corbat-tech/coding-standards-mcp
 ```
 
 </details>

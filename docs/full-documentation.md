@@ -8,6 +8,7 @@
 
 <br>
 
+[![npm version](https://img.shields.io/npm/v/@corbat-tech/coding-standards-mcp.svg)](https://www.npmjs.com/package/@corbat-tech/coding-standards-mcp)
 [![CI](https://github.com/corbat-tech/corbat-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/corbat-tech/corbat-mcp/actions/workflows/ci.yml)
 [![Coverage](https://img.shields.io/badge/coverage-80%25+-brightgreen.svg)](https://github.com/corbat-tech/corbat-mcp)
 [![Tests](https://img.shields.io/badge/tests-78%20passing-brightgreen.svg)](https://github.com/corbat-tech/corbat-mcp)
@@ -70,19 +71,11 @@ Corbat automatically injects:
 
 ## Quick Start
 
-### Step 1: Install
-
-```bash
-git clone https://github.com/corbat-tech/corbat-mcp.git
-cd corbat-mcp
-npm install && npm run build
-```
-
-### Step 2: Connect to Claude
+### Step 1: Connect to Claude
 
 **Claude Code (CLI):**
 ```bash
-claude mcp add corbat node /absolute/path/to/corbat-mcp/dist/index.js
+claude mcp add corbat -- npx -y @corbat-tech/coding-standards-mcp
 ```
 
 **Claude Desktop:**
@@ -92,14 +85,14 @@ Edit `~/.config/Claude/claude_desktop_config.json`:
 {
   "mcpServers": {
     "corbat": {
-      "command": "node",
-      "args": ["/absolute/path/to/corbat-mcp/dist/index.js"]
+      "command": "npx",
+      "args": ["-y", "@corbat-tech/coding-standards-mcp"]
     }
   }
 }
 ```
 
-### Step 3: Use It
+### Step 2: Use It
 
 ```
 "Create a user service"
@@ -323,7 +316,7 @@ Expert code review.
 
 ```bash
 cd /your/project
-npx /path/to/corbat-mcp/dist/cli/init.js
+npx corbat-init
 ```
 
 **What happens:**
@@ -608,11 +601,10 @@ corbat-mcp/
 <details>
 <summary><b>Claude can't find corbat</b></summary>
 
-1. Use **absolute path** in config (not relative)
-2. Verify: `ls /your/path/to/corbat-mcp/dist/index.js`
-3. Check `node` is in PATH: `which node`
-4. Restart Claude completely
-5. Check Claude's MCP logs
+1. Verify npm/npx is in PATH: `which npx`
+2. Test manually: `npx @corbat-tech/coding-standards-mcp`
+3. Restart Claude completely
+4. Check Claude's MCP logs
 
 </details>
 
@@ -651,23 +643,19 @@ Or specify in prompt: *"...using profile nodejs"*
 <summary><b>Permission errors (macOS/Linux)</b></summary>
 
 ```bash
-chmod +x /path/to/corbat-mcp/dist/index.js
-which node  # Use this absolute path in config
+# Clear npx cache and retry
+npx clear-npx-cache
+npx @corbat-tech/coding-standards-mcp
 ```
 
 </details>
 
 <details>
-<summary><b>init command not found</b></summary>
+<summary><b>init command not working</b></summary>
 
 ```bash
-# Run directly
-node /path/to/corbat-mcp/dist/cli/init.js
-
-# Or build first
-cd /path/to/corbat-mcp
-npm run build
-npm run init
+# Run the init wizard
+npx corbat-init
 ```
 
 </details>
